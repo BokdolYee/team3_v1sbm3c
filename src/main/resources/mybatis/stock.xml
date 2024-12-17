@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.mvc.stock.StockDAOInter">
+
+    <insert id="create" parameterType="dev.mvc.stock.StockVO">
+        INSERT INTO Stock (stockno, symbol, name, sector, industry, description)
+        VALUES (#{stockno}, #{symbol}, #{name}, #{industry}, #{description})
+    </insert>
+
+    <select id="read" parameterType="int" resultType="dev.mvc.stock.StockVO">
+        SELECT * FROM Stock WHERE stockno = #{stockno}
+    </select>
+
+    <select id="list" resultType="dev.mvc.stock.StockVO">
+        SELECT * FROM Stock ORDER BY stockno ASC
+    </select>
+
+    <update id="update" parameterType="dev.mvc.stock.StockVO">
+        UPDATE Stock
+        SET symbol = #{symbol},
+            name = #{name},
+            industry = #{industry},
+            description = #{description}
+        WHERE stockno = #{stockno}
+    </update>
+
+    <delete id="delete" parameterType="int">
+        DELETE FROM Stock WHERE stockno = #{stockno}
+    </delete>
+
+</mapper>

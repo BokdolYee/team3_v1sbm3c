@@ -4,22 +4,22 @@
 <div layout:fragment="content">
 
   <div class='title_line'>
-    <span th:text="${cateVO.genre}" class="title_line_text"></span >
-    > <span th:text="${cateVO.name}" class="title_line_text"></span >
+    <span th:text="${newscateVO.genre}" class="title_line_text"></span >
+    > <span th:text="${newscateVO.name}" class="title_line_text"></span >
     <span th:if="${word != ''}" th:text="|> ${word} (${search_count} 건)|" class="title_line_text"></span>
   </div>
 
   <aside class="aside_right">
     <span th:if="${session.grade == 'admin'}">
-      <a th:href="@{|/contents/create?cateno=${cateVO.cateno}|}">등록</a>
+      <a th:href="@{|/contents/create?newscateno=${newscateVO.newscateno}|}">등록</a>
       <span class="menu_devide">│</span>    
     </span>
     
     <a href="javascript:location.reload();">새로고침</a>
     <span class='menu_divide' >│</span>    
-    <a th:href="@{|./list_by_cateno?cateno=${cateVO.cateno }&word=${word }&now_page=${now_page}|}">목록형</a>    
+    <a th:href="@{|./list_by_cateno?newscateno=${newscateVO.newscateno }&word=${word }&now_page=${now_page}|}">목록형</a>    
     <span class='menu_divide' >│</span>
-    <a th:href="@{|./list_by_cateno_grid?cateno=${cateVO.cateno }&word=${word }&now_page=${now_page}|}">갤러리형</a>    
+    <a th:href="@{|./list_by_cateno_grid?newscateno=${newscateVO.newscateno }&word=${word }&now_page=${now_page}|}">갤러리형</a>    
   </aside> 
 
   <!-- /contents/list_search_com.html 파일의 list_search_fragment import -->

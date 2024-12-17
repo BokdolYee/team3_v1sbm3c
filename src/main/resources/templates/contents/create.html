@@ -3,25 +3,25 @@
 <html layout:decorate="~{layout}"> <!-- layout.html 상속-->
 <div layout:fragment="content">
   <div class='title_line'>
-    <span th:text="${cateVO.genre}" class="title_line_text"></span > 
-    > <span th:text="${cateVO.name}" class="title_line_text"></span > 
+    <span th:text="${NewscateVO.genre}" class="title_line_text"></span > 
+    > <span th:text="${NewscateVO.name}" class="title_line_text"></span > 
     > 글 등록
   </div>
   
   <aside class="aside_right">
-    <a th:href="@{|./create?cateno=${cateVO.cateno }|}">등록</a>
+    <a th:href="@{|./create?newscateno=${NewscateVO.newscateno }|}">등록</a>
     <span class='menu_divide' >│</span>
     <a href="javascript:location.reload();">새로고침</a>
     <span class='menu_divide' >│</span>
-    <a th:href="@{|./list_by_cateno_search_paging?cateno=${cateVO.cateno }|}">기본 목록형</a>    
+    <a th:href="@{|./list_by_newscateno_search_paging?newscateno=${NewscateVO.newscateno }|}">기본 목록형</a>    
     <span class='menu_divide' >│</span>
-    <a th:href="@{|./list_by_cateno_grid?cateno=${cateVO.cateno }|}">갤러리형</a>
+    <a th:href="@{|./list_by_newscateno_grid?newscateno=${NewscateVO.newscateno }|}">갤러리형</a>
   </aside>
   
   <div class='menu_line'></div>
   
   <form name='frm' method='post' th:object="${contentsVO}" action='./create' enctype="multipart/form-data">
-    <input type="hidden" name="cateno" th:value="${param.cateno }">
+    <input type="hidden" name="newscateno" th:value="${param.newscateno }">
     
     <div>
        <label>제목</label>
@@ -48,7 +48,7 @@
     </div>   
     <div class="content_body_bottom">
       <button type="submit" class="btn btn-secondary btn-sm">등록</button>
-      <button type="button" th:attr="onclick=|location.href='./list_by_cateno?cateno=${cateVO.cateno}&word=${word }&now_page=${now_page}'|" class="btn btn-secondary btn-sm">목록</button>
+      <button type="button" th:attr="onclick=|location.href='./list_by_newscateno?newscateno=${NewscateVO.newscateno}&word=${word }&now_page=${now_page}'|" class="btn btn-secondary btn-sm">목록</button>
     </div>
 
   </form>

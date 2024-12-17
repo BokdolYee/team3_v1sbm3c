@@ -3,27 +3,27 @@
 <html layout:decorate="~{layout}"> <!-- layout.html 상속-->
 <div layout:fragment="content">
   <div class='title_line'>
-    <span th:text="${cateVO.genre }" class="title_line_text"></span > 
-    > <span th:text="${cateVO.name}" class="title_line_text"></span > 
+    <span th:text="${newscateVO.genre }" class="title_line_text"></span > 
+    > <span th:text="${newscateVO.name}" class="title_line_text"></span > 
     > 글 조회
   </div>
   
   <aside class="aside_right" th:if="${session.grade == 'admin'}">
     <a href="javascript:location.reload();">새로고침</a>
     <span class='menu_divide' >│</span>    
-    <a th:href="@{|./list_by_cateno?cateno=${cateVO.cateno }&word=${word }&now_page=${now_page}|}">목록형</a>    
+    <a th:href="@{|./list_by_cateno?newscateno=${newscateVO.newscateno }&word=${word }&now_page=${now_page}|}">목록형</a>    
     <span class='menu_divide' >│</span>
-    <a th:href="@{|./list_by_cateno_grid?cateno=${cateVO.cateno }&word=${word }&now_page=${now_page}|}">갤러리형</a>
+    <a th:href="@{|./list_by_cateno_grid?newscateno=${newscateVO.newscateno }&word=${word }&now_page=${now_page}|}">갤러리형</a>
     <span class='menu_divide' >│</span>
-    <a th:href="@{|/contents/create?cateno=${cateVO.cateno}|}">등록</a>
+    <a th:href="@{|/contents/create?newscateno=${newscateVO.newscateno}|}">등록</a>
     <span class='menu_divide' >│</span>
     <a th:href="@{|/contents/update_text?contentsno=${contentsVO.contentsno}&now_page=${now_page}&word=${word }|}">글 수정</a>
     <span class='menu_divide' >│</span>
     <a th:href="@{|./update_file?contentsno=${contentsVO.contentsno}&word=${word}&now_page=${now_page}|}">파일 수정</a>  
     <span class='menu_divide' >│</span>
-    <a th:href="@{|/contents/map?cateno=${contentsVO.cateno }&contentsno=${contentsVO.contentsno}|}">지도</a>
+    <a th:href="@{|/contents/map?newscateno=${contentsVO.newscateno }&contentsno=${contentsVO.contentsno}|}">지도</a>
     <span class='menu_divide' >│</span>
-    <a th:href="@{|/contents/youtube?cateno=${contentsVO.cateno }&contentsno=${contentsVO.contentsno}&word=${word}&now_page=${now_page}|}">Youtube</a>
+    <a th:href="@{|/contents/youtube?newscateno=${contentsVO.newscateno }&contentsno=${contentsVO.contentsno}&word=${word}&now_page=${now_page}|}">Youtube</a>
     <span class='menu_divide' >│</span>
     <a th:href="@{|./delete?contentsno=${contentsVO.contentsno}&word=${word}&now_page=${now_page}&cateno=${contentsVO.cateno}|}">삭제</a>  
  </aside> 
@@ -31,9 +31,9 @@
   <aside class="aside_right" th:if="${session.grade != 'admin'}">
      <a href="javascript:location.reload();">새로고침</a>
     <span class='menu_divide' >│</span>    
-    <a th:href="@{|./list_by_cateno?cateno=${cateVO.cateno }&word=${word }&now_page=${now_page}|}">목록형</a>    
+    <a th:href="@{|./list_by_cateno?newscateno=${newscateVO.newscateno }&word=${word }&now_page=${now_page}|}">목록형</a>    
     <span class='menu_divide' >│</span>
-    <a th:href="@{|./list_by_cateno_grid?cateno=${cateVO.cateno }&word=${word }&now_page=${now_page}|}">갤러리형</a>
+    <a th:href="@{|./list_by_cateno_grid?newscateno=${newscateVO.newscateno }&word=${word }&now_page=${now_page}|}">갤러리형</a>
   </aside> 
  
   <div class='menu_line'></div>

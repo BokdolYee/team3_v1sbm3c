@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.mvc.stockdata.StockdataDAOInter">
+
+    <insert id="create" parameterType="dev.mvc.stockdata.StockdataVO">
+        INSERT INTO Stockdata (sdatano, rdate, open_price, close_price, volume, change, stockno)
+        VALUES (#{sdatano}, #{rdate}, #{open_price}, #{close_price}, #{volume}, #{change}, #{stockno})
+    </insert>
+
+    <select id="read" parameterType="int" resultType="dev.mvc.stockdata.StockdataVO">
+        SELECT * FROM Stockdata WHERE sdatano = #{sdatano}
+    </select>
+
+    <select id="listByStockno" parameterType="int" resultType="dev.mvc.stockdata.StockdataVO">
+        SELECT * FROM Stockdata WHERE stockno = #{stockno} ORDER BY rdate ASC
+    </select>
+
+    <update id="update" parameterType="dev.mvc.stockdata.StockdataVO">
+        UPDATE Stockdata
+        SET rdate = #{rdate},
+            open_price = #{open_price},
+            close_price = #{close_price},
+            volume = #{volume},
+            change = #{change}
+        WHERE sdatano = #{sdatano}
+    </update>
+
+    <delete id="delete" parameterType="int">
+        DELETE FROM Stockdata WHERE sdatano = #{sdatano}
+    </delete>
+
+</mapper>

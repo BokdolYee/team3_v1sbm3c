@@ -3,17 +3,17 @@
 <html layout:decorate="~{layout}"> <!-- layout.html 상속-->
 <div layout:fragment="content">
   <div class='title_line'>
-    <span th:text="${cateVO.genre }" class="title_line_text"></span > 
-    > <span th:text="${cateVO.name}" class="title_line_text"></span > 
+    <span th:text="${cnewsateVO.genre }" class="title_line_text"></span > 
+    > <span th:text="${newscateVO.name}" class="title_line_text"></span > 
     > <span th:text="|${contentsVO.title} Youtube 등록/수정/삭제|" class="title_line_text"></span>
   </div>
  
   <aside class="aside_right">
     <A href="javascript:location.reload();">새로고침</A>
     <span class='menu_divide' >│</span>    
-    <a th:href="@{|./list_by_cateno?cateno=${cateno}&word=${word }&now_page=${now_page}|}">기본 목록형</a>    
+    <a th:href="@{|./list_by_cateno?newscateno=${newscateno}&word=${word }&now_page=${now_page}|}">기본 목록형</a>    
     <span class='menu_divide' >│</span>
-    <a th:href="@{|./list_by_cateno_grid?cateno=${cateno }&word=${word }&now_page=${now_page}|}">갤러리형</a>
+    <a th:href="@{|./list_by_cateno_grid?newscateno=${newscateno}&word=${word }&now_page=${now_page}|}">갤러리형</a>
   </aside>
   
   <div class='menu_line'></div>

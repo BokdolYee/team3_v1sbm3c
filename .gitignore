@@ -5,6 +5,9 @@ build/
 
 ### STS ###
 application.properties
+.bin
+.lock
+.erd
 .apt_generated
 .factorypath
 .springBeans

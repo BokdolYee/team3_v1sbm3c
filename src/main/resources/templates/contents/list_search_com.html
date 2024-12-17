@@ -1,0 +1,17 @@
+<div th:fragment="list_search_fragment"> <!-- <div th:replace=... -->
+  <div style="text-align: right; clear: both;">
+  <form name="frm_search" method="get" action="/contents/list_by_cateno">
+    <input type="hidden" name="cateno" id="cateno" th:value="${cateVO.cateno}" >
+    
+    <input type="text" name="word" id="word" th:value="${word}" >
+    <button type='submit' class='btn btn-secondary btn-sm' 
+                 style="padding: 2px 8px 3px 8px; margin: 0px 0px 2px 0px;">검색</button>
+    <span th:if="${word != null and word != ''}">
+      <button type='button' class='btn btn-secondary btn-sm' 
+                   style="padding: 2px 8px 3px 8px; margin: 0px 0px 2px 0px;"
+                   th:onclick="|location.href='/contents/list_by_cateno?cateno=${cateVO.cateno}'|">검색 취소</button>
+    </span>
+                  
+  </form>
+</div>
+</div>

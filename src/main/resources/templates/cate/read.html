@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  <div class="title_line">카테고리 조회</div>
+  <aside class="aside_right">
+    <a th:href="@{|/cate/list_search?word=${word}&now_page=${now_page}|}">목록</a>
+    <span class="menu_divide">|</span>
+    <a th:href="@{|/cate/update/${newscateVO.newscateno}?word=${word}&now_page=${now_page}|}">수정</a>
+    <span class="menu_divide">|</span>
+    <a th:href="@{|/cate/delete/${newscateVO.newscateno}?word=${word}&now_page=${now_page}|}">삭제</a>
+    <span class="menu_divide">|</span>
+    <a th:href="@{|/cate/list_search|}">등록</a>
+    <span class="menu_divide">|</span>
+    <a href="javascript: location.reload();">새로 고침</a>
+  </aside>
+  
+  <!--/* '/cate/list_search_com.html' 파일의 list_search_fragment를 가져다 사용 */--> 
+  <div th:replace="~{cate/list_search_com::list_search_fragment}"></div> 
+  
+  <div class="menu_line"></div>
+  
+  <div class="container mt-3" style="width: 60%; margin: 5px auto;"> <!--/* mt-3: margin top 16px */-->
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">번호: <span th:text="${newscateVO.newscateno}"></span></li>
+      <li class="list-group-item">카테고리 그룹/장르/분류: <span th:text="${newscateVO.genre}"></span></li>
+      <li class="list-group-item">카테고리: <span th:text="${newscateVO.name}"></span></li>
+      <li class="list-group-item">
+        관련 자료수: <span th:text="${newscateVO.cnt}" style="margin-right: 10px;"></span>
+        출력 순서: <span th:text="${newscateVO.seqno}" style="margin-right: 10px;"></span>
+        출력 모드: <span th:text="${newscateVO.visible}"></span>
+      </li>
+      <li class="list-group-item">등록일: <span th:text="${newscateVO.rdate}"></span></li>
+    </ul>  
+  </div>
+
+  <div th:replace="~{cate/list_all_com::list_all_fragment}"></div> 
+    
+</div>
+</html>
+
+

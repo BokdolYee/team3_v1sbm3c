@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+
+  <div class='title_line'>
+    <span th:text="${cateVO.genre}" class="title_line_text"></span >
+    > <span th:text="${cateVO.name}" class="title_line_text"></span >
+  </div>
+
+  <aside class="aside_right">
+    <span class="menu_divide">|</span>
+    <a th:href="@{|/contents/create?cateno=${cateVO.cateno}|}">등록</a>
+    <span class="menu_divide">|</span>
+    <a href="javascript:location.reload();">새로고침</a>
+    <span class="menu_divide">|</span>
+  </aside> 
+   
+  <div class='menu_line'></div>
+       
+  <table class="table table-striped" style='width: 100%;'>
+    <colgroup>
+      <col style='width: 10%;'/>
+      <col style='width: 90%;'/>
+    </colgroup>
+    <tr>
+      <th class='th_bs'>파일</TH>
+      <th class='th_bs'>제목</th>
+    </tr>
+   
+    <tr th:each="contentsVO, status:${list}" 
+         th:attr="onclick=|location.href='/contents/read?contentsno=${contentsVO.contentsno}'|"
+         style="cursor: pointer; height: 90px;">
+      <td class='td_basic' style="vertical-align: middle; text-align: center;">
+        <div th:if="${contentsVO.file1.endsWith('jpg') or contentsVO.file1.endsWith('png')  or contentsVO.file1.endsWith('gif')}">
+          <img th:src="@{|/contents/storage/${contentsVO.thumb1}|}" style="width: 120px; height: 90px;">
+        </div>
+
+        <div th:if="${((contentsVO.file1.endsWith('jpg') or contentsVO.file1.endsWith('png')  or contentsVO.file1.endsWith('gif')) == false) and (contentsVO.size1 > 0)}">
+          <span th:text="${contentsVO.file1}"></span>
+        </div>
+
+        <div th:if="${contentsVO.size1 == 0}">
+          <img src="/contents/images/none1.png" style="width: 120px; height: 90px;">
+        </div>
+                
+      </td>
+      </td>
+      <td class='td_left'>
+        <span th:text="${contentsVO.title}" style="font-weight: bold;"></span><br>
+        <span th:if="${contentsVO.content.length() > 160 }" 
+                  th:text="|${contentsVO.content.substring(0, 160) }...|"></span>
+        <span th:if="${contentsVO.content.length() <= 160 }" 
+                  th:text="|${contentsVO.content}|"></span>
+
+      </td>
+    </tr>
+  </table>
+   
+  <div class='bottom_menu'>
+    <button type='button' onclick="location.reload();" class="btn btn-primary btn-sm">새로 고침</button>
+  </div>
+
+</div>
+</html>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.mvc.newscate.NewsCateDAOInter">
+
+  <!-- Create -->
+  <insert id="create" parameterType="dev.mvc.newscate.NewsCateVO">
+    INSERT INTO newscate (newscateno, genre, name, cnt, seqno, visible, rdate) 
+    VALUES (newscate_seq.nextval, #{genre}, #{name}, #{cnt}, #{seqno}, #{visible}, sysdate)
+  </insert>
+
+  <!-- Read -->
+  <select id="read" resultType="dev.mvc.newscate.NewsCateVO" parameterType="Integer">
+    SELECT newscateno, genre, name, cnt, seqno, visible, rdate
+    FROM newscate 
+    WHERE newscateno = #{newscateno}
+  </select>
+
+  <!-- Update -->
+  <update id="update" parameterType="dev.mvc.newscate.NewsCateVO">
+    UPDATE newscate 
+    SET genre = #{genre}, 
+        name = #{name}, 
+        cnt = #{cnt}, 
+        seqno = #{seqno}, 
+        visible = #{visible}, 
+        rdate = sysdate
+    WHERE newscateno = #{newscateno}
+  </update>  
+
+  <!-- Delete -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM newscate WHERE newscateno = #{newscateno}
+  </delete>
+
+  <!-- 관련된 콘텐츠 삭제 -->
+  <delete id="deleteContents" parameterType="int">
+    DELETE FROM contents WHERE newscateno = #{newscateno}
+  </delete>
+
+  <!-- 순서 높임 -->
+  <update id="update_seqno_forward" parameterType="Integer">
+    UPDATE newscate 
+    SET seqno = seqno - 1  
+    WHERE newscateno = #{newscateno}
+  </update>
+
+  <!-- 순서 낮춤 -->
+  <update id="update_seqno_backward" parameterType="Integer">
+    UPDATE newscate 
+    SET seqno = seqno + 1  
+    WHERE newscateno = #{newscateno}
+  </update>
+
+  <!-- 전체 목록 -->
+  <select id="list_all" resultType="dev.mvc.newscate.NewsCateVO">
+    SELECT newscateno, genre, name, cnt, seqno, visible, rdate
+    FROM newscate 
+    ORDER BY seqno ASC
+  </select>
+
+  <!-- 공개 설정 -->
+  <update id="update_visible_y" parameterType="Integer">
+    UPDATE newscate SET visible = 'Y' WHERE newscateno = #{newscateno}
+  </update>
+
+  <!-- 비공개 설정 -->
+  <update id="update_visible_n" parameterType="Integer">
+    UPDATE newscate SET visible = 'N' WHERE newscateno = #{newscateno}
+  </update>
+
+  <!-- 공개된 카테고리 그룹 출력 -->
+  <select id="list_all_categrp_y" resultType="dev.mvc.newscate.NewsCateVO">
+    SELECT newscateno, genre, name, cnt, seqno, visible, rdate
+    FROM newscate 
+    WHERE visible = 'Y'
+    ORDER BY seqno ASC 
+  </select>
+
+  <!-- 특정 장르 공개 카테고리 출력 -->
+  <select id="list_all_cate_y" resultType="dev.mvc.newscate.NewsCateVO" parameterType="String">
+    SELECT newscateno, genre, name, cnt, seqno, visible, rdate
+    FROM newscate 
+    WHERE visible = 'Y' AND genre = #{genre}
+    ORDER BY seqno ASC 
+  </select>
+
+  <!-- 장르 목록 -->
+  <select id="genreset" resultType="String">
+    SELECT DISTINCT genre 
+    FROM newscate 
+    WHERE visible = 'Y'
+    ORDER BY genre ASC 
+  </select>
+
+  <!-- 검색 -->
+  <select id="list_search" resultType="dev.mvc.newscate.NewsCateVO" parameterType="String">
+    SELECT newscateno, genre, name, cnt, seqno, visible, rdate
+    FROM newscate
+    <if test="word != null and word != ''">
+      WHERE UPPER(genre) LIKE '%' || UPPER(#{word}) || '%' 
+         OR UPPER(name) LIKE '%' || UPPER(#{word}) || '%'
+    </if>
+    ORDER BY seqno ASC
+  </select>
+
+  <!-- 검색 갯수 -->
+  <select id="list_search_count" resultType="Integer" parameterType="String">
+    SELECT COUNT(*) 
+    FROM newscate
+    <if test="word != null and word != ''">
+      WHERE UPPER(genre) LIKE '%' || UPPER(#{word}) || '%' 
+         OR UPPER(name) LIKE '%' || UPPER(#{word}) || '%'
+    </if>
+  </select>
+
+  <!-- 검색 + 페이징 -->
+  <select id="list_search_paging" resultType="dev.mvc.newscate.NewsCateVO" parameterType="Map">
+    SELECT newscateno, genre, name, cnt, seqno, visible, rdate,r
+    FROM (
+      SELECT newscateno, genre, name, cnt, seqno, visible, rdate, rownum AS r
+      FROM (
+        SELECT newscateno, genre, name, cnt, seqno, visible, rdate
+        FROM newscate
+        WHERE UPPER(genre) LIKE '%' || UPPER(#{word}) || '%' 
+           OR UPPER(name) LIKE '%' || UPPER(#{word}) || '%'
+        ORDER BY seqno ASC
+      )
+    )
+    WHERE r &gt;= #{start_num} AND r &lt;= #{end_num}
+  </select>
+
+</mapper>

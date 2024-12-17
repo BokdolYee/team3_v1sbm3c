@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  <div class="title_line">카테고리 > 알림</div>
+  
+  <aside class="aside_right">
+    <a href="javascript: location.reload();">새로 고침</a>
+  </aside>
+  
+  <!--/* '/cate/list_search_com.html' 파일의 list_search_fragment를 가져다 사용 */--> 
+  <div th:replace="~{cate/list_search_com::list_search_fragment}"></div> 
+
+  <div class="menu_line"></div>
+  
+  <div class="message">
+    <fieldset class="fieldset_basic">
+      <ul>
+        <li th:switch="${code}" class="li_none">
+          <div th:case="create_success">
+            <span class="span_success">카테고리를 등록했습니다.</span><br>
+            등록된 카테고리: <span th:text="${name}"></span>
+          </div>
+          <div th:case="create_fail">
+            <span class="span_success">카테고리 등록에 실패했습니다.</span><br>
+            등록 실패된 카테고리: <span th:text="${name}"></span>
+          </div>
+          <div th:case="update_success">
+            <span class="span_success">수정을 완료 했습니다.</span><br>
+            장르: <span th:text="${genre}"></span><br>
+            카테고리: <span th:text="${name}"></span>
+          </div>
+          <div th:case="update_fail">
+            <span class="span_success">수정에 실패했습니다.</span><br>
+            수정 실패된 카테고리: <span th:text="${name}"></span>
+          </div>
+          <div th:case="delete_success">
+            <span class="span_success">삭제를 완료 했습니다.</span><br>
+            장르: <span th:text="${genre}"></span><br>
+            카테고리: <span th:text="${name}"></span>
+          </div>
+          <div th:case="delete_fail">
+            <span class="span_success">삭제에 실패했습니다.</span><br>
+            삭제 실패된 카테고리: <span th:text="${name}"></span>
+          </div>
+        </li>
+        <li class="li_none">
+          <div th:if="${cnt == 0}">
+            <button type="button" onclick="history.back()" class="btn btn-secondary btn-sm">다시 시도</button>
+          </div>
+          <div th:if="${cnt != 0}">
+            <button type="button" onclick="location.href='./list_search'" class="btn btn-secondary btn-sm">전체 목록</button>
+          </button>
+        </li>
+      </ul>
+    </fieldset>
+  </div>
+</div>
+</html>
+

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.mvc.analysis.AnalysisDAOInter"> <!-- AnalysisDAOInter 인터페이스에 매핑 -->
+
+  <!-- C: Create -->
+  <insert id="create" parameterType="dev.mvc.analysis.AnalysisVO">
+    INSERT INTO analysis (analysisno, impact, summaryno)
+    VALUES (analysis_seq.nextval, #{impact}, #{summaryno})
+  </insert>
+
+  <!-- R: Read -->
+  <select id="read" resultType="dev.mvc.analysis.AnalysisVO" parameterType="Integer">
+    SELECT analysisno, impact, summaryno
+    FROM analysis
+    WHERE analysisno = #{analysisno}
+  </select>
+
+  <!-- U: Update -->
+  <update id="update" parameterType="dev.mvc.analysis.AnalysisVO">
+    UPDATE analysis
+    SET impact = #{impact}, summaryno = #{summaryno}
+    WHERE analysisno = #{analysisno}
+  </update>
+
+  <!-- D: Delete -->
+  <delete id="delete" parameterType="Integer">
+    DELETE FROM analysis
+    WHERE analysisno = #{analysisno}
+  </delete>
+
+  <!-- S: Search -->
+  <select id="search" resultType="dev.mvc.analysis.AnalysisVO" parameterType="String">
+    SELECT analysisno, impact, summaryno
+    FROM analysis
+    <if test="keyword != null and keyword != ''">
+      WHERE UPPER(impact) LIKE '%' || UPPER(#{keyword}) || '%'
+    </if>
+    ORDER BY analysisno DESC
+  </select>
+
+  <!-- P: Paging -->
+  <select id="list_paging" resultType="dev.mvc.analysis.AnalysisVO" parameterType="Map">
+    SELECT analysisno, impact, summaryno, r
+    FROM (
+      SELECT analysisno, impact, summaryno, rownum AS r
+      FROM (
+        SELECT analysisno, impact, summaryno
+        FROM analysis
+        <if test="keyword != null and keyword != ''">
+          WHERE UPPER(impact) LIKE '%' || UPPER(#{keyword}) || '%'
+        </if>
+        ORDER BY analysisno DESC
+      )
+    )
+    WHERE r BETWEEN #{start} AND #{end}
+  </select>
+
+</mapper>

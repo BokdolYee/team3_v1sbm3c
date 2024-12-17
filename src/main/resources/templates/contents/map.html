@@ -1,0 +1,47 @@
+<!DOCTYPE html> 
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  <div class='title_line'>
+    <span th:text="${cateVO.genre}" class="title_line_text"></span > 
+    > <span th:text="${cateVO.name}" class="title_line_text"></span > 
+    > <span th:text="|${contentsVO.title} 지도 등록/수정/삭제|" class="title_line_text"></span>
+  </div>
+ 
+  <aside class="aside_right">
+    <A href="javascript:location.reload();">새로고침</A>
+    <span class='menu_divide' >│</span>    
+    <a href="./list_by_cateno.do?cateno=${param.cateno }&now_page=${param.now_page == null ? 1 : param.now_page}&word=${param.word }">기본 목록형</a>    
+    <span class='menu_divide' >│</span>
+    <a href="./list_by_cateno_grid.do?cateno=${param.cateno }&now_page=${param.now_page == null ? 1 : param.now_page}&word=${param.word }">갤러리형</a>
+  </aside>
+  
+  <div class='menu_line'></div>
+
+  <form name='frm_map' method='post' action='./map'>
+    <input type="hidden" name="contentsno" th:value="${contentsVO.contentsno }">
+    
+    <div>
+       <label>지도 스크립트</label>
+       <textarea name="map" class="form-control" rows="12" style="width: 100%;" th:text="${contentsVO.map}" autofocus="autofocus"></textarea>
+
+    </div>
+    <div class="content_body_bottom">
+      <button type="submit" class="btn btn-secondary btn-sm">저장</button>
+      <button type="button" onclick="frm_map.map.value=''; frm_map.submit();" class="btn btn-secondary btn-sm">지도 삭제</button>
+      <button type="button" onclick="history.back();" class="btn btn-secondary btn-sm">취소</button>
+    </div>
+  
+  </form>
+
+  <hr>
+  <div style="text-align: center;">
+      <h4>[참고] 다음 지도의 등록 방법</h4>
+      <img src='/contents/images/map01.jpg' style='width: 60%;'><br><br>
+      <img src='/contents/images/map02.jpg' style='width: 60%;'><br><br>
+      <img src='/contents/images/map03.jpg' style='width: 60%;'><br><br>
+      <img src='/contents/images/map04.jpg' style='width: 60%;'><br><br>
+      <img src='/contents/images/map05.jpg' style='width: 60%;'><br>
+  </div>
+
+</html>

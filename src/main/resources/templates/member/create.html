@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+
+<div layout:fragment="content">
+<script>
+    window.onload = () => {
+      document.querySelector('#id').addEventListener('keypress', (event) => {
+        if(event.key === 'Enter') { // ===: 타입까지 확인
+          document.getElementById('btn_checkID').focus();
+        }
+      }); 
+  
+      document.querySelector('#passwd').addEventListener('keypress', (event) => {
+        if(event.key === 'Enter') {
+          document.getElementById('passwd2').focus();
+        }
+      }); 
+  
+      document.querySelector('#passwd2').addEventListener('keypress', (event) => {
+        if(event.key === 'Enter') {
+          document.getElementById('name').focus();
+        }
+      }); 
+  
+      document.querySelector('#name').addEventListener('keypress', (event) => {
+        if(event.key === 'Enter') {
+          document.getElementById('birth').focus();
+        }
+      });
+      
+      document.querySelector('#birth').addEventListener('keypress', (event) => {
+        if(event.key === 'Enter') {
+          document.getElementById('nickname').focus();
+        }
+      });
+      
+      document.querySelector('#nickname').addEventListener('keypress', (event) => {
+        if(event.key === 'Enter') {
+          document.getElementById('tel').focus();
+        }
+      });
+      
+      document.querySelector('#tel').addEventListener('keypress', (event) => {
+        if(event.key === 'Enter') {
+          document.getElementById('gender').focus();
+        }
+      }); 
+      
+      document.querySelector('#gender').addEventListener('keypress', (event) => {
+        if(event.key === 'Enter') {
+          document.getElementById('zipcode').focus();
+        }
+      });
+      
+      document.querySelector('#zipcode').addEventListener('keypress', (event) => {
+        if(event.key === 'Enter') {
+          document.getElementById('btn_DaumPostcode').focus();
+        }
+      });
+      
+      document.querySelector('#address').addEventListener('keypress', (event) => {
+        if(event.key === 'Enter') {
+          document.getElementById('btn_send').focus();
+        }
+      }); 
+      
+    }
+    
+    // 중복 아이디 검사
+    function checkID() {
+      
+      let id = document.getElementById('id');
+      let id_msg = document.getElementById('id_msg');
+  
+      if (id.value.trim().length == 0) {
+        id_msg.innerHTML= 'ID 입력은 필수 입니다. ID(이메일)는 3자이상 권장합니다.';
+        id_msg.classList.add('span_warning');    // class 적용
+        id.focus();
+  
+        return false;  // 회원 가입 진행 중지
+        
+      } else {  // when ID is entered
+        id_msg.classList.remove('span_warning'); // class 삭제
+  
+       // ---------------------------------------------------------------------------------------
+       // fetch 관련 시작
+       // ---------------------------------------------------------------------------------------
+        let id = document.getElementById('id');
+        let url = './checkID?id=' + id.value;
+    
+        fetch(url, {
+            method: 'GET',
+            // headers: {
+            //   'Content-Type': 'application/json' // JSON 형식으로 데이터 전송을 알림
+            // },
+            // body: JSON.stringify(dataToSend) // JSON 데이터를 문자열로 변환하여 요청 본문에 포함            
+        })
+        .then(response => response.json())
+        .then(rdata => {
+          if (rdata.cnt > 0) { // 아이디 중복
+            id_msg.innerHTML= '이미 사용중인 ID(이메일) 입니다. 다른 ID(이메일)을 지정해주세요.';
+            id_msg.classList.add('span_warning');
+            id_msg.classList.remove('span_info'); // class 삭제
+            id.focus();
+              
+          } else { // 아이디 중복 안됨.
+            id_msg.innerHTML= '사용 가능한 ID(이메일) 입니다.';
+            id_msg.classList.add('span_info');
+            document.getElementById('passwd').focus(); 
+          }
+        })
+        .catch(error => { // 서버 다운등 통신 에러
+            console.error('Error:', error);
+        });      
+            
+        // 처리중 출력
+        id_msg.innerHTML="<img src='/images/progress.gif' style='width: 5%;'>"; // static 기준
+
+       // ---------------------------------------------------------------------------------------
+       // fetch 관련 종료
+       // ---------------------------------------------------------------------------------------
+        
+      }
+    }
+    
+    // 중복 닉네임 검사
+    function checkNICKNAME() {
+      
+      let nickname = document.getElementById('nickname');
+      let nickname_msg = document.getElementById('nickname_msg');
+  
+      if (nickname.value.trim().length == 0) {
+        nickname_msg.innerHTML= '닉네임 입력은 필수 입니다. 닉네임을 2글자 이상으로 지어 주세요.';
+        nickname_msg.classList.add('span_warning');    // class 적용
+        nickname.focus();
+  
+        return false;  // 회원 가입 진행 중지
+        
+      } else {  // when NICKNAME is entered
+        nickname_msg.classList.remove('span_warning'); // class 삭제
+  
+       // ---------------------------------------------------------------------------------------
+       // fetch 관련 시작
+       // ---------------------------------------------------------------------------------------
+        let nickname = document.getElementById('nickname');
+        let url = './checkNICKNAME?nickname=' + nickname.value;
+    
+        fetch(url, {
+            method: 'GET',
+            // headers: {
+            //   'Content-Type': 'application/json' // JSON 형식으로 데이터 전송을 알림
+            // },
+            // body: JSON.stringify(dataToSend) // JSON 데이터를 문자열로 변환하여 요청 본문에 포함            
+        })
+        .then(response => response.json())
+        .then(rdata => {
+          if (rdata.cnt > 0) { // 아이디 중복
+            nickname_msg.innerHTML= '이미 사용중인 닉네임입니다. 다른 닉네임을 지정해주세요.';
+            inickname_msg.classList.add('span_warning');
+            nickname_msg.classList.remove('span_info'); // class 삭제
+            nickname.focus();
+              
+          } else { // 아이디 중복 안됨.
+            nickname_msg.innerHTML= '사용 가능한 닉네임입니다.';
+            nickname_msg.classList.add('span_info');
+            document.getElementById('tel').focus(); 
+          }
+        })
+        .catch(error => { // 서버 다운등 통신 에러
+            console.error('Error:', error);
+        });      
+            
+        // 처리중 출력
+        nickname_msg.innerHTML="<img src='/images/progress.gif' style='width: 5%;'>"; // static 기준
+
+       // ---------------------------------------------------------------------------------------
+       // fetch 관련 종료
+       // ---------------------------------------------------------------------------------------
+        
+      }
+    }
+    
+    function send() { // 회원 가입 처리
+      let id = document.getElementById('id');
+      let id_msg = document.getElementById('id_msg');
+  
+      if (id.value.trim().length == 0) {
+        id_msg.innerHTML= 'ID 입력은 필수 입니다. ID(이메일)는 3자이상 권장합니다.';
+        id_msg.classList.add('span_warning');    // class 적용
+        id.focus();
+  
+        return false;  // 회원 가입 진행 중지
+        
+      }
+      
+      let nickname = document.getElementById('nickname');
+      let nickname_msg = document.getElementById('nickname_msg');
+  
+      if (nickname.value.trim().length == 0) {
+        id_msg.innerHTML= '닉네임 입력은 필수 입니다. 닉네임은 2글자 이상 권장합니다.';
+        nickname_msg.classList.add('span_warning');    // class 적용
+        nickname.focus();
+  
+        return false;  // 회원 가입 진행 중지
+        
+      }
+  
+      // 패스워드를 정상적으로 2번 입력했는지 확인
+      let passwd = document.getElementById('passwd');
+      let passwd2 = document.getElementById('passwd2');
+      let passwd2_msg = document.getElementById('passwd2_msg');
+  
+      if (passwd.value != passwd2.value) {
+        passwd2_msg.innerHTML= '입력된 패스워드가 일치하지 않습니다.';
+        passwd2_msg.classList.add('span_warning');    // class 적용
+        passwd2.focus();  // 첫번째 패스워드로 focus 설정
+  
+        return false;  // 회원 가입 진행 중지
+      }
+ 
+      let name = document.getElementById('name');
+      let name_msg = document.getElementById('name_msg');
+  
+      if (name.value.length == 0) {
+        name_msg.innerHTML= '이름 입력은 필수입니다.';
+        name_msg.classList.add('span_warning');    // class 적용
+        name.focus();
+  
+        return false;  // 회원 가입 진행 중지
+      }
+      
+      let birth = document.getElementById('birth');
+      let birth_msg = document.getElementById('birth_msg');
+  
+      if (birth.value.length == 0) {
+        birth_msg.innerHTML= '생년월일 입력은 필수입니다.';
+        birth_msg.classList.add('span_warning');    // class 적용
+        birth.focus();
+  
+        return false;  // 회원 가입 진행 중지
+      }
+      
+      let tel = document.getElementById('tel');
+      let tel_msg = document.getElementById('tel_msg');
+  
+      if (tel.value.length == 0) {
+        tel_msg.innerHTML= '전화번호 입력은 필수입니다.';
+        tel_msg.classList.add('span_warning');    // class 적용
+        tel.focus();
+  
+        return false;  // 회원 가입 진행 중지
+      }
+      
+      let zipcode = document.getElementById('zipcode');
+      let zipcode_msg = document.getElementById('zipcode_msg');
+  
+      if (zipcode.value.length == 0) {
+        zipcode_msg.innerHTML= '전화번호 입력은 필수입니다.';
+        zipcode_msg.classList.add('span_warning');    // class 적용
+        zipcode.focus();
+  
+        return false;  // 회원 가입 진행 중지
+      }
+  
+      document.getElementById('frm').submit(); // required="required" 작동 안됨.
+    }    
+  </script>
+
+  <div class="title_line">회원 가입(*: 필수)</div>
+  <aside class="aside_right">
+    <a href="javascript:location.reload();">새로고침</a>
+    <span class='menu_divide' >│</span> 
+    <a href='./create'>회원 가입</a>
+    <span class='menu_divide' >│</span> 
+    <a href='./list'>목록</a>
+  </aside> 
+
+  <div class='menu_line'></div>
+  
+  <div style="width: 60%; margin: 0px auto ">
+    <form name="frm" id="frm" th:object="${memberVO}" method="post" action="/member/create">
+      <div>
+        <label for="id">아이디(이메일)*</label>
+        <input type="text" name="id" id="id" value="" autofocus="autofocus" placeholder="이메일 또는 아이디"
+               class="form-control fom-control-sm" style="width: 50%;">
+        <button type='button' id="btn_checkID" onclick="checkID()" 
+                     class="btn btn-primary btn-sm" style="margin-top: 4px;">중복 확인</button>
+        <span id='id_msg'></span>  
+      </div>
+      
+      <div class="form-group">
+        <label for="passwd">비밀번호*</label> 
+        <input type='password' name='passwd' id='passwd' value='' required="required" 
+                  placeholder="패스워드" class="form-control form-control-sm" style="width: 30%;">
+      </div>
+
+      <div class="form-group">
+        <label for="passwd2">비밀번호 확인*</label>
+        <input type='password' name='passwd2' id='passwd2' value='' required="required" 
+                  placeholder="패스워드 확인" class="form-control form-control-sm" style="width: 30%;">
+        <span id='passwd2_msg'></span>
+      </div>
+
+      <div class="form-group">
+        <label for="name">성명*</label>
+        <input type='text' name='name' id='name' value='' required="required"
+                   placeholder="성명" class="form-control form-control-sm" style="width: 30%;">
+        <span id='name_msg'></span>
+      </div>
+      
+      <div class="form-group">
+        <label for="name">생년월일*</label>
+        <input type='text' name='birth' id='birth' value='' required="required"
+                   placeholder="생년월일" class="form-control form-control-sm" style="width: 30%;">
+        <span id='birth_msg'></span>
+        예) 19990505
+      </div>
+      
+      <div class="form-group">
+        <label for="tel">닉네임*</label>
+        <input type='text' name='nickname' id='nickname' value='' required="required" 
+                  placeholder="한글, 영문 및 숫자 최대 12자" maxlength="12" class="form-control form-control-sm" style="width: 30%;">
+        <button type='button' id="btn_checkNICKNAME" onclick="checkNICKNAME()" 
+                     class="btn btn-primary btn-sm" style="margin-top: 4px;">중복 확인</button>
+        <span id='nickname_msg'></span>
+      </div>
+  
+      <div class="form-group">
+        <label for="tel">전화 번호*(-없이 입력해 주세요.)</label>
+        <input type='text' name='tel' id='tel' value='' required="required" 
+                  placeholder="전화번호" class="form-control form-control-sm" style="width: 30%;">
+        <span id='tel_msg'></span>
+        예) 01012345678
+      </div>
+      
+      <div class="form-group">
+        <label for="tel">성별*</label><br>
+        <input type='radio' name='gender' id='gender_m' value='m' checked>
+        <label for="gender_m">남성<label>
+        <input type='radio' name='gender' id='gender_f' value='f' style="margin-left:10px;">
+        <label for="gender_f">여성<label>
+      </div>
+      
+      <div class="form-group"> 
+        <label for="zipcode">우편 번호*</label>
+        <input type='text' name='zipcode' id='zipcode' value='' required="required" placeholder="우편번호"
+                  class="form-control form-control-sm" style="width: 30%;">
+        <button type="button" id="btn_DaumPostcode" onclick="DaumPostcode()" 
+                  class="btn btn-primary btn-sm" style="margin-top: 4px;">우편번호 찾기</button>
+      </div>  
+  
+      <div class="form-group">
+        <label for="address" style="width: 100%;">상세 주소</label>
+        <input type='text' name='address' id='address' value='' placeholder="상세 주소"
+                   class="form-control form-control-sm">
+      </div>     
+
+<!-- ------------------------------ DAUM 우편번호 API 시작 ------------------------------ -->
+    <div>
+<div id="wrap" style="display:none;border:1px solid;width:500px;height:300px;margin:5px 0;position:relative">
+<img src="//t1.daumcdn.net/postcode/resource/images/close.png" id="btnFoldWrap" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1" onclick="foldDaumPostcode()" alt="접기 버튼">
+</div>
+
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+    // 우편번호 찾기 찾기 화면을 넣을 element
+    var element_wrap = document.getElementById('wrap');
+
+    function foldDaumPostcode() {
+        // iframe을 넣은 element를 안보이게 한다.
+        element_wrap.style.display = 'none';
+    }
+
+    function DaumPostcode() {
+        // 현재 scroll 위치를 저장해놓는다.
+        var currentScroll = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
+        new daum.Postcode({
+            oncomplete: function(data) {
+                // 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+                // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+                // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+                var addr = ''; // 주소 변수
+                var extraAddr = ''; // 참고항목 변수
+
+                //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+                if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                    addr = data.roadAddress;
+                } else { // 사용자가 지번 주소를 선택했을 경우(J)
+                    addr = data.jibunAddress;
+                }
+
+                /*
+                // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+                if(data.userSelectedType === 'R'){
+                    // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+                    // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                        extraAddr += data.bname;
+                    }
+                    // 건물명이 있고, 공동주택일 경우 추가한다.
+                    if(data.buildingName !== '' && data.apartment === 'Y'){
+                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                    }
+                    // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+                    if(extraAddr !== ''){
+                        extraAddr = ' (' + extraAddr + ')';
+                    }
+                    // 조합된 참고항목을 해당 필드에 넣는다.
+                    document.getElementById("sample3_extraAddress").value = extraAddr;
+                
+                } else {
+                    document.getElementById("sample3_extraAddress").value = '';
+                }
+                */
+
+                // 우편번호와 주소 정보를 해당 필드에 넣는다.
+                document.getElementById('zipcode').value = data.zonecode; // 우편번호
+                document.getElementById("address1").value = addr;  // 주소
+
+                document.getElementById("address2").innerHTML=""; // 상세 주소 지우기
+                // 커서를 상세주소 필드로 이동한다.
+                document.getElementById("address2").focus();  // 상세 주소로 포커스 이동
+
+                // iframe을 넣은 element를 안보이게 한다.
+                // (autoClose:false 기능을 이용한다면, 아래 코드를 제거해야 화면에서 사라지지 않는다.)
+                element_wrap.style.display = 'none';
+
+                // 우편번호 찾기 화면이 보이기 이전으로 scroll 위치를 되돌린다.
+                document.body.scrollTop = currentScroll;
+            },
+            // 우편번호 찾기 화면 크기가 조정되었을때 실행할 코드를 작성하는 부분. iframe을 넣은 element의 높이값을 조정한다.
+            onresize : function(size) {
+                element_wrap.style.height = size.height+'px';
+            },
+            width : '100%',
+            height : '100%'
+        }).embed(element_wrap);
+
+        // iframe을 넣은 element를 보이게 한다.
+        element_wrap.style.display = 'block';
+    }
+</script>
+
+    </div>
+<!-- ------------------------------ DAUM 우편번호 API 종료 ------------------------------ -->
+
+      <div class="content_body_bottom">
+        <button type="button" onclick="send();" class="btn btn-secondary btn-sm">가입</button>
+        <button type="button" onclick="history.back();" class="btn btn-secondary btn-sm">취소</button>
+      </div>
+
+
+    </form>
+  </div>
+    
+</div>
+
+</html>
+

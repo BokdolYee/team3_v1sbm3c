@@ -1,0 +1,46 @@
+<!DOCTYPE html> 
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  <div class='title_line'>
+    <span th:text="${cateVO.genre }" class="title_line_text"></span > 
+    > <span th:text="${cateVO.name}" class="title_line_text"></span > 
+    > <span th:text="|${contentsVO.title} Youtube 등록/수정/삭제|" class="title_line_text"></span>
+  </div>
+ 
+  <aside class="aside_right">
+    <A href="javascript:location.reload();">새로고침</A>
+    <span class='menu_divide' >│</span>    
+    <a th:href="@{|./list_by_cateno?cateno=${cateno}&word=${word }&now_page=${now_page}|}">기본 목록형</a>    
+    <span class='menu_divide' >│</span>
+    <a th:href="@{|./list_by_cateno_grid?cateno=${cateno }&word=${word }&now_page=${now_page}|}">갤러리형</a>
+  </aside>
+  
+  <div class='menu_line'></div>
+
+  <form name='frm' method='post' action='./youtube'>
+    <input type="hidden" name="contentsno" th:value="${contentsVO.contentsno }">
+    <input type="hidden" name="word" th:value="${word }">
+    <input type="hidden" name="now_page" th:value="${now_page }">
+    
+    <div>
+       <label>Youtube 스크립트</label>
+       <textarea name='youtube' class="form-control" rows="12" style='width: 100%;' th:text="${contentsVO.youtube }"></textarea>
+    </div>
+    <div class="content_body_bottom">
+      <button type="submit" class="btn btn-secondary btn-sm">저장</button>
+      <button type="button" onclick="frm.youtube.value=''; frm.submit();" 
+                  class="btn btn-secondary btn-sm">Youtube 삭제</button>
+      <button type="button" onclick="history.back();" class="btn btn-secondary btn-sm">취소</button>
+    </div>
+  
+  </form>
+
+  <hr>
+  <div style="text-align: center;">
+      <h5>[참고] Youtube의 등록 방법</h5>
+      <img src='/contents/images/youtube01.jpg' style='width: 60%;'><br><br>
+      <img src='/contents/images/youtube02.jpg' style='width: 60%;'><br>
+  </div>
+
+</html>

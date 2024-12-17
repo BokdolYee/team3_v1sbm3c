@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- SB가 자동으로 구현하여 연동하는 interface -->
+<mapper namespace="dev.mvc.member.MemberDAOInter"> <!-- SB가 자동으로 구현하여 연동하는 interface -->
+
+  <!-- id 중복 확인 -->
+  <select id="checkID" resultType="int" parameterType="String">
+    SELECT COUNT(id) as cnt
+    FROM member
+    WHERE id=#{id}
+  </select>
+  
+  <!-- nickname 중복 확인 -->
+  <select id="checkNICKNAME" resultType="int" parameterType="String">
+    SELECT COUNT(id) as cnt
+    FROM member
+    WHERE nickname=#{nickname}
+  </select>
+  
+  <!-- 회원 가입 -->
+  <insert id="create" parameterType="dev.mvc.member.MemberVO">
+    INSERT INTO member(memberno, id, passwd, name, birth, nickname, tel, gender, zipcode, address, replycnt, rdate, grade)
+    VALUES (member_seq.nextval, #{id}, #{passwd}, #{name}, #{birth}, #{nickname}, #{tel}, #{gender}, #{zipcode}, 
+                 #{address}, #{replycnt}, sysdate, #{grade})
+  </insert>
+  
+  <!-- 회원 정보 조회(memberno 이용) -->
+  <select id="read" resultType="dev.mvc.member.MemberVO" parameterType="int">
+    SELECT memberno, id, passwd, name, birth, nickname, tel, gender, zipcode, address, replycnt, rdate, grade
+    FROM member
+    WHERE memberno = #{memberno}
+  </select>
+  
+  <!-- 회원 정보 조회(id 이용) -->
+  <select id="readByID" resultType="dev.mvc.member.MemberVO" parameterType="String">
+    SELECT memberno, id, passwd, name, birth, nickname, tel, gender, zipcode, address, replycnt, rdate, grade
+    FROM member
+    WHERE id = #{id}
+  </select>
+  
+  <!-- 회원 목록 -->
+  <select id="list" resultType="dev.mvc.member.MemberVO">
+    SELECT memberno, id, passwd, name, birth, nickname, tel, gender, zipcode, address, replycnt, rdate, grade
+    FROM member
+    ORDER BY grade ASC, id ASC
+  </select>
+  
+  <!-- 회원 정보 수정(name, nickname, tel, zipcode, address) -->
+  <update id="update" parameterType="dev.mvc.member.MemberVO">
+    UPDATE member 
+    SET name=#{name}, nickname=#{nickname}, tel=#{tel}, zipcode=#{zipcode}, address=#{address}
+    WHERE memberno=#{memberno}
+  </update>
+  
+  <!-- 회원 탈퇴(보통 db에서 없애지 않고 등급이나 상태를 바꿔 로그인 못 하게 함 - 소프트 삭제 방식)-->
+  <delete id="withdraw" parameterType="dev.mvc.member.MemberVO">
+    UPDATE member
+    SET grade=99
+    WHERE memberno=#{memberno}
+  </delete>
+  
+  <!-- 로그인, 1: 로그인 성공, 0: 로그인 실패 메세지 출력-->
+  <select id="login" resultType="int" parameterType="HashMap">
+    SELECT COUNT(memberno) as cnt
+    FROM member 
+    WHERE id=#{id} AND passwd=#{passwd}
+  </select>
+  
+  <!-- 비밀번호 변경 클릭 시 현재 패스워드 검사 -->
+  <select id="passwd_check" parameterType="HashMap" resultType="int">
+    SELECT COUNT(memberno) as cnt
+    FROM member
+    WHERE memberno=#{memberno} AND passwd=#{passwd}
+  </select>
+  
+  <!-- 회원 정보 수정(passwd) -->
+  <update id="update_passwd" parameterType="HashMap">
+    UPDATE member
+    SET passwd=#{passwd}
+    WHERE memberno=#{memberno}
+  </update>
+  
+</mapper>

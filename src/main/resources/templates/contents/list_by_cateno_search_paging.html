@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+
+  <div class='title_line'>
+    <span th:text="${cateVO.genre}" class="title_line_text"></span >
+    > <span th:text="${cateVO.name}" class="title_line_text"></span >
+    <span th:if="${word != ''}" th:text="|> ${word} (${search_count} 건)|" class="title_line_text"></span>
+  </div>
+
+  <aside class="aside_right">
+    <span th:if="${session.grade == 'admin'}">
+      <a th:href="@{|/contents/create?cateno=${cateVO.cateno}|}">등록</a>
+      <span class="menu_devide">│</span>    
+    </span>
+    
+    <a href="javascript:location.reload();">새로고침</a>
+    <span class='menu_divide' >│</span>    
+    <a th:href="@{|./list_by_cateno?cateno=${cateVO.cateno }&word=${word }&now_page=${now_page}|}">목록형</a>    
+    <span class='menu_divide' >│</span>
+    <a th:href="@{|./list_by_cateno_grid?cateno=${cateVO.cateno }&word=${word }&now_page=${now_page}|}">갤러리형</a>
+    
+  </aside> 
+
+  <!-- /contents/list_search_component.html 파일의 list_search_fragment import -->
+  <div th:replace="~{contents/list_search_com::list_search_fragment}"></div>
+     
+  <div class='menu_line'></div>
+       
+  <table class="table table-striped" style='width: 100%;'>
+    <colgroup>
+      <col style='width: 10%;'/>
+      <col style='width: 90%;'/>
+    </colgroup>
+    <tr>
+      <th class='th_bs'>파일</TH>
+      <th class='th_bs'>제목</th>
+    </tr>
+   
+    <tr th:if="${list.size() > 0}" th:each="contentsVO, status:${list}" 
+         th:attr="onclick=|location.href='/contents/read?contentsno=${contentsVO.contentsno}&word=${word}&now_page=${now_page}'|"
+         style="cursor: pointer; height: 90px;">
+      <td class='td_basic' style="vertical-align: middle; text-align: center;">
+        <div th:if="${contentsVO.file1.endsWith('jpg') or contentsVO.file1.endsWith('png')  or contentsVO.file1.endsWith('gif')}">
+          <img th:src="@{|/contents/storage/${contentsVO.thumb1}|}" style="width: 120px; height: 90px;">
+        </div>
+
+        <!-- % 이미지가 아닌 파일은 파일명만 출력 % -->
+        <div th:if="${((contentsVO.file1.endsWith('jpg') or contentsVO.file1.endsWith('png')  or contentsVO.file1.endsWith('gif')) == false) and (contentsVO.size1 > 0)}">
+          <span th:text="${contentsVO.file1}"></span>
+        </div>
+
+        <!-- % 파일이 없는 경우 기본이미지 출력 % -->
+        <div th:if="${contentsVO.size1 == 0}">
+          <img src="/contents/images/none1.png" style="width: 120px; height: 90px;">
+        </div>
+                
+      </td>
+      </td>
+      <td class='td_left'>
+        <span th:text="${contentsVO.title}" style="font-weight: bold;"></span>
+        <span th:text="| ${contentsVO.rdate.substring(0, 10)}|"></span><br>
+
+        <span th:if="${contentsVO.content.length() > 160 }" 
+                  th:text="|${contentsVO.content.substring(0, 160) }...|"></span>
+        <span th:if="${contentsVO.content.length() <= 160 }" 
+                  th:text="|${contentsVO.content}|"></span>
+        
+      </td>
+    </tr>
+
+    <tr th:if="${list.size() == 0}">
+      <td colspan="2" style="text-align: center;">관련 글이 등록되지 않았습니다.</td>
+    </tr> 
+
+  </table>
+   
+  <!-- 페이지 버튼 목록 출력 시작 -->
+  <div class="bottom_menu" th:utext="${paging}"></div>
+  <!-- 페이지 버튼 목록 출력 종료 --> 
+
+</div>
+</html>

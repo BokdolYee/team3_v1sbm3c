@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  <div class="title_line">회원 > 알림 <span th:text="${code}"></span></div>
+  <div class="message">
+    <fieldset class="fieldset_basic">
+      <ul>
+        <li th:switch="${code}" class="li_none">
+          <div th:case="create_success">
+            <span class="span_success" th:text="|${mname}(${id})님 회원 가입을 축하합니다.|"></span><br>
+            <button type='button'
+                         th:attr="onclick=|location.href='./login?id=${id}'|" 
+                         class="btn btn-primary btn-sm">로그인</button>
+          </div>
+          <div th:case="create_fail">
+            <span class="span_fail">회원 가입에 실패했습니다. 계속 문제가 발생하면 02-111-1111로 문의해주세요</span><br>
+          </div>
+
+          <div th:case="duplicte_fail">
+            <span class="span_fail">id가 중복됩니다. 새로운 아이디를 사용해주세요.</span><br>
+          </div>
+                    
+          <div th:case="update_success">
+            <span class="span_success">회원 정보 수정에 성공했습니다.</span><br>
+            수정된 회원 정보: <span th:text="${mname}"></span>
+          </div>
+          <div th:case="update_fail">
+            <span class="span_fail">회원 정보 수정에 실패했습니다.</span><br>
+            수정 실패된 회원 정보: <span th:text="${mname}"></span>
+          </div>
+          
+          <div th:case="delete_success">
+            <span class="span_success">회원 정보 삭제에 성공했습니다.</span><br>
+            삭제된 회원 정보: <span th:text="${mname}"></span> 
+          </div>
+          <div th:case="delete_fail">
+            <span class="span_fail">회원 정보 삭제에 실패했습니다.</span><br>
+            삭제 실패된 회원 정보: <span th:text="${mname}"></span>
+          </div>
+          <div th:case="login_fail">
+            <span class="span_fail">로그인에 실패했습니다. 다시 시도해주세요.</span><br>
+          </div>
+          <div th:case="passwd_not_equal">
+            <span class="span_fail">패스워드가 일치하지 않습니다. 다시 시도해주세요.</span><br>
+          </div>
+          <div th:case="passwd_change_success">
+            <span class="span_success">패스워드가 변경 처리 되었습니다.</span><br>
+          </div>
+          <div th:case="passwd_change_fail">
+            <span class="span_fail">패스워드 변경에 실패했습니다. 다시 시도해주세요.</span><br>
+          </div>
+        </li>
+        
+        <li class="li_none">
+          <div th:if="${cnt == 0}">
+            <button type="button" onclick="history.back()" class="btn btn-secondary btn-sm">다시 시도</button>
+          </div>
+          <div th:if="${cnt == 1}">
+            <button type="button" onclick="location.href='/'" class="btn btn-secondary btn-sm">닫기</button>
+          </div>
+        </li>
+      </ul>
+    </fieldset>
+  </div>
+</div>
+</html>
+

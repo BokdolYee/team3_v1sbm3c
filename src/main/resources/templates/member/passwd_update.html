@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+
+<div layout:fragment="content">
+  <script>
+    window.onload = () => {
+      document.getElementById('btn_send').addEventListener('click', send);
+            
+      document.querySelector('#current_passwd').addEventListener('keypress', (event) => {
+      // document.getElementById('passwd').addEventListener('keypress', (event) => {
+        if(event.key === 'Enter') {
+          document.getElementById('passwd').focus();
+        }
+      });
+      
+      document.querySelector('#passwd').addEventListener('keypress', (event) => {
+      // document.getElementById('passwd').addEventListener('keypress', (event) => {
+        if(event.key === 'Enter') {
+          document.getElementById('passwd2').focus();
+        }
+      }); 
+      
+      document.querySelector('#passwd2').addEventListener('keypress', (event) => {
+      // document.getElementById('passwd').addEventListener('keypress', (event) => {
+        if(event.key === 'Enter') {
+          document.getElementById('btn_send').focus();
+        }
+      }); 
+      
+    }
+    
+    function send() {
+       // ---------------------------------------------------------------------------------------
+       // fetch 관련 시작
+       // ---------------------------------------------------------------------------------------
+        let url = './passwd_check';
+        let passwd = document.getElementById("current_passwd").value;
+    
+        fetch(url, {
+            method: 'POST',
+            headers: {
+               'Content-Type': 'application/json' // JSON 형식으로 데이터 전송을 알림
+            },
+            body: JSON.stringify({current_passwd: passwd}) // JSON 데이터를 문자열로 변환하여 요청 본문에 포함   
+        })
+        .then(response => response.json())
+        .then(rdata => {
+          if (rdata.cnt == 0) { // 패스워드 불일치
+            current_passwd_msg.innerHTML= '현재 패스워드가 일치하지 않습니다.';
+            current_passwd_msg.classList.add('span_warning');
+            current_passwd.focus();
+            return false;              
+          } else {
+            current_passwd_msg.style.display = 'none'; // gif 종료
+            
+            // 새로운 패스워드 입력 확인
+            // 패스워드를 정상적으로 2번 입력했는지 확인
+            let passwd = document.getElementById('passwd');   // 새로운 패스워드 1
+            let passwd2 = document.getElementById('passwd2'); // 새로운 패스워드 2 
+            let passwd2_msg = document.getElementById('passwd2_msg');
+        
+            if (passwd.value != passwd2.value) { // 새로운 패스워드 1 != 새로운 패스워드 2 
+              passwd2_msg.innerHTML= '입력된 패스워드가 일치하지 않습니다.';
+              passwd2_msg.classList.add('span_warning');    // class 적용
+              passwd.focus();  // 첫번째 패스워드로 focus 설정
+        
+              return false;  // 회원 가입 진행 중지
+            }
+            
+            document.getElementById('frm').submit(); // 패스워드 수정 처리           
+          }
+        })
+        .catch(error => { // 서버 다운등 통신 에러
+            console.error('Error:', error);
+        });      
+            
+        // 처리중 출력
+        current_passwd_msg.innerHTML="<img src='/images/progress.gif' style='width: 5%;'>"; // static 기준
+
+       // ---------------------------------------------------------------------------------------
+       // fetch 관련 종료
+       // ---------------------------------------------------------------------------------------
+    }    
+  </script>
+  
+  <div class="title_line">패스워드 변경 > <span th:text="@{|${memberVO.mname} (${memberVO.id})|}"></span></div>
+  <aside class="aside_right">
+    <a href="javascript:location.reload();">새로고침</a>
+    <span class='menu_divide' >│</span> 
+    <a href='./create'>회원 가입</a>
+    <span class='menu_divide' >│</span> 
+    <a href='./list'>목록</a>
+  </aside> 
+
+  <div class='menu_line'></div>
+  
+  <div style="width: 30%; margin: 0px auto ">
+    <form name="frm" id="frm" th:object="${memberVO}" method="post" action="/member/passwd_update_proc">
+      <input type="hidden" name="memberno" th:value="${memberVO.memberno}">
+
+      <div class="form-group">
+        <label for="passwd">현재 패스워드*</label> 
+        <input type='password' name='current_passwd' id='current_passwd' value='1234' required="required" 
+                  placeholder="패스워드" autofocus="autofocus" 
+                  class="form-control form-control-sm" style="width: 100%;">
+         <div id='current_passwd_msg' style='width: 100%; text-align: cnter;'></div>         
+      </div>
+      
+      <div class="form-group">
+        <label for="passwd">새로운 패스워드*</label> 
+        <input type='password' name='passwd' id='passwd' value='1234' required="required" 
+                  placeholder="패스워드" class="form-control form-control-sm" style="width: 100%;">
+      </div>
+
+      <div class="form-group">
+        <label for="passwd2">새로운 패스워드 확인*</label>
+        <input type='password' name='passwd2' id='passwd2' value='1234' required="required" 
+                  placeholder="패스워드 확인" class="form-control form-control-sm" style="width: 100%;">
+        <span id='passwd2_msg'></span>
+      </div>
+      
+      <div class="content_body_bottom">
+        <button type="button" id='btn_send' class="btn btn-secondary btn-sm">저장</button>
+        <button type="button" onclick="history.back();" class="btn btn-secondary btn-sm">취소</button>
+      </div>
+
+
+    </form>
+  </div>
+    
+</div>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  <div class='title_line'>
+    <span th:text="${cateVO.genre }" class="title_line_text"></span > 
+    > <span th:text="${cateVO.name}" class="title_line_text"></span > 
+    > 삭제
+  </div>
+  
+  <aside class="aside_right">
+    <a th:href="@{|./create?cateno=${cateVO.cateno }|}">등록</a>
+    <span class='menu_divide' >│</span>
+    <a href="javascript:location.reload();">새로고침</a>
+    <span class='menu_divide' >│</span>
+    <a th:href="@{|./list_by_cateno_search_paging?cateno=${cateVO.cateno }|}">기본 목록형</a>    
+    <span class='menu_divide' >│</span>
+    <a th:href="@{|./list_by_cateno_grid?cateno=${cateVO.cateno }|}">갤러리형</a>
+  </aside>
+  
+  <div class='menu_line'></div>
+  
+  <fieldset class="fieldset_basic">
+    <ul>
+      <li class="li_none">
+        <div th:if="${contentsVO.file1.endsWith('jpg') or contentsVO.file1.endsWith('png')  or contentsVO.file1.endsWith('gif')}"
+               style="text-align: center; width: 50%; float: left;">
+          <img th:src="@{|/contents/storage/${contentsVO.file1saved}|}" style="width: 90%;">
+        </div>
+
+        <div th:if="${((contentsVO.file1.endsWith('jpg') or contentsVO.file1.endsWith('png')  or contentsVO.file1.endsWith('gif')) == false) and (contentsVO.size1 > 0)}"
+               class="display_table" style="float: left; width: 50%;">
+            <div class="display_table_cell">
+              <span th:text="${contentsVO.file1}"></span>
+            </div>
+        </div>
+
+        <div th:if="${contentsVO.size1 == 0}" style="text-align: center; width: 50%; float: left;">
+          <img src="/contents/images/none1.png" style="width: 90%;">
+        </div>
+  
+        <div style='text-align: left; width: 47%; float: left;'>
+          <span style='font-size: 1.5em;' th:text="${contentsVO.title}"></span>
+          <br>
+          <form name='frm' method='POST' action='./delete'>
+            <input type="hidden" name="cateno" th:value="${cateVO.cateno }">
+            <input type="hidden" name="contentsno" th:value="${contentsVO.contentsno }">
+            <input type="hidden" name="now_page" th:value="${now_page}">
+            <input type="hidden" name="search_word" th:value="${word}">
+                
+            <br> 
+            <div style='margin-top: 20px; clear: both;'>
+              <span style="color: #FF0000; font-weight: bold;">삭제를 진행 하시겠습니까? 삭제하시면 복구 할 수 없습니다.</span>
+              <br><br><br>  
+              <button type="submit" class="btn btn-secondary btn-sm">삭제</button>
+              <button type="button" onclick="history.back();" class="btn btn-secondary btn-sm">취소</button>
+            </div>  
+          </form>
+        </div>
+      </li>
+    </ul>
+  </fieldset>  
+
+</div>
+
+</html>

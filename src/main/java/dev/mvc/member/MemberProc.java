@@ -15,6 +15,7 @@ public class MemberProc implements MemberProcInter {
   @Autowired
   private MemberDAOInter memberDAO;
   
+  @Autowired
   Security security;
   
   public MemberProc(){
@@ -116,7 +117,7 @@ public class MemberProc implements MemberProcInter {
   }
 
   /**
-   * 회원 정보 수정(비밀번호 제외)
+   * 회원 정보 수정(아이디, 비밀번호 제외)
    */
   @Override
   public int update(MemberVO memberVO) {
@@ -147,7 +148,7 @@ public class MemberProc implements MemberProcInter {
   }
 
   /**
-   * 현재 passwd 검사
+   * 현재 비밀번호 검사
    */
   @Override
   public int passwd_check(HashMap<String, Object> map) {
@@ -159,7 +160,9 @@ public class MemberProc implements MemberProcInter {
     return cnt;
   }
 
-
+/**
+ * 비밀번호 변경 처리
+ */
   @Override
   public int update_passwd(HashMap<String, Object> map) {
     String passwd = (String)map.get("passwd");

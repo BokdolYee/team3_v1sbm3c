@@ -53,7 +53,7 @@ public interface MemberDAOInter {
   public int update(MemberVO memberVO);
   
   /**
-   * 회원 탈퇴 처리(아예 삭제가 아닌 등급을 탈퇴로 변경)
+   * 회원 탈퇴 처리(아예 삭제가 아닌 grade를 99(탈퇴 회원 번호)로 변경)
    * @param memberVO
    * @return
    */

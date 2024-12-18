@@ -33,9 +33,9 @@ public class ContentsProc implements ContentsProcInter {
     int cnt = this.contentsDAO.create(contentsVO);
     if (cnt == 1) {
       // 콘텐츠 추가가 성공하면 cnt 업데이트
-      this.contentsDAO.updateCntCount(contentsVO.getNewsCateno());
-      this.contentsDAO.resetCnt(contentsVO.getNewsCateno());
-      this.contentsDAO.updateCnt(contentsVO.getNewsCateno());
+      this.contentsDAO.updateCntCount(contentsVO.getNewscateno());
+      this.contentsDAO.resetCnt(contentsVO.getNewscateno());
+      this.contentsDAO.updateCnt(contentsVO.getNewscateno());
     }
     return cnt;
   }

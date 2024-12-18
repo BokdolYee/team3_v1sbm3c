@@ -4,7 +4,7 @@
 <mapper namespace="dev.mvc.newscate.NewsCateDAOInter"> <!-- SB가 자동으로 구현하여 연동하는 interface -->
   <insert id="create" parameterType="dev.mvc.newscate.NewsCateVO">
       insert into newscate(newscateno, genre, name, cnt, seqno, visible, rdate)
-      values(newscate.nextval, #{genre}, #{name}, 0, #{seqno}, #{visible}, sysdate)
+      values(newscate_seq.nextval, #{genre}, #{name}, 0, #{seqno}, #{visible}, sysdate)
   </insert>
   
   <!-- SQL -> CateVO 객체 레코드 수 만큼 생성 -> ArrayList<cateVO> 객체 생성되어 CateDAOInter로 리턴

@@ -78,7 +78,7 @@ public class ContentsCont {
     model.addAttribute("menu", menu);
 
     NewsCateVO newscateVO = this.newscateProc.read(newscateno); // 카테고리 정보를 출력하기위한 목적
-    model.addAttribute("NewscateVO", newscateVO);
+    model.addAttribute("newscateVO", newscateVO);
 
     return "/contents/create"; // /templates/contents/create.html
   }
@@ -174,7 +174,7 @@ public class ContentsCont {
         // ra.addFlashAttribute("cateno", contentsVO.getCateno()); // controller ->
         // controller: X
 
-        ra.addAttribute("newscateno", contentsVO.getNewsCateno()); // controller -> controller: O
+        ra.addAttribute("newscateno", contentsVO.getNewscateno()); // controller -> controller: O
         return "redirect:/contents/list_by_cateno";
 
         // return "redirect:/contents/list_by_cateno?cateno=" + contentsVO.getCateno();
@@ -420,7 +420,7 @@ public class ContentsCont {
 
     model.addAttribute("contentsVO", contentsVO);
 
-    NewsCateVO newscateVO = this.newscateProc.read(contentsVO.getNewsCateno());
+    NewsCateVO newscateVO = this.newscateProc.read(contentsVO.getNewscateno());
     model.addAttribute("newscateVO", newscateVO);
 
     // 조회에서 화면 하단에 출력
@@ -447,7 +447,7 @@ public class ContentsCont {
     ContentsVO contentsVO = this.contentsProc.read(contentsno); // map 정보 읽어 오기
     model.addAttribute("contentsVO", contentsVO); // request.setAttribute("contentsVO", contentsVO);
 
-    NewsCateVO newscateVO = this.newscateProc.read(contentsVO.getNewsCateno()); // 그룹 정보 읽기
+    NewsCateVO newscateVO = this.newscateProc.read(contentsVO.getNewscateno()); // 그룹 정보 읽기
     model.addAttribute("newscateVO", newscateVO);
 
     return "/contents/map"; // //templates/contents/map.html
@@ -488,7 +488,7 @@ public class ContentsCont {
     ContentsVO contentsVO = this.contentsProc.read(contentsno); // map 정보 읽어 오기
     model.addAttribute("contentsVO", contentsVO); // request.setAttribute("contentsVO", contentsVO);
 
-    NewsCateVO newscateVO = this.newscateProc.read(contentsVO.getNewsCateno()); // 그룹 정보 읽기
+    NewsCateVO newscateVO = this.newscateProc.read(contentsVO.getNewscateno()); // 그룹 정보 읽기
     model.addAttribute("newscateVO", newscateVO);
 
     model.addAttribute("word", word);
@@ -551,7 +551,7 @@ public class ContentsCont {
       ContentsVO contentsVO = this.contentsProc.read(contentsno);
       model.addAttribute("contentsVO", contentsVO);
 
-      NewsCateVO newscateVO = this.newscateProc.read(contentsVO.getNewsCateno());
+      NewsCateVO newscateVO = this.newscateProc.read(contentsVO.getNewscateno());
       model.addAttribute("newscateVO", newscateVO);
 
       return "/contents/update_text"; // /templates/contents/update_text.html
@@ -592,7 +592,7 @@ public class ContentsCont {
 
         // mav 객체 이용
         ra.addAttribute("contentsno", contentsVO.getContentsno());
-        ra.addAttribute("newscateno", contentsVO.getNewsCateno());
+        ra.addAttribute("newscateno", contentsVO.getNewscateno());
         return "redirect:/contents/read"; // @GetMapping(value = "/read")
 
       } else { // 패스워드 불일치
@@ -628,7 +628,7 @@ public class ContentsCont {
     ContentsVO contentsVO = this.contentsProc.read(contentsno);
     model.addAttribute("contentsVO", contentsVO);
 
-    NewsCateVO newscateVO = this.newscateProc.read(contentsVO.getNewsCateno());
+    NewsCateVO newscateVO = this.newscateProc.read(contentsVO.getNewscateno());
     model.addAttribute("newscateVO", newscateVO);
 
     return "/contents/update_file";
@@ -703,7 +703,7 @@ public class ContentsCont {
 
       this.contentsProc.update_file(contentsVO); // Oracle 처리
       ra.addAttribute ("contentsno", contentsVO.getContentsno());
-      ra.addAttribute("newscateno", contentsVO.getNewsCateno());
+      ra.addAttribute("newscateno", contentsVO.getNewscateno());
       ra.addAttribute("word", word);
       ra.addAttribute("now_page", now_page);
       
@@ -738,7 +738,7 @@ public class ContentsCont {
       ContentsVO contentsVO = this.contentsProc.read(contentsno);
       model.addAttribute("contentsVO", contentsVO);
       
-      NewsCateVO newscateVO = this.newscateProc.read(contentsVO.getNewsCateno());
+      NewsCateVO newscateVO = this.newscateProc.read(contentsVO.getNewscateno());
       model.addAttribute("newscateVO", newscateVO);
       
       return "/contents/delete"; // forward

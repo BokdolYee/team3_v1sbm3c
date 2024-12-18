@@ -32,8 +32,8 @@ public class MemberCont {
   private MemberProcInter memberProc;
 
   @Autowired
-  @Qualifier("dev.mvc.newscate.NewscateProc")
-  private NewsCateProcInter newsCateProc;
+  @Qualifier("dev.mvc.newscate.NewsCateProc")
+  private NewsCateProcInter newscateProc;
 
   public MemberCont() {
     System.out.println("MemberCont 생성됨");
@@ -86,7 +86,7 @@ public class MemberCont {
   @GetMapping(value = "/create") // http://localhost:9093/member/create
   public String create_form(Model model, @ModelAttribute("memberVO") MemberVO memberVO) {
 
-    ArrayList<NewsCateVOMenu> menu = this.newsCateProc.menu();
+    ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
     model.addAttribute("menu", menu);
 
     return "/member/create"; // /template/member/create.html
@@ -135,7 +135,7 @@ public class MemberCont {
   @GetMapping(value = "/list")
   public String list(Model model, HttpSession session) {
     if (this.memberProc.isAdmin(session)) {
-      ArrayList<NewsCateVOMenu> menu = this.newsCateProc.menu();
+      ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
       model.addAttribute("menu", menu);
 
       ArrayList<MemberVO> list = this.memberProc.list();
@@ -457,7 +457,7 @@ public class MemberCont {
   public String login_form(Model model, HttpServletRequest request) {
     // Cookie 관련 코드---------------------------------------------------------
     
-    ArrayList<NewsCateVOMenu> menu = this.newsCateProc.menu();
+    ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
     model.addAttribute("menu", menu);
 
     Cookie[] cookies = request.getCookies();

@@ -3,19 +3,19 @@
 <html layout:decorate="~{layout}"> <!-- layout.html 상속-->
 <div layout:fragment="content">
   <div class='title_line'>
-    <span th:text="${NewscateVO.genre}" class="title_line_text"></span > 
-    > <span th:text="${NewscateVO.name}" class="title_line_text"></span > 
+    <span th:text="${newscateVO.genre}" class="title_line_text"></span > 
+    > <span th:text="${newscateVO.name}" class="title_line_text"></span > 
     > 글 등록
   </div>
   
   <aside class="aside_right">
-    <a th:href="@{|./create?newscateno=${NewscateVO.newscateno }|}">등록</a>
+    <a th:href="@{|./create?newscateno=${newscateVO.newscateno}|}">등록</a>
     <span class='menu_divide' >│</span>
     <a href="javascript:location.reload();">새로고침</a>
     <span class='menu_divide' >│</span>
-    <a th:href="@{|./list_by_newscateno_search_paging?newscateno=${NewscateVO.newscateno }|}">기본 목록형</a>    
+    <a th:href="@{|./list_by_cateno_search_paging?newscateno=${newscateVO.newscateno}|}">기본 목록형</a>    
     <span class='menu_divide' >│</span>
-    <a th:href="@{|./list_by_newscateno_grid?newscateno=${NewscateVO.newscateno }|}">갤러리형</a>
+    <a th:href="@{|./list_by_cateno_grid?newscateno=${newscateVO.newscateno}|}">갤러리형</a>
   </aside>
   
   <div class='menu_line'></div>
@@ -48,7 +48,7 @@
     </div>   
     <div class="content_body_bottom">
       <button type="submit" class="btn btn-secondary btn-sm">등록</button>
-      <button type="button" th:attr="onclick=|location.href='./list_by_newscateno?newscateno=${NewscateVO.newscateno}&word=${word }&now_page=${now_page}'|" class="btn btn-secondary btn-sm">목록</button>
+      <button type="button" th:attr="onclick=|location.href='./list_by_cateno?newscateno=${newscateVO.newscateno}&word=${word }&now_page=${now_page}'|" class="btn btn-secondary btn-sm">목록</button>
     </div>
 
   </form>

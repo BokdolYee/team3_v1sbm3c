@@ -45,7 +45,7 @@
           <a th:href="@{|/cate/update_seqno_backward/${newscateVO.newscateno}?word=${word}&now_page=${now_page}|}"><img src="/cate/images/increase.png" class="icon" title="우선순위 낮춤"></a>
           <a th:href="@{|/cate/update/${newscateVO.newscateno}?word=${word}&now_page=${now_page}|}"><img src="/cate/images/update.png" class="icon" title="수정"></a> <!-- /static 기준 -->
           <a th:href="@{|/cate/delete/${newscateVO.newscateno}?word=${word}&now_page=${now_page}|}"><img src="/cate/images/delete.png" class="icon" title="삭제"></a> <!--/* /static 기준 */-->
-          <a th:if="${newscateVO.name != '--'}" th:href="@{|/contents/create?cateno=${newscateVO.newscateno}|}"><img src="/cate/images/append.png" class="icon" title="추가"></a>
+          <a th:if="${newscateVO.name != '--'}" th:href="@{|/contents/create?newscateno=${newscateVO.newscateno}|}"><img src="/cate/images/append.png" class="icon" title="추가"></a>  
         </td>
       </tr>
     </tbody>

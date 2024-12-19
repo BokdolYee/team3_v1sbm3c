@@ -17,7 +17,7 @@
     
     <a href="javascript:location.reload();">새로고침</a>
     <span class='menu_divide' >│</span>    
-    <a th:href="@{|./list_by_cateno?cateno=${newscateVO.newscateno }&word=${word }&now_page=${now_page}|}">목록형</a>    
+    <a th:href="@{|./list_by_cateno?newscateno=${newscateVO.newscateno }&word=${word }&now_page=${now_page}|}">목록형</a>    
     <span class='menu_divide' >│</span>
     <a th:href="@{|./list_by_cateno_grid?cateno=${newscateVO.newscateno }&word=${word }&now_page=${now_page}|}">갤러리형</a>
     

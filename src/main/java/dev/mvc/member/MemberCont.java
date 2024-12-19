@@ -122,7 +122,7 @@ public class MemberCont {
       model.addAttribute("cnt", 0);
     }
 
-    return "/member/login";
+    return "/index";
   }
 
   /**
@@ -599,7 +599,7 @@ public class MemberCont {
   @GetMapping(value="/logout")
   public String logout(HttpSession session, Model model) {
     session.invalidate();  // 모든 세션 변수 삭제
-    return "redirect:/index";
+    return "/index";
   }
 
   /**

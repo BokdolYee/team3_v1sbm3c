@@ -25,7 +25,7 @@
     <span class='menu_divide' >│</span>
     <a th:href="@{|/contents/youtube?newscateno=${contentsVO.newscateno }&contentsno=${contentsVO.contentsno}&word=${word}&now_page=${now_page}|}">Youtube</a>
     <span class='menu_divide' >│</span>
-    <a th:href="@{|./delete?contentsno=${contentsVO.contentsno}&word=${word}&now_page=${now_page}&cateno=${contentsVO.cateno}|}">삭제</a>  
+    <a th:href="@{|./delete?contentsno=${contentsVO.contentsno}&word=${word}&now_page=${now_page}&newscateno=${contentsVO.newscateno}|}">삭제</a>  
  </aside> 
 
   <aside class="aside_right" th:if="${session.grade != 'admin'}">

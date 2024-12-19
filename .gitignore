@@ -34,13 +34,3 @@ out/
 
 ### VS Code ###
 .vscode/
-
-# Gradle files
-.gradle/
-
-# Eclipse files
-.classpath
-.settings/
-
-# 기타 무시할 파일들
-*.log

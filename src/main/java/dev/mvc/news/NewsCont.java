@@ -7,33 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-<<<<<<< HEAD
-<<<<<<< HEAD
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-=======
-import org.springframework.web.bind.annotation.*;
->>>>>>> ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d
-=======
-import org.springframework.web.bind.annotation.*;
->>>>>>> ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d
 import dev.mvc.analysis.AnalysisProc;
 import dev.mvc.analysis.AnalysisVO;
 import dev.mvc.summarize.SummarizeProc;
 import dev.mvc.summarize.SummarizeVO;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-@CrossOrigin(origins = "http://localhost:3000")  // React 앱의 주소
->>>>>>> ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d
-=======
-@CrossOrigin(origins = "http://localhost:3000")  // React 앱의 주소
->>>>>>> ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d
 @Controller
 @RequestMapping("/news")
 public class NewsCont {
@@ -56,8 +39,6 @@ public class NewsCont {
      * @return
      */
     @GetMapping("/detail/{newsno}")
-<<<<<<< HEAD
-<<<<<<< HEAD
     public String getNewsDetail(@PathVariable("newsno") int newsno, Model model) {
         System.out.printf("Spring에서 받아온 newsno: %d\n", newsno);  // newsno 값 출력 (디버깅)
 
@@ -73,12 +54,6 @@ public class NewsCont {
     }
 
 
-    /**
-     * 뉴스 분석 및 요약 처리
-     * @param newsno
-     * @param model
-     * @return
-     */
     @PostMapping("/analyze/{newsno}")
     public String analyzeAndSummarize(@PathVariable("newsno") int newsno, Model model) {
         // 뉴스 본문 가져오기
@@ -86,45 +61,6 @@ public class NewsCont {
         if (newsVO == null) {
             model.addAttribute("error", "뉴스를 찾을 수 없습니다.");
             return "error";  // error.html 페이지로 이동
-=======
-=======
->>>>>>> ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> getNewsDetail(@PathVariable("newsno") int newsno) {
-        System.out.printf("Spring에서 받아온 newsno:", newsno);  // newsno 값 출력 (디버깅)
-
-        Map<String, Object> result = new HashMap<>();
-        
-        // 뉴스 상세 정보 가져오기
-        NewsVO newsVO = newsProc.read(newsno);
-        if (newsVO == null) {
-            result.put("error", "뉴스를 찾을 수 없습니다.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
-        }
-
-        result.put("news", newsVO);
-        return ResponseEntity.ok(result);  // 뉴스 상세 정보 반환
-    }
-
-    /**
-     * 뉴스 분석 및 요약 처리
-     * @param newsno
-     * @return
-     */
-    @PostMapping("/analyze/{newsno}")
-    @ResponseBody
-    public ResponseEntity<Map<String, String>> analyzeAndSummarize(@PathVariable("newsno") int newsno) {
-        Map<String, String> result = new HashMap<>();
-        
-        // 뉴스 본문 가져오기
-        NewsVO newsVO = newsProc.read(newsno);
-        if (newsVO == null) {
-            result.put("error", "뉴스를 찾을 수 없습니다.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
-<<<<<<< HEAD
->>>>>>> ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d
-=======
->>>>>>> ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d
         }
 
         String text = newsVO.getText(); // 뉴스 본문
@@ -132,53 +68,31 @@ public class NewsCont {
         try {
             // Python API 분석 요청
             String analysisResult = pythonAPIClient.analyze(text);
-<<<<<<< HEAD
-<<<<<<< HEAD
             if (analysisResult == null) {
                 throw new Exception("분석 결과가 null입니다.");
             }
 
             // 분석 결과 디코딩 (JSON에서 데이터 추출)
             String decodedAnalysis = decodeJson(analysisResult);
-=======
->>>>>>> ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d
-=======
->>>>>>> ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d
 
             // 분석 결과 저장
             AnalysisVO analyzeVO = new AnalysisVO();
             analyzeVO.setNewsno(newsno);
-<<<<<<< HEAD
-<<<<<<< HEAD
             analyzeVO.setImpact(decodedAnalysis);
-=======
-            analyzeVO.setImpact(analysisResult);
->>>>>>> ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d
-=======
-            analyzeVO.setImpact(analysisResult);
->>>>>>> ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d
             analysisProc.create(analyzeVO);
 
             // Python API 요약 요청
             String summary = pythonAPIClient.summarize(text);
-<<<<<<< HEAD
-<<<<<<< HEAD
             if (summary == null) {
                 throw new Exception("요약 결과가 null입니다.");
             }
 
             // 요약 디코딩 (JSON에서 데이터 추출)
             String decodedSummary = decodeJson(summary);
-=======
->>>>>>> ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d
-=======
->>>>>>> ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d
 
             // 요약 저장
             SummarizeVO summarizeVO = new SummarizeVO();
             summarizeVO.setNewsno(newsno);
-<<<<<<< HEAD
-<<<<<<< HEAD
             summarizeVO.setContent(decodedSummary);
             summarizeProc.create(summarizeVO);
 
@@ -217,25 +131,4 @@ public class NewsCont {
         return decodedValue;
     }
 
-=======
-=======
->>>>>>> ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d
-            summarizeVO.setContent(summary);
-            summarizeProc.create(summarizeVO);
-
-            result.put("message", "뉴스 분석 및 요약이 완료되었습니다.");
-            result.put("summary", summary);
-            result.put("impact", analysisResult);
-
-        } catch (Exception e) {
-            result.put("error", "API 호출 중 오류가 발생했습니다: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
-        }
-
-        return ResponseEntity.ok(result);  // 분석 및 요약 결과 반환
-    }
-<<<<<<< HEAD
->>>>>>> ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d
-=======
->>>>>>> ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d
 }

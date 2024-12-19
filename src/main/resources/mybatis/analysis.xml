@@ -5,8 +5,13 @@
   <!-- C: Create -->
   <insert id="create" parameterType="dev.mvc.analysis.AnalysisVO">
 <<<<<<< HEAD
+<<<<<<< HEAD
     INSERT INTO analysis (analysisno, impact, newsno)
     VALUES (analysis_seq.nextval, #{impact}, #{newsno})
+=======
+    INSERT INTO analysis (analysisno, impact, summaryno)
+    VALUES (analysis_seq.nextval, #{impact}, #{summaryno})
+>>>>>>> ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d
 =======
     INSERT INTO analysis (analysisno, impact, summaryno)
     VALUES (analysis_seq.nextval, #{impact}, #{summaryno})
@@ -16,7 +21,11 @@
   <!-- R: Read -->
   <select id="read" resultType="dev.mvc.analysis.AnalysisVO" parameterType="Integer">
 <<<<<<< HEAD
+<<<<<<< HEAD
     SELECT analysisno, impact, newsno
+=======
+    SELECT analysisno, impact, summaryno
+>>>>>>> ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d
 =======
     SELECT analysisno, impact, summaryno
 >>>>>>> ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d
@@ -28,7 +37,11 @@
   <update id="update" parameterType="dev.mvc.analysis.AnalysisVO">
     UPDATE analysis
 <<<<<<< HEAD
+<<<<<<< HEAD
     SET impact = #{impact}, newsno = #{newsno}
+=======
+    SET impact = #{impact}, summaryno = #{summaryno}
+>>>>>>> ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d
 =======
     SET impact = #{impact}, summaryno = #{summaryno}
 >>>>>>> ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d
@@ -44,7 +57,11 @@
   <!-- S: Search -->
   <select id="search" resultType="dev.mvc.analysis.AnalysisVO" parameterType="String">
 <<<<<<< HEAD
+<<<<<<< HEAD
     SELECT analysisno, impact, newsno
+=======
+    SELECT analysisno, impact, summaryno
+>>>>>>> ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d
 =======
     SELECT analysisno, impact, summaryno
 >>>>>>> ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d

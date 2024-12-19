@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import dev.mvc.newscate.NewsCateProcInter;
 import dev.mvc.newscate.NewsCateVOMenu;
@@ -157,23 +158,20 @@ public class MemberCont {
    * @return
    */
   @GetMapping(value = "/read")
-  public String read(HttpSession session, Model model, int memberno) {
-    // 회원은 회원 등급만 처리, 관리자: 1 ~ 10, 회원: 11 ~ 20
-    String grade = (String) session.getAttribute("grade"); // 등급: member, admin
-
-    // 회원 또는 관리자일 경우 | 회원: 11~20, 관리자: 1~10
-    if (grade.equals("member") && memberno == (int) session.getAttribute("memberno")
-        || grade.equals("admin") && memberno == (int) session.getAttribute("memberno")) {
-      System.out.println("memberno: " + memberno);
-
+  public String read(HttpSession session, Model model, 
+      @RequestParam(name="memberno", defaultValue = "0")int memberno) {
+    ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
+    model.addAttribute("menu", menu);
+    if(this.memberProc.isMember(session) || this.memberProc.isAdmin(session)) {
+      
+      memberno = (int)session.getAttribute("memberno"); // session에서 가져오기
       MemberVO memberVO = this.memberProc.read(memberno);
       model.addAttribute("memberVO", memberVO);
-
-      return "member/read"; // templates/member/read.html
+      
+      return "/member/read";    // /templates/member/read 
     } else {
-      return "redirect:/member/login_cookie_need"; // redirect
+      return "redirect:/member/login_cookie_need";
     }
-
   }
 
   /**
@@ -508,18 +506,20 @@ public class MemberCont {
    */
   @PostMapping(value = "/login")
   public String login_proc(HttpSession session, HttpServletRequest request, HttpServletResponse response, Model model,
+      RedirectAttributes ra,
       @RequestParam(value = "id", defaultValue = "") String id,
       @RequestParam(value = "passwd", defaultValue = "") String passwd,
       @RequestParam(value = "id_save", defaultValue = "") String id_save,
       @RequestParam(value = "passwd_save", defaultValue = "") String passwd_save) {
+    ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
+    model.addAttribute("menu", menu);
+    
     HashMap<String, Object> map = new HashMap<String, Object>();
     map.put("id", id);
     map.put("passwd", passwd);
 
     int cnt = this.memberProc.login(map);
     System.out.println("login_proc cnt: " + cnt);
-
-    model.addAttribute("cnt", cnt);
 
     if (cnt == 1) {
       // id를 이용하여 회원 정보 조회
@@ -582,11 +582,13 @@ public class MemberCont {
       response.addCookie(check_passwd_save);
       // -------------------------------------------------------------------
       // ----------------------------------------------------------------------------
-
-      return "redirect:/";
+      
+      return "/index";
     } else {
+      ra.addFlashAttribute("cnt", cnt); // 새로고침 시에도 cnt 값이 살아서 전달될 수 있도록 RedirectAttributes 클래스의 addFlashAttribute 함수 사용
       model.addAttribute("code", "login_fail");
-      return "redirect:/";
+      System.out.println("login_fail");
+      return "redirect:/member/login";
     }
   }
   
@@ -599,7 +601,7 @@ public class MemberCont {
   @GetMapping(value="/logout")
   public String logout(HttpSession session, Model model) {
     session.invalidate();  // 모든 세션 변수 삭제
-    return "/index";
+    return "redirect:/";
   }
 
   /**
@@ -611,6 +613,8 @@ public class MemberCont {
    */
   @GetMapping(value = "/login_cookie_need")
   public String login_cookie_need(Model model, HttpServletRequest request) {
+    ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
+    model.addAttribute("menu", menu);
     // Cookie 관련 코드---------------------------------------------------------
     Cookie[] cookies = request.getCookies();
     Cookie cookie = null;

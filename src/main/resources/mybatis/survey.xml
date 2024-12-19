@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.mvc.survey.SurveyDAOInter"> 
+  <insert id="create" parameterType="dev.mvc.survey.SurveyVO">
+    INSERT INTO survey(surveyno, topic, startdate, enddate, poster, cnt, visible) 
+    VALUES(survey_seq.nextval, #{topic}, #{startdate}, #{enddate}, #{poster}, #{cnt}, #{visible})
+  </insert>
+  
+  <select id="read" resultType="dev.mvc.survey.SurveyVO" parameterType="Integer">
+    SELECT surveyno, topic, startdate, enddate, poster, cnt, poster
+    FROM survey
+    WHERE surveyno=#{surveyno}
+  </select>  
+  
+  <update id="update" parameterType="dev.mvc.survey.SurveyVO">
+    UPDATE survey 
+    SET topic=#{topic}, startdate=#{startdate}, poster=#{poster} 
+    WHERE surveyno=#{surveyno}
+  </update> 
+  
+  <delete id="delete" parameterType="int">
+    DELETE FROM survey WHERE surveyno=#{surveyno}
+  </delete>
+  
+  <select id="list_all" resultType="dev.mvc.survey.SurveyVO">
+    SELECT surveyno, topic, startdate, enddate, poster, cnt, visible
+    FROM survey 
+    ORDER BY surveyno ASC
+  </select>
+  
+    <!-- 검색 갯수 -->
+  <select id="list_search_count" resultType="Integer" parameterType="String">
+    SELECT COUNT(*) as cnt
+    FROM survey
+    <if test="word != null and word != ''"> <!-- 검색 상태라면 WHERE 생성 -->
+      WHERE (UPPER(topic) LIKE '%' || UPPER(#{word}) || '%') 
+    </if> 
+    ORDER BY startdate ASC
+  </select>
+  
+   <select id="list_search" resultType="dev.mvc.survey.SurveyVO" parameterType="String">
+    SELECT surveyno, topic, startdate, enddate, poster, cnt, visible
+    FROM survey
+    <if test="word != null and word != ''"> <!-- 검색 상태라면 WHERE 생성 -->
+      WHERE (UPPER(topic) LIKE '%' || UPPER(#{word}) || '%') 
+    </if> 
+    ORDER BY startdate ASC
+  </select>
+  
+    <!-- 페이징 -->
+  <select id="list_paging" resultType="dev.mvc.survey.SurveyVO" parameterType="Map">
+    SELECT surveyno, topic, startdate, enddate, poster, cnt, visible, r
+    FROM (
+        SELECT surveyno, topic, startdate, enddate, poster, cnt, visible, 
+               ROW_NUMBER() OVER (ORDER BY startdate ASC) as r
+        FROM survey
+    ) 
+    WHERE r &gt;= #{start_num} AND r &lt;= #{end_num}
+  </select>
+  
+</mapper>

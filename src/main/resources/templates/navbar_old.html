@@ -27,7 +27,7 @@
                     </ul>
                 </li>
                 <li class="nav-item" th:if="${session.grade == 'admin'}">
-                    <a class="nav-link" th:href="@{|/cate/list_search?word=${word}|}">카테고리 목록</a>
+                    <a class="nav-link" th:href="@{|/newscate/list_search?word=${word}|}">카테고리 목록</a>
                 </li>
                 <li class="nav-item">
                     <span th:if="${session.memberno == null}"><a class="nav-link" th:href="@{|/member/create|}">회원 가입</a>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  <div class="title_line">설문조사</div>
+  <aside class="aside_right">
+    <a href="javascript: location.reload();">새로 고침</a>
+  </aside>
+<div class="menu_line"></div>
+
+<form action="/transJson" method="post">
+    <div class="container mt-3" style="width: 60%; margin: 5px auto;">
+      <ul class="list-group list-group-flush">
+        <!-- 첫 번째 질문: 라디오 버튼 -->
+        <li class="list-group-item">
+          <strong>2024 리그 경기 기준</strong>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="box_check_one" id="team_high" value="상위팀" th:checked="${box_check_one == '상위팀'}">
+            <label class="form-check-label" for="team_high">상위팀</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="box_check_one" id="team_mid" value="중위팀" th:checked="${box_check_one == '중위팀'}">
+            <label class="form-check-label" for="team_mid">중위팀</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="box_check_one" id="team_low" value="하위팀" th:checked="${box_check_one == '하위팀'}">
+            <label class="form-check-label" for="team_low">하위팀</label>
+          </div>
+        </li>
+        
+        <div class="menu_line"></div>
+        
+        <!-- 두 번째 질문: 체크박스 -->
+        <li class="list-group-item">
+          <strong>팀 구성</strong>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="box_check_two" id="box_check_two_1" value="한국인 있는 팀" th:checked="${box_check_two == '한국인 있는 팀'}">
+            <label class="form-check-label" for="box_check_two_1">한국인 있는 팀</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="box_check_two" id="box_check_two_2" value="한국인 없는 팀" th:checked="${box_check_two == '한국인 없는 팀'}">
+            <label class="form-check-label" for="box_check_two_2">한국인 없는 팀</label>
+          </div>
+        </li>
+        
+        <div class="menu_line"></div>
+        
+        <!-- 세 번째 질문: 체크박스 -->
+        <li class="list-group-item">
+          <strong>프랜차이즈 선수 여부</strong>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="box_check_three" id="box_check_three_1" value="프랜차이즈 선수가 있는 팀" th:checked="${box_check_three == '프랜차이즈 선수가 있는 팀'}">
+            <label class="form-check-label" for="box_check_three_1">프랜차이즈 선수가 있는 팀</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="box_check_three" id="box_check_three_2" value="프랜차이즈 선수가 없는 팀" th:checked="${box_check_three == '프랜차이즈 선수가 없는 팀'}">
+            <label class="form-check-label" for="box_check_three_2">프랜차이즈 선수가 없는 팀</label>
+          </div>
+        </li>
+        
+        <div class="menu_line"></div>
+        
+        <!-- 네 번째 질문: 체크박스 -->
+        <li class="list-group-item">
+          <strong>게임 스타일</strong>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="box_check_four" id="box_check_four_1" value="패스 플레이의 팀" th:checked="${box_check_four == '패스 플레이의 팀'}">
+            <label class="form-check-label" for="box_check_four_1">패스 플레이의 팀</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" class="form-check-input" name="box_check_four" id="box_check_four_2" value="역습 위주의 팀" th:checked="${box_check_four == '역습 위주의 팀'}">
+            <label class="form-check-label" for="box_check_four_2">역습 위주의 팀</label>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="content_body_bottom">
+      <button type="submit" class="btn btn-secondary btn-sm">완료</button>
+      <button type="button" onclick="location.href='/survey/list_search'" class="btn btn-secondary btn-sm">목록</button>
+    </div>
+
+</form>
+
+
+    
+</div>
+</html>
+
+

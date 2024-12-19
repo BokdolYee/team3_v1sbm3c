@@ -32,6 +32,9 @@
                     
                 </li>
                 <li class="nav-item"><a class="nav-link" href="/stock/list">주식</a></li>
+
+                <li class="nav-item"><a class="nav-link" th:href="@{|/survey/list_search?word=${word}|}">설문 조사</a></li>
+
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" 
                         role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="회원">                                                            
@@ -50,7 +53,7 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <li class="nav-item"><a class="nav-link" th:href="@{|/member/list|}">회원 목록</a></li>
-                        <li class="nav-item"><a class="nav-link" th:href="@{|/cate/list_search?word=${word}|}">카테고리 목록</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{|/newscate/list_search?word=${word}|}">카테고리 목록</a></li>
                         <li class="nav-item"><a class="nav-link" href="/contents/list_all">전체 글 목록</a></li>
                     </ul>
                 </li>

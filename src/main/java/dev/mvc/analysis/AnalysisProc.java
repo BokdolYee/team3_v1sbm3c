@@ -37,8 +37,4 @@ public class AnalysisProc implements AnalysisProcInter {
         return analysisDAO.search(keyword);
     }
 
-    @Override
-    public ArrayList<AnalysisVO> listPaging(Map<String, Object> param) {
-        return analysisDAO.listPaging(param);
-    }
 }

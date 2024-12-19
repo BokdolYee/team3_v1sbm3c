@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.mvc.news.NewsDAOInter"> <!-- NewsDAOInter 인터페이스에 매핑 -->
+
+  <!-- C: Create -->
+  <insert id="create" parameterType="dev.mvc.news.NewsVO">
+    INSERT INTO news (newsno, text, url, source, publish_date)
+    VALUES (news_seq.nextval, #{text}, #{url}, #{source}, #{publishDate})
+  </insert>
+
+  <!-- R: Read -->
+  <select id="read" resultType="dev.mvc.news.NewsVO" parameterType="Integer">
+    SELECT newsno, text, url, source, publish_date
+    FROM news
+    WHERE newsno = #{newsno}
+  </select>
+
+  <!-- U: Update -->
+  <update id="update" parameterType="dev.mvc.news.NewsVO">
+    UPDATE news
+    SET text = #{text}, url = #{url}, source = #{source}, publish_date = #{publishDate}
+    WHERE newsno = #{newsno}
+  </update>
+
+  <!-- D: Delete -->
+  <delete id="delete" parameterType="Integer">
+    DELETE FROM news
+    WHERE newsno = #{newsno}
+  </delete>
+
+  <!-- S: Search -->
+  <select id="search" resultType="dev.mvc.news.NewsVO" parameterType="String">
+    SELECT newsno, text, url, source, publish_date
+    FROM news
+    <if test="keyword != null and keyword != ''">
+      WHERE UPPER(text) LIKE '%' || UPPER(#{keyword}) || '%'
+         OR UPPER(source) LIKE '%' || UPPER(#{keyword}) || '%'
+    </if>
+    ORDER BY publish_date DESC
+  </select>
+
+  <!-- P: Paging -->
+  <select id="list_paging" resultType="dev.mvc.news.NewsVO" parameterType="Map">
+    SELECT newsno, text, url, source, publish_date, r
+    FROM (
+      SELECT newsno, text, url, source, publish_date, rownum AS r
+      FROM (
+        SELECT newsno, text, url, source, publish_date
+        FROM news
+        <if test="keyword != null and keyword != ''">
+          WHERE UPPER(text) LIKE '%' || UPPER(#{keyword}) || '%'
+             OR UPPER(source) LIKE '%' || UPPER(#{keyword}) || '%'
+        </if>
+        ORDER BY publish_date DESC
+      )
+    )
+    WHERE r BETWEEN #{start} AND #{end}
+  </select>
+
+</mapper>

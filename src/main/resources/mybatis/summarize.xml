@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.mvc.summarize.SummarizeDAOInter"> <!-- SummarizeDAOInter 인터페이스에 매핑 -->
+
+  <!-- C: Create -->
+  <insert id="create" parameterType="dev.mvc.summarize.SummarizeVO">
+    INSERT INTO summarize (summaryno, content, newsno)
+    VALUES (summarize_seq.nextval, #{content}, #{newsno})
+  </insert>
+
+  <!-- R: Read -->
+  <select id="read" resultType="dev.mvc.summarize.SummarizeVO" parameterType="Integer">
+    SELECT summaryno, content, newsno
+    FROM summarize
+    WHERE summaryno = #{summaryno}
+  </select>
+
+  <!-- U: Update -->
+  <update id="update" parameterType="dev.mvc.summarize.SummarizeVO">
+    UPDATE summarize
+    SET content = #{content}, newsno = #{newsno}
+    WHERE summaryno = #{summaryno}
+  </update>
+
+  <!-- D: Delete -->
+  <delete id="delete" parameterType="Integer">
+    DELETE FROM summarize
+    WHERE summaryno = #{summaryno}
+  </delete>
+
+  <!-- S: Search -->
+  <select id="search" resultType="dev.mvc.summarize.SummarizeVO" parameterType="String">
+    SELECT summaryno, content, newsno
+    FROM summarize
+    <if test="keyword != null and keyword != ''">
+      WHERE UPPER(content) LIKE '%' || UPPER(#{keyword}) || '%'
+    </if>
+    ORDER BY summaryno DESC
+  </select>
+
+  <!-- P: Paging -->
+  <select id="list_paging" resultType="dev.mvc.summarize.SummarizeVO" parameterType="Map">
+    SELECT summaryno, content, newsno, r
+    FROM (
+      SELECT summaryno, content, newsno, rownum AS r
+      FROM (
+        SELECT summaryno, content, newsno
+        FROM summarize
+        <if test="keyword != null and keyword != ''">
+          WHERE UPPER(content) LIKE '%' || UPPER(#{keyword}) || '%'
+        </if>
+        ORDER BY summaryno DESC
+      )
+    )
+    WHERE r BETWEEN #{start} AND #{end}
+  </select>
+
+</mapper>

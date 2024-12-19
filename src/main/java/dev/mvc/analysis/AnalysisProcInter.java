@@ -42,12 +42,4 @@ public interface AnalysisProcInter {
    */
   public ArrayList<AnalysisVO> search(String keyword);
 
-  /**
-   * 검색 + 페이징 목록
-   * @param word
-   * @param now_page
-   * @param record_per_page
-   * @return
-   */
-  public ArrayList<AnalysisVO> listPaging(Map<String, Object> param); 
 }

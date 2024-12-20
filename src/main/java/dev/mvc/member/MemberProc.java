@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import dev.mvc.tool.Security;
+import dev.mvc.dto.SearchDTO;
 
 @Component("dev.mvc.member.MemberProc")
 public class MemberProc implements MemberProcInter {
@@ -54,13 +55,17 @@ public class MemberProc implements MemberProcInter {
     return cnt;
   }
   
+  @Override
+  public int list_search_count(SearchDTO searchDTO) {
+    return memberDAO.list_search_count(searchDTO);
+  }
+  
   /**
-   * 회원 목록
+   * 회원 검색 + 목록 페이징
    */
   @Override
-  public ArrayList<MemberVO> list() {
-    ArrayList<MemberVO> list = this.memberDAO.list();
-    return list;
+  public ArrayList<MemberVO> list_search_paging(SearchDTO searchDTO) {
+    return memberDAO.list_search_paging(searchDTO);
   }
 
   /**

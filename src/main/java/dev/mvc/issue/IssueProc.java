@@ -15,6 +15,10 @@ public class IssueProc implements IssueProcInter{
   @Autowired
   private IssueDAOInter issueDAO;
 
+  public IssueProc() {
+    System.out.println("---> IssueProc 생성됨.");
+  }
+  
   @Override
   public int create(IssueVO issueVO) {
       return issueDAO.create(issueVO);

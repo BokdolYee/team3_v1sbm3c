@@ -20,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import dev.mvc.newscate.NewsCateProcInter;
 import dev.mvc.newscate.NewsCateVOMenu;
+import dev.mvc.tool.Tool;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -133,21 +134,40 @@ public class MemberCont {
    * @param session
    * @return
    */
-  @GetMapping(value = "/list")
-  public String list(Model model, HttpSession session) {
-    if (this.memberProc.isAdmin(session)) {
-      ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
-      model.addAttribute("menu", menu);
-
-      ArrayList<MemberVO> list = this.memberProc.list();
-
-      model.addAttribute("list", list);
-
-      return "/member/list"; // templates/member/list.html
-    } else {
-      return "redirect:/member/login_cookie_need"; // redirect
-    }
-  }
+//  @GetMapping(value = "/list")
+//  public String list(Model model, HttpSession session) {
+//    if (this.memberProc.isAdmin(session)) {
+//      ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
+//      model.addAttribute("menu", menu);
+//
+//      ArrayList<MemberVO> list = this.memberProc.list();
+//
+//      model.addAttribute("list", list);
+//
+//      return "/member/list"; // templates/member/list.html
+//    } else {
+//      return "redirect:/member/login_cookie_need"; // redirect
+//    }
+//  }
+  
+//  @GetMapping(value="/list_search")
+//  public String list_search_paging(Model model, HttpSession session,
+//        @RequestParam(name="word", defaultValue = "")String word,
+//        @RequestParam(name="now_page", defaultValue = "1")int now_page) {
+//    
+//    if(this.memberProc.isAdmin(session)) {
+//      MemberVO memberVO = new MemberVO();
+//      model.addAttribute("memberVO", memberVO);
+//      
+//      ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
+//      model.addAttribute("menu", menu);
+//      
+//      word = Tool.checkNull(word);
+//      
+//      ArrayList<>
+//    }
+//  }
+  
 
   /**
    * 회원 정보 조회 (내 정보 보기)

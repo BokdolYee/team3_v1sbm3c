@@ -38,11 +38,22 @@
     WHERE id = #{id}
   </select>
   
-  <!-- 회원 목록 -->
+  <!-- 회원 목록 
   <select id="list" resultType="dev.mvc.member.MemberVO">
     SELECT memberno, id, passwd, name, birth, nickname, tel, gender, zipcode, address, replycnt, rdate, grade
     FROM member
     ORDER BY grade ASC, id ASC
+  </select> -->
+  
+  <!-- 회원 목록 + 검색 + 페이징-->
+  <select id="list_search_paging" resultType="dev.mvc.member.MemberVO" parameterType="Map">
+    SELECT memberno, id, name, birth, nickname, tel, gender, zipcode, address, replycnt, rdate, grade, r
+    FROM(
+         SELECT memberno, id, name, birth, nickname, tel, gender, zipcode, address, replycnt, rdate, grade, rownum as r
+         FROM(
+              SELECT memberno, id, name, birth, nickname, tel, gender, zipcode, address, replycnt, rdate, grade
+              FROM member
+              WHERE (UPPER
   </select>
   
   <!-- 회원 정보 수정(name, nickname, tel, zipcode, address) -->

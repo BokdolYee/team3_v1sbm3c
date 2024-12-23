@@ -38,11 +38,77 @@
     WHERE id = #{id}
   </select>
   
-  <!-- 회원 목록 -->
+  <!-- 회원 목록 
   <select id="list" resultType="dev.mvc.member.MemberVO">
     SELECT memberno, id, passwd, name, birth, nickname, tel, gender, zipcode, address, replycnt, rdate, grade
     FROM member
     ORDER BY grade ASC, id ASC
+  </select> -->
+  
+  <!-- 회원 검색 목록 + 페이징 -->
+  <select id="list_search_paging" parameterType="dev.mvc.dto.SearchDTO" resultType="dev.mvc.member.MemberVO">
+    SELECT *
+    FROM(
+        SELECT a.*, ROWNUM rnum
+        FROM(
+            SELECT *
+            FROM member
+            <where>
+              <if test="searchType != null and keyword != null">
+                <choose>
+                  <when test = "searchType == 'id'">
+                    AND id LIKE '%' || #{keyword} || '%'
+                  </when>
+                  <when test = "searchType == 'nickname'">
+                    AND nickname LIKE '%' || #{keyword} || '%'
+                  </when>
+                </choose>
+              </if>
+            </where>
+            ORDER BY memberno DESC
+          ) a
+          WHERE ROWNUM &lt;= #{size}
+        )
+        WHERE rnum &gt; #{offset}
+  </select>
+            
+  
+  <!-- 회원 검색 목록 + 페이징
+  <select id="list_search_paging" parameterType="dev.mvc.dto.SearchDTO" resultType="dev.mvc.member.MemberVO">
+    SELECT *
+    FROM member
+    <where>
+      <if test="searchType != null and keyword != null">
+        <choose>
+          <when test = "searchType == 'id'">
+            AND id LIKE '%' || #{keyword} || '%'
+          </when>
+          <when test = "searchType == 'nickname'">
+            AND nickname LIKE '%' || #{keyword} || '%'
+          </when>
+        </choose>
+      </if>
+    </where>
+    ORDER BY memberno DESC
+    OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
+  </select>-->
+  
+  <!-- 회원 검색된 수 -->
+  <select id="list_search_count" parameterType="dev.mvc.dto.SearchDTO" resultType="int">
+    SELECT COUNT(*)
+    FROM member
+    <where>
+      <if test="searchType != null and keyword != null">
+        <choose>
+          <when test = "searchType == 'id'">
+            AND id LIKE '%' || #{keyword} || '%'
+          </when>
+          <when test = "searchType == 'nickname'">
+            AND nickname LIKE '%' || #{keyword} || '%'
+          </when>
+        </choose>
+      </if>
+    </where>
   </select>
   
   <!-- 회원 정보 수정(name, nickname, tel, zipcode, address) -->

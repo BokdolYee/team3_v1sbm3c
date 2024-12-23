@@ -16,9 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import dev.mvc.newscate.NewsCateProcInter;
 import dev.mvc.newscate.NewsCateVOMenu;
+import dev.mvc.dto.SearchDTO;
+import dev.mvc.dto.PageDTO;
+import dev.mvc.tool.Tool;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -125,28 +129,85 @@ public class MemberCont {
     return "/index";
   }
 
-  /**
-   * 회원 목록(관리자만 접근 가능)
-   * 
-   * @param model
-   * @param session
-   * @return
-   */
-  @GetMapping(value = "/list")
-  public String list(Model model, HttpSession session) {
-    if (this.memberProc.isAdmin(session)) {
+//  /**
+//   * 회원 목록(관리자만 접근 가능)
+//   * 
+//   * @param model
+//   * @param session
+//   * @return
+//   */
+//  @GetMapping(value = "/list")
+//  public String list(Model model, HttpSession session) {
+//    if (this.memberProc.isAdmin(session)) {
+//      ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
+//      model.addAttribute("menu", menu);
+//
+//      ArrayList<MemberVO> list = this.memberProc.list();
+//
+//      model.addAttribute("list", list);
+//
+//      return "/member/list"; // templates/member/list.html
+//    } else {
+//      return "redirect:/member/login_cookie_need"; // redirect
+//    }
+//  }
+  
+  @GetMapping(value="/list")
+  public String list_search_paging(Model model,HttpSession session,
+                                   @RequestParam(value = "page", defaultValue = "1")int page,
+                                   @RequestParam(value = "searchType", required = false)String searchType,
+                                   @RequestParam(value = "keyword", defaultValue = "")String keyword) {
+    if(this.memberProc.isAdmin(session)) {
       ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
       model.addAttribute("menu", menu);
-
-      ArrayList<MemberVO> list = this.memberProc.list();
-
+      
+      MemberVO memberVO = new MemberVO();
+      model.addAttribute(memberVO);
+      
+      // 검색 조건 설정
+      SearchDTO searchDTO = new SearchDTO();
+      searchDTO.setSearchType(searchType);
+      searchDTO.setKeyword(keyword);
+      searchDTO.setPage(page);
+      searchDTO.setSize(page * 10);
+      searchDTO.setOffset((page - 1) * 10);
+      
+      // 전체 회원 수 조회
+      int total = this.memberProc.list_search_count(searchDTO);
+      
+      //페이징 정보 계산
+      PageDTO pageDTO = new PageDTO(total, page);
+      
+      System.out.println(searchDTO.getSearchType());
+      System.out.println(searchDTO.getKeyword());
+      System.out.println(searchDTO.getPage());
+      System.out.println(searchDTO.getSize());
+      System.out.println(searchDTO.getOffset());
+      
+      /*
+       * total 나옴
+       * pageDTO 나옴
+       * searchDTO 나옴
+       * 
+       */
+      
+      //회원 목록 조회
+      ArrayList<MemberVO> list = memberProc.list_search_paging(searchDTO);
+      
       model.addAttribute("list", list);
-
-      return "/member/list"; // templates/member/list.html
-    } else {
-      return "redirect:/member/login_cookie_need"; // redirect
+      model.addAttribute("searchDTO", searchDTO);
+      model.addAttribute("pageDTO", pageDTO);
+      model.addAttribute("currentPage", page);
+      model.addAttribute("searchType", searchType);
+      model.addAttribute("keyword", keyword);
+      
+      return "/member/list_search";
+    }
+    else {
+      return "redirect:/member/login_cookie_need";
     }
   }
+  
 
   /**
    * 회원 정보 조회 (내 정보 보기)
@@ -157,23 +218,20 @@ public class MemberCont {
    * @return
    */
   @GetMapping(value = "/read")
-  public String read(HttpSession session, Model model, int memberno) {
-    // 회원은 회원 등급만 처리, 관리자: 1 ~ 10, 회원: 11 ~ 20
-    String grade = (String) session.getAttribute("grade"); // 등급: member, admin
-
-    // 회원 또는 관리자일 경우 | 회원: 11~20, 관리자: 1~10
-    if (grade.equals("member") && memberno == (int) session.getAttribute("memberno")
-        || grade.equals("admin") && memberno == (int) session.getAttribute("memberno")) {
-      System.out.println("memberno: " + memberno);
-
+  public String read(HttpSession session, Model model, 
+      @RequestParam(name="memberno", defaultValue = "0")int memberno) {
+    ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
+    model.addAttribute("menu", menu);
+    if(this.memberProc.isMember(session) || this.memberProc.isAdmin(session)) {
+      
+      memberno = (int)session.getAttribute("memberno"); // session에서 가져오기
       MemberVO memberVO = this.memberProc.read(memberno);
       model.addAttribute("memberVO", memberVO);
-
-      return "member/read"; // templates/member/read.html
+      
+      return "/member/read";    // /templates/member/read 
     } else {
-      return "redirect:/member/login_cookie_need"; // redirect
+      return "redirect:/member/login_cookie_need";
     }
-
   }
 
   /**
@@ -508,18 +566,20 @@ public class MemberCont {
    */
   @PostMapping(value = "/login")
   public String login_proc(HttpSession session, HttpServletRequest request, HttpServletResponse response, Model model,
+      RedirectAttributes ra,
       @RequestParam(value = "id", defaultValue = "") String id,
       @RequestParam(value = "passwd", defaultValue = "") String passwd,
       @RequestParam(value = "id_save", defaultValue = "") String id_save,
       @RequestParam(value = "passwd_save", defaultValue = "") String passwd_save) {
+    ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
+    model.addAttribute("menu", menu);
+    
     HashMap<String, Object> map = new HashMap<String, Object>();
     map.put("id", id);
     map.put("passwd", passwd);
 
     int cnt = this.memberProc.login(map);
     System.out.println("login_proc cnt: " + cnt);
-
-    model.addAttribute("cnt", cnt);
 
     if (cnt == 1) {
       // id를 이용하여 회원 정보 조회
@@ -582,11 +642,13 @@ public class MemberCont {
       response.addCookie(check_passwd_save);
       // -------------------------------------------------------------------
       // ----------------------------------------------------------------------------
-
-      return "redirect:/";
+      
+      return "/index";
     } else {
+      ra.addFlashAttribute("cnt", cnt); // 새로고침 시에도 cnt 값이 살아서 전달될 수 있도록 RedirectAttributes 클래스의 addFlashAttribute 함수 사용
       model.addAttribute("code", "login_fail");
-      return "redirect:/";
+      System.out.println("login_fail");
+      return "redirect:/member/login";
     }
   }
   
@@ -599,7 +661,7 @@ public class MemberCont {
   @GetMapping(value="/logout")
   public String logout(HttpSession session, Model model) {
     session.invalidate();  // 모든 세션 변수 삭제
-    return "/index";
+    return "redirect:/";
   }
 
   /**
@@ -611,6 +673,8 @@ public class MemberCont {
    */
   @GetMapping(value = "/login_cookie_need")
   public String login_cookie_need(Model model, HttpServletRequest request) {
+    ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
+    model.addAttribute("menu", menu);
     // Cookie 관련 코드---------------------------------------------------------
     Cookie[] cookies = request.getCookies();
     Cookie cookie = null;

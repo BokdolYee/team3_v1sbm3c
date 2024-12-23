@@ -437,7 +437,7 @@
     padding: 2px;
     margin: 10px auto;
     text-align: center;
-    width: 80%;
+    width: 90%;
     margin-top: 2px; 
   }  
   
@@ -544,4 +544,27 @@
   /* Bootstrap div input 태그 수평 center 정렬 종료                          */
   /* ---------------------------------------------------------------------- */
 
-  
+  /* 추가 */
+  .pagination {
+        margin: 20px 0;
+        text-align: center;
+    }
+    
+    .pagination a {
+        color: black;
+        padding: 8px 16px;
+        text-decoration: none;
+        transition: background-color .3s;
+        border: 1px solid #ddd;
+        margin: 0 4px;
+    }
+    
+    .pagination a.active {
+        background-color: #007bff;
+        color: white;
+        border: 1px solid #007bff;
+    }
+    
+    .pagination a:hover:not(.active) {
+        background-color: #ddd;
+    }

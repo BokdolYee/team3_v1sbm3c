@@ -2,6 +2,8 @@ package dev.mvc.member;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import dev.mvc.dto.SearchDTO;
 import jakarta.servlet.http.HttpSession;
 
 public interface MemberProcInter {
@@ -27,10 +29,18 @@ public interface MemberProcInter {
   public int create(MemberVO memberVO);
   
   /**
-   * 회원 전체 목록
-   * @return
+   * 검색 조건에 맞는 총 회원 수
+   * @param searchDTO 검색 조건(searchType, keyword)
+   * @return 총 회원 수
    */
-  public ArrayList<MemberVO> list();
+  public int list_search_count(SearchDTO searchDTO);
+  
+  /**
+   * 회원 검색 + 페이징 목록
+   * searchDTO 검색 조건 및 페이징 정보
+   * @return 회원 목록
+   */
+  public ArrayList<MemberVO> list_search_paging(SearchDTO searchDTO);
   
   /**
    * memberno로 회원 정보 조회

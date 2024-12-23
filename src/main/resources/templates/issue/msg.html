@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Message</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+            text-align: center;
+        }
+        .message {
+            font-size: 20px;
+            color: #333;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>System Message</h1>
+    <div class="message" th:classappend="${code == 'invalid_admin_grade' ? ' error' : ''}">
+        <p th:if="${code == 'invalid_admin_grade'}">⚠️ 관리자 권한이 부족합니다. 로그인을 확인하세요.</p>
+        <p th:if="${code == 'create_fail'}">❌ 공지사항 생성에 실패했습니다. 다시 시도해주세요.</p>
+        <p th:if="${code == null}">알 수 없는 에러가 발생했습니다.</p>
+    </div>
+
+    <a th:href="@{/issue/list}">공지사항 목록으로 돌아가기</a>
+</body>
+</html>

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import dev.mvc.tool.Security;
+import dev.mvc.dto.SearchDTO;
 
 @Component("dev.mvc.member.MemberProc")
 public class MemberProc implements MemberProcInter {
@@ -54,13 +55,17 @@ public class MemberProc implements MemberProcInter {
     return cnt;
   }
   
+  @Override
+  public int list_search_count(SearchDTO searchDTO) {
+    return memberDAO.list_search_count(searchDTO);
+  }
+  
   /**
-   * 회원 목록
+   * 회원 검색 + 목록 페이징
    */
   @Override
-  public ArrayList<MemberVO> list() {
-    ArrayList<MemberVO> list = this.memberDAO.list();
-    return list;
+  public ArrayList<MemberVO> list_search_paging(SearchDTO searchDTO) {
+    return memberDAO.list_search_paging(searchDTO);
   }
 
   /**
@@ -103,17 +108,17 @@ public class MemberProc implements MemberProcInter {
    */  
   @Override
   public boolean isAdmin(HttpSession session){
-    boolean sw = false; // 로그인하지 않은 것으로 초기화
-//    String grade = (String)session.getAttribute("grade");
-//    
-//    if (grade != null) {
-//      if (grade.equals("admin")) {
-//        sw = true;  // 로그인 한 경우
-//      }      
-//    }
-//    
-    sw = true;  // 테스트를 위한 임시 true
-    return sw;
+    boolean examine = false; // 로그인하지 않은 것으로 초기화
+    String grade = (String)session.getAttribute("grade");
+    
+    if (grade != null) {
+      if (grade.equals("admin")) {
+        examine = true;  // 로그인 한 경우
+      }      
+    }
+    
+    //sw = true;  // 테스트를 위한 임시 true
+    return examine;
   }
 
   /**

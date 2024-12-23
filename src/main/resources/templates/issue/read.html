@@ -3,14 +3,14 @@
 <div layout:fragment="content">
   <div class="title_line">공지사항 조회</div>
   <aside class="aside_right">
-    <span class="menu_divide">|</span>
-    <a th:href="@{|/issue/update/${issueVO.issueno}|}">수정</a>
-    <span class="menu_divide">|</span>
-    <a th:href="@{|/issue/delete/${issueVO.issueno}|}">삭제</a>
+    <span th:if="${isAdmin}" class="menu_divide">|</span>
+    <a th:if="${isAdmin}" th:href="@{|/issue/update/${issueVO.issueno}|}">수정</a>
+    <span th:if="${isAdmin}" class="menu_divide">|</span>
+    <a th:if="${isAdmin}" th:href="@{|/issue/delete/${issueVO.issueno}|}">삭제</a>
     <span class="menu_divide">|</span>
     <a th:href="@{/issue/list_search}">목록</a>
-    <span class="menu_divide">|</span>
-    <a th:href="@{|/issue/create|}">등록</a>
+    <span th:if="${isAdmin}" class="menu_divide">|</span>
+    <a th:if="${isAdmin}" th:href="@{|/issue/create|}">등록</a>
     <span class="menu_divide">|</span>
     <a href="javascript: location.reload();">새로 고침</a>
   </aside>

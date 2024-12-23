@@ -1,5 +1,6 @@
 package dev.mvc.issue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +11,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
+import jakarta.validation.Valid;  
 
+@CrossOrigin(origins = "*") // React 앱의 주소
+@RestController
 @Controller
 @RequestMapping("/issue")
 public class IssueCont {
@@ -19,7 +22,19 @@ public class IssueCont {
     @Autowired
     @Qualifier("dev.mvc.issue.IssueProc")
     private IssueProcInter issueProc;
-
+    
+// // 공지사항 목록 API
+//    @GetMapping
+//    public List<IssueVO> getAllIssues() {
+//        return issueProc.list();  // 공지사항 목록 반환
+//    }
+//
+//    // 공지사항 상세보기 API
+//    @GetMapping("/{issueno}")
+//    public IssueVO getIssue(@PathVariable int issueno) {
+//        return issueProc.read(issueno);  // 특정 공지사항 반환
+//    }
+    
     @GetMapping("/create")
     public String createForm() {
         return "issue/create";
@@ -55,21 +70,27 @@ public class IssueCont {
         }
 
         model.addAttribute("cnt", cnt);
-        return "/issue/msg";
+        return "issue/msg";
     }
-
 
     @GetMapping("/list")
-    public String list(Model model) {
-        List<IssueVO> list = issueProc.list();
+    public String list(HttpSession session, Model model) {
+        ArrayList<IssueVO> list = this.issueProc.list();
+        System.out.println("List size: " + list.size());
+        for (IssueVO issueVO : list) {
+            System.out.println("issueVO: " + issueVO);  // 각 IssueVO 객체 출력
+        }
         model.addAttribute("list", list);
-        return "issue/list";
+        return "/issue/list";
     }
+
+
 
     @GetMapping("/read/{issueno}")
     public String read(@PathVariable int issueno, Model model) {
         IssueVO issueVO = issueProc.read(issueno);
         model.addAttribute("issueVO", issueVO);
+        
         return "issue/read";
     }
 

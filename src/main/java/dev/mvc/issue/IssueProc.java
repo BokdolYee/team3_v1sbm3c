@@ -1,5 +1,6 @@
 package dev.mvc.issue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class IssueProc implements IssueProcInter{
   }
 
   @Override
-  public List<IssueVO> list() {
+  public ArrayList<IssueVO> list() {
       return issueDAO.list();
   }
 

@@ -1,10 +1,11 @@
 package dev.mvc.issue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface IssueProcInter {
   public int create(IssueVO issueVO);
-  public List<IssueVO> list();
+  public ArrayList<IssueVO> list();
   public IssueVO read(int issueno);
   public int update(IssueVO issueVO);
   public int delete(int issueno);

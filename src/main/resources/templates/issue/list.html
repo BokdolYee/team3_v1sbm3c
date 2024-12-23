@@ -11,11 +11,10 @@
         <div class='title_line'>전체 공지사항 목록</div>
 
         <aside class="aside_right">
-            <span class='menu_divide'>│</span>
             <!-- 관리자일 경우에만 "등록" 버튼을 표시 -->
             <a th:if="${isAdmin}" th:href="@{/issue/create}">등록</a>
             <span class='menu_divide'>│</span>
-            <a href="javascript:location.reload();">새로고침</a>
+            <a href="javascript:location.reload();">새로 고침</a>
         </aside>
 
         <div class='menu_line'></div>

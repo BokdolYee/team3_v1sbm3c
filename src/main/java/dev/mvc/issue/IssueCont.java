@@ -26,8 +26,20 @@ public class IssueCont {
     @Autowired
     private MemberProc memberProc; // MemberProc 추가
 
+    // 관리자 권한 확인 메서드
+    private boolean checkAdmin(HttpSession session, Model model) {
+        if (!memberProc.isAdmin(session)) {  // MemberProc의 isAdmin 메서드 사용
+            System.out.println("-> 관리자 권한이 없는 사용자");
+            model.addAttribute("code", "invalid_admin_grade");
+            return false;  // 관리자 권한이 없으면 false 반환
+        }
+        return true;
+    }
+
     @GetMapping("/create")
-    public String createForm(Model model) {
+    public String createForm(Model model, HttpSession session, @ModelAttribute("memberVO") MemberVO memberVO) {
+        boolean isAdmin = memberProc.isAdmin(session);
+        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("issueVO", new IssueVO()); // 빈 객체 전달
         return "issue/create"; // 템플릿 이름
     }
@@ -37,7 +49,6 @@ public class IssueCont {
         HttpSession session,
         Model model,
         @Valid @ModelAttribute("issueVO") IssueVO issueVO,
-        @ModelAttribute("memberVO") MemberVO memberVO,
         BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
@@ -46,10 +57,8 @@ public class IssueCont {
         }
 
         // 관리자 권한 확인
-        if (!memberProc.isAdmin(session)) {  // MemberProc의 isAdmin 메서드 사용
-            System.out.println("-> 관리자 권한이 없는 사용자");
-            model.addAttribute("code", "invalid_admin_grade");
-            return "/issue/msg";
+        if (!checkAdmin(session, model)) {  // 공통 메서드 사용
+            return "issue/msg"; // 관리자 권한이 없으면 실패 메시지 출력
         }
 
         // 공지사항 생성 처리
@@ -93,30 +102,40 @@ public class IssueCont {
     }
 
     @GetMapping("/update/{issueno}")
-    public String updateForm(@PathVariable("issueno") int issueno, Model model) {
+    public String updateForm(@PathVariable("issueno") int issueno, HttpSession session, Model model, @ModelAttribute("memberVO") MemberVO memberVO) {
+        boolean isAdmin = memberProc.isAdmin(session);
+        model.addAttribute("isAdmin", isAdmin);
         IssueVO issueVO = issueProc.read(issueno);
         model.addAttribute("issueVO", issueVO);
         return "issue/update";
     }
 
     @PostMapping("/update/{issueno}")
-    public String update(@PathVariable("issueno") int issueno, @ModelAttribute IssueVO issueVO) {
+    public String update(@PathVariable("issueno") int issueno, @ModelAttribute IssueVO issueVO, HttpSession session, Model model) {
+        // 관리자 권한 확인
+        if (!checkAdmin(session, model)) {  // 공통 메서드 사용
+            return "issue/msg"; // 관리자 권한이 없으면 실패 메시지 출력
+        }
+
         issueVO.setIssueno(issueno); // issueno를 명시적으로 설정
         issueProc.update(issueVO);
         return "redirect:/issue/list"; 
     }
 
     @GetMapping("/delete/{issueno}")
-    public String deleteForm(@PathVariable("issueno") int issueno, Model model) {
+    public String deleteForm(@PathVariable("issueno") int issueno, HttpSession session, Model model, @ModelAttribute("memberVO") MemberVO memberVO) {
+        boolean isAdmin = memberProc.isAdmin(session);
+        model.addAttribute("isAdmin", isAdmin);
         IssueVO issueVO = issueProc.read(issueno); 
         model.addAttribute("issueVO", issueVO);
         return "issue/delete"; 
     }
-    
-    @PostMapping("/delete/{issueno}")
-    public String delete(@PathVariable("issueno") int issueno) {
-        issueProc.delete(issueno);
-        return "redirect:/issue/list";
-    }
 
+    @PostMapping("/delete/{issueno}")
+    public String delete(@PathVariable("issueno") int issueno, HttpSession session, Model model) {
+        boolean isAdmin = memberProc.isAdmin(session);
+        model.addAttribute("isAdmin", isAdmin);
+        issueProc.delete(issueno);
+        return "redirect:/issue/list"; // 삭제 후 공지사항 목록으로 이동
+    }
 }

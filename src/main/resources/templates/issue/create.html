@@ -6,37 +6,45 @@
   </div>
 
   <aside class="aside_right">
-    <a href="javascript:location.reload();">새로고침</a>
-    <span class='menu_divide'>│</span>
     <a th:href="@{/issue/list}">목록</a>
+    <span class='menu_divide'>│</span>
+    <a href="javascript:location.reload();">새로 고침</a>
   </aside>
 
   <div class='menu_line'></div>
 
-  <form name='frm' method='post' th:object="${issueVO}" action='/issue/create'>
-    <div>
-      <label>제목</label>
-      <input type='text' name='title' th:value="${issueVO.title}" required="required" 
-             autofocus="autofocus" class="form-control" style='width: 100%;'>
-    </div>
+  <!-- 관리자 권한 체크 -->
+  <div th:if="${isAdmin}">
+    <form name='frm' method='post' th:object="${issueVO}" action='/issue/create'>
+      <div>
+        <label>제목</label>
+        <input type='text' name='title' th:value="${issueVO.title}" required="required" 
+               autofocus="autofocus" class="form-control" style='width: 100%;'>
+      </div>
 
-    <div>
-      <label>내용</label>
-      <textarea name='content' th:text="${issueVO.content}" required="required" 
-                class="form-control" rows="12" style='width: 100%;'></textarea>
-    </div>
+      <div>
+        <label>내용</label>
+        <textarea name='content' th:text="${issueVO.content}" required="required" 
+                  class="form-control" rows="12" style='width: 100%;'></textarea>
+      </div>
 
-    <div>
-      <label>관리자 패스워드</label>
-      <input type='password' name='passwd' required="required" 
-             class="form-control" style='width: 50%;'>
-    </div>
+      <div>
+        <label>관리자 패스워드</label>
+        <input type='password' name='passwd' required="required" 
+               class="form-control" style='width: 50%;'>
+      </div>
 
-    <div class="content_body_bottom">
-      <button type="submit" class="btn btn-secondary btn-sm">등록</button>
-      <button type="button" th:attr="onclick=|location.href='/issue/list'|" 
-              class="btn btn-secondary btn-sm">목록</button>
-    </div>
-  </form>
+      <div class="content_body_bottom">
+        <button type="submit" class="btn btn-secondary btn-sm">등록</button>
+        <button type="button" th:attr="onclick=|location.href='/issue/list'|" 
+                class="btn btn-secondary btn-sm">목록</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- 관리자 권한이 아닐 경우 -->
+  <div th:if="${not isAdmin}">
+    <span>관리자로 로그인 해주세요.</span>
+  </div>
 </div>
 </html>

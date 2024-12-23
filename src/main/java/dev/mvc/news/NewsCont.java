@@ -12,10 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.mvc.analysis.AnalysisProc;
-import dev.mvc.analysis.AnalysisVO;
-import dev.mvc.summarize.SummarizeProc;
-import dev.mvc.summarize.SummarizeVO;
 
 @Controller
 @RequestMapping("/news")

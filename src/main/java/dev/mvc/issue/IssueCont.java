@@ -131,7 +131,7 @@ public class IssueCont {
 
         issueVO.setIssueno(issueno); // issueno를 명시적으로 설정
         issueProc.update(issueVO);
-        return "redirect:/issue/list"; 
+        return "redirect:/issue/list_search"; 
     }
 
     @GetMapping("/delete/{issueno}")
@@ -148,7 +148,7 @@ public class IssueCont {
         boolean isAdmin = memberProc.isAdmin(session);
         model.addAttribute("isAdmin", isAdmin);
         issueProc.delete(issueno);
-        return "redirect:/issue/list"; // 삭제 후 공지사항 목록으로 이동
+        return "redirect:/issue/list_search"; // 삭제 후 공지사항 목록으로 이동
     }
     
     // 페이징 처리된 공지사항 목록을 가져오는 메서드

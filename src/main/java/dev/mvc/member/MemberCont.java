@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,12 +23,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import dev.mvc.newscate.NewsCateProcInter;
 import dev.mvc.newscate.NewsCateVOMenu;
 import dev.mvc.dto.SearchDTO;
+import dev.mvc.member.MemberVO.UpdateValidationGroup;
 import dev.mvc.dto.PageDTO;
 import dev.mvc.tool.Tool;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 @RequestMapping("/member")
 @Controller
@@ -72,6 +76,7 @@ public class MemberCont {
   public String checkNICKNAME(@RequestParam(name = "nickname", defaultValue = "") String nickname) {
     System.out.println("-> nickname: " + nickname);
     int cnt = this.memberProc.checkNICKNAME(nickname);
+    System.out.println(cnt);
 
     JSONObject obj = new JSONObject();
     obj.put("cnt", cnt);
@@ -151,19 +156,19 @@ public class MemberCont {
 //      return "redirect:/member/login_cookie_need"; // redirect
 //    }
 //  }
-  
-  @GetMapping(value="/list")
-  public String list_search_paging(Model model,HttpSession session,
-                                   @RequestParam(value = "page", defaultValue = "1")int page,
-                                   @RequestParam(value = "searchType", required = false)String searchType,
-                                   @RequestParam(value = "keyword", defaultValue = "")String keyword) {
-    if(this.memberProc.isAdmin(session)) {
+
+  @GetMapping(value = "/list")
+  public String list_search_paging(Model model, HttpSession session,
+      @RequestParam(value = "page", defaultValue = "1") int page,
+      @RequestParam(value = "searchType", required = false) String searchType,
+      @RequestParam(value = "keyword", defaultValue = "") String keyword) {
+    if (this.memberProc.isAdmin(session)) {
       ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
       model.addAttribute("menu", menu);
-      
+
       MemberVO memberVO = new MemberVO();
       model.addAttribute(memberVO);
-      
+
       // 검색 조건 설정
       SearchDTO searchDTO = new SearchDTO();
       searchDTO.setSearchType(searchType);
@@ -171,43 +176,33 @@ public class MemberCont {
       searchDTO.setPage(page);
       searchDTO.setSize(page * 10);
       searchDTO.setOffset((page - 1) * 10);
-      
+
       // 전체 회원 수 조회
       int total = this.memberProc.list_search_count(searchDTO);
-      
-      //페이징 정보 계산
+
+      // 페이징 정보 계산
       PageDTO pageDTO = new PageDTO(total, page);
-      
-      System.out.println(searchDTO.getSearchType());
-      System.out.println(searchDTO.getKeyword());
-      System.out.println(searchDTO.getPage());
-      System.out.println(searchDTO.getSize());
-      System.out.println(searchDTO.getOffset());
-      
+
       /*
-       * total 나옴
-       * pageDTO 나옴
-       * searchDTO 나옴
+       * total 나옴 pageDTO 나옴 searchDTO 나옴
        * 
        */
-      
-      //회원 목록 조회
+
+      // 회원 목록 조회
       ArrayList<MemberVO> list = memberProc.list_search_paging(searchDTO);
-      
+
       model.addAttribute("list", list);
       model.addAttribute("searchDTO", searchDTO);
       model.addAttribute("pageDTO", pageDTO);
       model.addAttribute("currentPage", page);
       model.addAttribute("searchType", searchType);
       model.addAttribute("keyword", keyword);
-      
+
       return "/member/list_search";
-    }
-    else {
+    } else {
       return "redirect:/member/login_cookie_need";
     }
   }
-  
 
   /**
    * 회원 정보 조회 (내 정보 보기)
@@ -218,17 +213,26 @@ public class MemberCont {
    * @return
    */
   @GetMapping(value = "/read")
-  public String read(HttpSession session, Model model, 
-      @RequestParam(name="memberno", defaultValue = "0")int memberno) {
+  public String read(HttpSession session, Model model,
+      @RequestParam(name = "memberno", required = false) Integer memberno) {
     ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
     model.addAttribute("menu", menu);
-    if(this.memberProc.isMember(session) || this.memberProc.isAdmin(session)) {
-      
-      memberno = (int)session.getAttribute("memberno"); // session에서 가져오기
+    if (this.memberProc.isMember(session) || this.memberProc.isAdmin(session)) {
+      // memberno 파라미터가 없는 경우 세션에서 가져옴 (일반 회원인 경우)
+      if (memberno == null) {
+        memberno = (int) session.getAttribute("memberno"); // session에서 가져오기
+      } else {
+        // 관리자가 아닌데 다른 회원의 정보를 조회하려는 경우
+        if (!this.memberProc.isAdmin(session)) {
+          memberno = (int) session.getAttribute("memberno"); // session에서 가져오기
+        }
+        // 관리자인 경우 전달받은 memberno 사용
+      }
+
       MemberVO memberVO = this.memberProc.read(memberno);
       model.addAttribute("memberVO", memberVO);
-      
-      return "/member/read";    // /templates/member/read 
+
+      return "/member/read"; // /templates/member/read
     } else {
       return "redirect:/member/login_cookie_need";
     }
@@ -243,26 +247,28 @@ public class MemberCont {
    * @return
    */
   @GetMapping(value = "/update")
-  public String update_form(HttpSession session, Model model, int memberno) {
+  public String update_form(HttpSession session, Model model,
+      @RequestParam(name = "nickname", required = false) String nickname,
+      @RequestParam(name = "memberno", required = false) Integer memberno) {
     // 회원은 회원 등급만 처리, 관리자: 1 ~ 10, 회원: 11 ~ 20
     String grade = (String) session.getAttribute("grade"); // 등급: member, admin
+    memberno = (int) session.getAttribute("memberno");
 
     // 회원: member && 11 ~ 20
     if (grade.equals("member") && memberno == (int) session.getAttribute("memberno")) {
       System.out.println("memberno: " + memberno);
-
       MemberVO memberVO = this.memberProc.read(memberno);
       model.addAttribute("memberVO", memberVO);
 
-      return "member/update"; // templates/member/read.html
+      return "/member/update"; // templates/member/read.html
 
     } else if (grade.equals("admin") && memberno == (int) session.getAttribute("memberno")) { // 관리자 1~10
       System.out.println("-> admin memberno: " + memberno);
-
       MemberVO memberVO = this.memberProc.read(memberno);
+
       model.addAttribute("memberVO", memberVO);
 
-      return "member/update"; // templates/member/update.html
+      return "/member/update"; // templates/member/update.html
     } else {
       return "redirect:/member/login_cookie_need"; // redirect
     }
@@ -274,51 +280,151 @@ public class MemberCont {
    * 
    * @param session
    * @param model
+   * @param memberno
    * @param memberVO
    * @return
    */
   @PostMapping(value = "/update")
-  public String update_proc(HttpSession session, Model model, @ModelAttribute("memberVO") MemberVO memberVO) {
+  public String update_proc(HttpSession session, Model model, 
+      @Validated(UpdateValidationGroup.class) @ModelAttribute("memberVO") MemberVO memberVO,
+      @RequestParam(name = "memberno", required = false) Integer memberno,
+      @RequestParam(name = "nickname", required = false) String nickname) {
+
     String grade = (String) session.getAttribute("grade");
+    memberno = (int) session.getAttribute("memberno");
+    String nicknameSession = (String) session.getAttribute("nickname");
 
     // 회원 본인일 때
-    if ((grade.equals("member") && memberVO.getMemberno() == (int) session.getAttribute("memberno"))) {
-      int cnt = this.memberProc.update(memberVO);
+    if ((grade.equals("member") && memberno == (int) session.getAttribute("memberno"))) {
+      int checkNICKNAME_cnt = this.memberProc.checkNICKNAME(memberVO.getNickname());
+      // 닉네임 중복되지 않았을 경우
+      if (checkNICKNAME_cnt == 0) {
+        memberVO.setMemberno(memberno);
+        memberVO.setName(memberVO.getName().trim());
+        memberVO.setBirth(memberVO.getBirth().trim());
+        memberVO.setNickname(memberVO.getNickname().trim());
+        memberVO.setTel(memberVO.getTel().trim());
+        memberVO.setZipcode(memberVO.getZipcode().trim());
+        memberVO.setAddress(memberVO.getAddress().trim());
 
-      if (cnt == 1) {
-        model.addAttribute("code", "update_success");
-        model.addAttribute("memberno", memberVO.getMemberno());
-        model.addAttribute("name", memberVO.getName());
-        model.addAttribute("nickname", memberVO.getNickname());
-        model.addAttribute("tel", memberVO.getTel());
-        model.addAttribute("zipcode", memberVO.getZipcode());
-        model.addAttribute("address", memberVO.getAddress());
-      } else {
-        model.addAttribute("code", "update_fail");
+        
+        
+        int cnt = this.memberProc.update(memberVO);
+        System.out.println("update cnt1: " + cnt);
+
+        if (cnt == 1) {
+          model.addAttribute("code", "update_success");
+          model.addAttribute("memberno", memberVO.getMemberno());
+          model.addAttribute("name", memberVO.getName());
+          model.addAttribute("nickname", memberVO.getNickname());
+          model.addAttribute("tel", memberVO.getTel());
+          model.addAttribute("zipcode", memberVO.getZipcode());
+          model.addAttribute("address", memberVO.getAddress());
+
+        } else {
+          model.addAttribute("code", "update_fail");
+          System.out.println("update_fail");
+        }
+
+        model.addAttribute("cnt", cnt);
+        System.out.println("update_success_cnt: " + cnt);
       }
-      model.addAttribute("cnt", cnt);
+      // 닉네임 중복됐지만 기존 회원 닉네임이랑 같을 경우
+      else if (checkNICKNAME_cnt == 1 && nicknameSession.equals(memberVO.getNickname())) {
+        memberVO.setMemberno(memberno);
+        memberVO.setName(memberVO.getName().trim());
+        memberVO.setBirth(memberVO.getBirth().trim());
+        memberVO.setNickname(memberVO.getNickname().trim());
+        memberVO.setTel(memberVO.getTel().trim());
+        memberVO.setZipcode(memberVO.getZipcode().trim());
+        memberVO.setAddress(memberVO.getAddress().trim());
 
-      return "redirect:/member/update"; // /templates/member/update.html
+        int cnt = this.memberProc.update(memberVO);
+        System.out.println("update cnt: " + cnt);
+
+        if (cnt == 1) {
+          model.addAttribute("code", "update_success");
+          model.addAttribute("memberno", memberVO.getMemberno());
+          model.addAttribute("name", memberVO.getName());
+          model.addAttribute("nickname", memberVO.getNickname());
+          model.addAttribute("tel", memberVO.getTel());
+          model.addAttribute("zipcode", memberVO.getZipcode());
+          model.addAttribute("address", memberVO.getAddress());
+
+        } else {
+          model.addAttribute("code", "update_fail");
+          System.out.println("update_fail");
+        }
+
+        model.addAttribute("cnt", cnt);
+        System.out.println("update_success_cnt: " + cnt);
+      }
+      return "redirect:/member/read"; //templates/member/read.html
     } // 관리자 본인일 때
-    else if ((grade.equals("admin") && memberVO.getMemberno() == (int) session.getAttribute("memberno"))) {
-      int cnt = this.memberProc.update(memberVO);
+    else if ((grade.equals("admin") && memberno == (int) session.getAttribute("memberno"))) {
+      int checkNICKNAME_cnt = this.memberProc.checkNICKNAME(memberVO.getNickname());
+      // 닉네임 중복되지 않았을 경우
+      if (checkNICKNAME_cnt == 0) {
+        memberVO.setMemberno(memberno);
+        memberVO.setName(memberVO.getName().trim());
+        memberVO.setBirth(memberVO.getBirth().trim());
+        memberVO.setNickname(memberVO.getNickname().trim());
+        memberVO.setTel(memberVO.getTel().trim());
+        memberVO.setZipcode(memberVO.getZipcode().trim());
+        memberVO.setAddress(memberVO.getAddress().trim());
 
-      if (cnt == 1) {
-        model.addAttribute("code", "update_success");
-        model.addAttribute("memberno", memberVO.getMemberno());
-        model.addAttribute("name", memberVO.getName());
-        model.addAttribute("nickname", memberVO.getNickname());
-        model.addAttribute("tel", memberVO.getTel());
-        model.addAttribute("zipcode", memberVO.getZipcode());
-        model.addAttribute("address", memberVO.getAddress());
-      } else {
-        model.addAttribute("code", "update_fail");
+        int cnt = this.memberProc.update(memberVO);
+        System.out.println("update cnt: " + cnt);
+
+        if (cnt == 1) {
+          model.addAttribute("code", "update_success");
+          model.addAttribute("memberno", memberVO.getMemberno());
+          model.addAttribute("name", memberVO.getName());
+          model.addAttribute("nickname", memberVO.getNickname());
+          model.addAttribute("tel", memberVO.getTel());
+          model.addAttribute("zipcode", memberVO.getZipcode());
+          model.addAttribute("address", memberVO.getAddress());
+        } else {
+          model.addAttribute("code", "update_fail");
+          System.out.println("update_fail");
+        }
+
+        model.addAttribute("cnt", cnt);
+        System.out.println("update_success_cnt: " + cnt);
       }
-      model.addAttribute("cnt", cnt);
+      // 닉네임 중복됐지만 기존 회원 닉네임이랑 같을 경우
+      else if (checkNICKNAME_cnt == 1 && nicknameSession.equals(memberVO.getNickname())) {
+        memberVO.setMemberno(memberno);
+        memberVO.setName(memberVO.getName().trim());
+        memberVO.setBirth(memberVO.getBirth().trim());
+        memberVO.setNickname(memberVO.getNickname().trim());
+        memberVO.setTel(memberVO.getTel().trim());
+        memberVO.setZipcode(memberVO.getZipcode().trim());
+        memberVO.setAddress(memberVO.getAddress().trim());
 
-      return "redirect:/member/update"; // /templates/member/update.html
+        int cnt = this.memberProc.update(memberVO);
+        System.out.println("update cnt: " + cnt);
+
+        if (cnt == 1) {
+          model.addAttribute("code", "update_success");
+          model.addAttribute("memberno", memberVO.getMemberno());
+          model.addAttribute("name", memberVO.getName());
+          model.addAttribute("nickname", memberVO.getNickname());
+          model.addAttribute("tel", memberVO.getTel());
+          model.addAttribute("zipcode", memberVO.getZipcode());
+          model.addAttribute("address", memberVO.getAddress());
+
+        } else {
+          model.addAttribute("code", "update_fail");
+          System.out.println("update_fail");
+        }
+
+        model.addAttribute("cnt", cnt);
+        System.out.println("update_success_cnt: " + cnt);
+      }
+      return "redirect:/member/read"; // /templates/member/read.html
     } else {
-      return "redirect:/member/login_cookie_need"; // redirect
+      return "redirect:/member/login_cookie_need"; // /templates/member/read.html
     }
   }
 
@@ -514,7 +620,7 @@ public class MemberCont {
   @GetMapping(value = "/login")
   public String login_form(Model model, HttpServletRequest request) {
     // Cookie 관련 코드---------------------------------------------------------
-    
+
     ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
     model.addAttribute("menu", menu);
 
@@ -566,14 +672,13 @@ public class MemberCont {
    */
   @PostMapping(value = "/login")
   public String login_proc(HttpSession session, HttpServletRequest request, HttpServletResponse response, Model model,
-      RedirectAttributes ra,
-      @RequestParam(value = "id", defaultValue = "") String id,
+      RedirectAttributes ra, @RequestParam(value = "id", defaultValue = "") String id,
       @RequestParam(value = "passwd", defaultValue = "") String passwd,
       @RequestParam(value = "id_save", defaultValue = "") String id_save,
       @RequestParam(value = "passwd_save", defaultValue = "") String passwd_save) {
     ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
     model.addAttribute("menu", menu);
-    
+
     HashMap<String, Object> map = new HashMap<String, Object>();
     map.put("id", id);
     map.put("passwd", passwd);
@@ -583,18 +688,19 @@ public class MemberCont {
 
     if (cnt == 1) {
       // id를 이용하여 회원 정보 조회
-      MemberVO memverVO = this.memberProc.readByID(id);
-      session.setAttribute("memberno", memverVO.getMemberno());
-      session.setAttribute("id", memverVO.getId());
-      session.setAttribute("name", memverVO.getName());
+      MemberVO memberVO = this.memberProc.readByID(id);
+      session.setAttribute("memberno", memberVO.getMemberno());
+      session.setAttribute("id", memberVO.getId());
+      session.setAttribute("name", memberVO.getName());
+      session.setAttribute("nickname", memberVO.getNickname());
 
-      if (memverVO.getGrade() >= 1 && memverVO.getGrade() <= 10) {
+      if (memberVO.getGrade() >= 1 && memberVO.getGrade() <= 10) {
         session.setAttribute("grade", "admin");
-      } else if (memverVO.getGrade() >= 11 && memverVO.getGrade() <= 20) {
+      } else if (memberVO.getGrade() >= 11 && memberVO.getGrade() <= 20) {
         session.setAttribute("grade", "member");
-      } else if (memverVO.getGrade() >= 41 && memverVO.getGrade() <= 49) {
+      } else if (memberVO.getGrade() >= 41 && memberVO.getGrade() <= 49) {
         session.setAttribute("grade", "stopped");
-      } else if (memverVO.getGrade() == 99) {
+      } else if (memberVO.getGrade() == 99) {
         session.setAttribute("grade", "withdraw");
       }
 
@@ -642,7 +748,7 @@ public class MemberCont {
       response.addCookie(check_passwd_save);
       // -------------------------------------------------------------------
       // ----------------------------------------------------------------------------
-      
+
       return "/index";
     } else {
       ra.addFlashAttribute("cnt", cnt); // 새로고침 시에도 cnt 값이 살아서 전달될 수 있도록 RedirectAttributes 클래스의 addFlashAttribute 함수 사용
@@ -651,16 +757,17 @@ public class MemberCont {
       return "redirect:/member/login";
     }
   }
-  
+
   /**
    * 로그아웃
+   * 
    * @param model
    * @param memberno 회원 번호
    * @return 회원 정보
    */
-  @GetMapping(value="/logout")
+  @GetMapping(value = "/logout")
   public String logout(HttpSession session, Model model) {
-    session.invalidate();  // 모든 세션 변수 삭제
+    session.invalidate(); // 모든 세션 변수 삭제
     return "redirect:/";
   }
 

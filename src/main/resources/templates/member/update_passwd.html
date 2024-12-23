@@ -5,7 +5,7 @@
 <div layout:fragment="content">
   <script>
     window.onload = () => {
-      document.getElementById('btn_send').addEventListener('click', send);
+      document.getElementById('btn_update').addEventListener('click', send);
             
       document.querySelector('#current_passwd').addEventListener('keypress', (event) => {
       // document.getElementById('passwd').addEventListener('keypress', (event) => {
@@ -24,7 +24,7 @@
       document.querySelector('#passwd2').addEventListener('keypress', (event) => {
       // document.getElementById('passwd').addEventListener('keypress', (event) => {
         if(event.key === 'Enter') {
-          document.getElementById('btn_send').focus();
+          document.getElementById('btn_update').focus();
         }
       }); 
       
@@ -84,44 +84,42 @@
     }    
   </script>
   
-  <div class="title_line">패스워드 변경 > <span th:text="@{|${memberVO.mname} (${memberVO.id})|}"></span></div>
+  <div class="title_line">비밀번호 변경 > <span th:text="@{|${memberVO.name} (${memberVO.id})|}"></span></div>
   <aside class="aside_right">
     <a href="javascript:location.reload();">새로고침</a>
     <span class='menu_divide' >│</span> 
-    <a href='./create'>회원 가입</a>
-    <span class='menu_divide' >│</span> 
-    <a href='./list'>목록</a>
+    <a href='/member/read'>회원정보</a>
   </aside> 
 
   <div class='menu_line'></div>
   
   <div style="width: 30%; margin: 0px auto ">
-    <form name="frm" id="frm" th:object="${memberVO}" method="post" action="/member/passwd_update_proc">
+    <form name="frm" id="frm" th:object="${memberVO}" method="post" action="/member/update_passwd">
       <input type="hidden" name="memberno" th:value="${memberVO.memberno}">
 
       <div class="form-group">
-        <label for="passwd">현재 패스워드*</label> 
-        <input type='password' name='current_passwd' id='current_passwd' value='1234' required="required" 
-                  placeholder="패스워드" autofocus="autofocus" 
+        <label for="passwd">현재 비밀번호</label> 
+        <input type='password' name='current_passwd' id='current_passwd' th:value='${memberVO.passwd}' required="required" 
+                  placeholder="비밀번호" autofocus="autofocus" 
                   class="form-control form-control-sm" style="width: 100%;">
          <div id='current_passwd_msg' style='width: 100%; text-align: cnter;'></div>         
       </div>
       
       <div class="form-group">
-        <label for="passwd">새로운 패스워드*</label> 
-        <input type='password' name='passwd' id='passwd' value='1234' required="required" 
+        <label for="passwd">새 비밀번호</label> 
+        <input type='password' name='passwd' id='passwd' value='' required="required" 
                   placeholder="패스워드" class="form-control form-control-sm" style="width: 100%;">
       </div>
 
       <div class="form-group">
-        <label for="passwd2">새로운 패스워드 확인*</label>
-        <input type='password' name='passwd2' id='passwd2' value='1234' required="required" 
+        <label for="passwd2">비밀번호 확인</label>
+        <input type='password' name='passwd2' id='passwd2' value='' required="required" 
                   placeholder="패스워드 확인" class="form-control form-control-sm" style="width: 100%;">
         <span id='passwd2_msg'></span>
       </div>
       
       <div class="content_body_bottom">
-        <button type="button" id='btn_send' class="btn btn-secondary btn-sm">저장</button>
+        <button type="button" id='btn_update' class="btn btn-secondary btn-sm">저장</button>
         <button type="button" onclick="history.back();" class="btn btn-secondary btn-sm">취소</button>
       </div>
 

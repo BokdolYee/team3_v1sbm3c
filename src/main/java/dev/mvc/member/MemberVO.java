@@ -24,6 +24,9 @@ public class MemberVO {
   grade      NUMBER(2)      NOT NULL, -- 등급(1~10: 관리자, 11~20: 회원, 40~49: 정지 회원, 99: 탈퇴 회원)
    */
   
+  public interface UpdateValidationGroup {}
+  public interface CreateValidationGroup {}
+  
   /** 회원 번호 */
   private int memberno = 0;
   
@@ -32,7 +35,7 @@ public class MemberVO {
   private String id = "";
   
   /** 비밀번호 */
-  @NotEmpty(message="비밀번호 입력은 필수입니다.")
+  @NotEmpty(groups = CreateValidationGroup.class, message="비밀번호 입력은 필수입니다.")
   private String passwd = "";
   
   /** 성명 */

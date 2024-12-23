@@ -76,6 +76,11 @@
         <input type='text' name='rdate' id='rdate' th:value="${memberVO.rdate}"
                class="form-control form-control-sm" raedonly>
       </div>
+
+      <div class="content_body_bottom">
+        <button type="button" onclick="location.href='/member/update';" class="btn btn-secondary btn-sm">회원정보 수정</button>
+        <button type="button" onclick="location.href='/member/update_passwd'" class="btn btn-secondary btn-sm">비밀번호 변경</button>
+      </div>
     </form>
   </div>
 </div>

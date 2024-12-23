@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+
+<div layout:fragment="content">
+  <script th:inline="javascript">
+    window.onload = () => {
+      document.querySelector('#name').addEventListener('keypress', (event) => {
+          if(event.key === 'Enter') {
+            document.getElementById('nickname').focus();
+          }
+        });
+        
+      document.querySelector('#nickname').addEventListener('keypress', (event) => {
+          if(event.key === 'Enter') {
+            document.getElementById('btn_checkNICKNAME').focus();
+          }
+        });
+        
+      document.querySelector('#tel').addEventListener('keypress', (event) => {
+          if(event.key === 'Enter') {
+            document.getElementById('btn_DaumPostcode').focus();
+          }
+        }); 
+      
+      document.querySelector('#address').addEventListener('keypress', (event) => {
+          if(event.key === 'Enter') {
+            document.getElementById('btn_update').focus();
+          }
+      }); 
+    }
+    
+    // 중복 닉네임 검사
+    /*<![CDATA[*/
+    function checkNICKNAME() {
+      
+      let nickname = document.getElementById('nickname');
+      let nickname_msg = document.getElementById('nickname_msg');
+
+      let originalNickname = /*[[${memberVO.nickname}]]*/'기존 닉네임';
+
+      console.log(originalNickname);
+
+      if (nickname.value.trim().length == 0) {
+        nickname_msg.innerHTML= '닉네임 입력은 필수 입니다. 닉네임을 2글자 이상으로 지어 주세요.';
+        nickname_msg.classList.add('span_warning');    // class 적용
+        nickname.focus();
+
+        return false;  // 회원 가입 진행 중지
+
+      } else {  // when NICKNAME is entered
+        nickname_msg.classList.remove('span_warning'); // class 삭제
+
+      // ---------------------------------------------------------------------------------------
+      // fetch 관련 시작
+      // ---------------------------------------------------------------------------------------
+        let nickname = document.getElementById('nickname');
+        let url = '/member/checkNICKNAME?nickname=' + nickname.value;
+    
+        fetch(url, {
+            method: 'GET',
+            // headers: {
+            //   'Content-Type': 'application/json' // JSON 형식으로 데이터 전송을 알림
+            // },
+            // body: JSON.stringify(dataToSend) // JSON 데이터를 문자열로 변환하여 요청 본문에 포함            
+        })
+        .then(response => response.json())
+        .then(rdata => {
+          if (rdata.cnt > 0 && nickname.value != originalNickname) { // 닉네임 중복
+            nickname_msg.innerHTML= '이미 사용중인 닉네임입니다. 다른 닉네임을 지정해주세요.';
+            nickname_msg.classList.add('span_warning');
+            nickname.focus();
+
+          } else if(rdata.cnt > 0 && nickname.value == originalNickname) { // 기존에 사용하던 닉네임이랑 같을 경우
+            nickname_msg.innerHTML= '현재 회원님이 사용 중인 닉네임입니다.';
+            nickname_msg.classList.add('span_info');    // class 적용
+            document.getElementById('tel').focus();  
+                     
+          } else { // 닉네임 중복 안됨.
+            nickname_msg.innerHTML= '사용 가능한 닉네임입니다.';
+            nickname_msg.classList.add('span_info');
+            document.getElementById('tel').focus(); 
+          }
+        })
+        .catch(error => { // 서버 다운등 통신 에러
+            console.error('Error:', error);
+        });      
+            
+        // 처리중 출력
+        nickname_msg.innerHTML="<img src='/images/progress.gif' style='width: 5%;'>"; // static 기준
+
+      // ---------------------------------------------------------------------------------------
+      // fetch 관련 종료
+      // ---------------------------------------------------------------------------------------
+        
+      }
+    }
+    /*]]>*/
+    
+    function update() { // 회원정보 수정 처리
+
+      let name = document.getElementById('name');
+      let name_msg = document.getElementById('name_msg');
+  
+      if (name.value.length <= 1) {
+        name_msg.innerHTML= '이름 입력은 필수입니다.';
+        name_msg.classList.add('span_warning');    // class 적용
+        name.focus();
+  
+        return false;  // 회원 가입 진행 중지
+      }
+
+      let nickname = document.getElementById('nickname');
+      let nickname_msg = document.getElementById('nickname_msg');
+
+      if (nickname.value.trim().length <= 1) {
+        id_msg.innerHTML= '닉네임 입력은 필수 입니다. 닉네임은 2글자 이상 작성해 주세요.';
+        nickname_msg.classList.add('span_warning');    // class 적용
+        nickname.focus();
+
+        return false;  // 업데이트 진행 중지
+        
+      }
+
+      let birth = document.getElementById('birth');
+      let birth_msg = document.getElementById('birth_msg');
+
+      if (birth.value.length <= 7) {
+        birth_msg.innerHTML= '생년월일 입력은 필수입니다.';
+        birth_msg.classList.add('span_warning');    // class 적용
+        birth.focus();
+
+        return false;  // 회원 가입 진행 중지
+      }
+
+      let tel = document.getElementById('tel');
+      let tel_msg = document.getElementById('tel_msg');
+
+      if (tel.value.length <= 10) {
+        tel_msg.innerHTML= '전화번호 입력은 필수입니다.';
+        tel_msg.classList.add('span_warning');    // class 적용
+        tel.focus();
+
+        return false;  // 회원 가입 진행 중지
+      }
+
+      let zipcode = document.getElementById('zipcode');
+      let zipcode_msg = document.getElementById('zipcode_msg');
+
+      if (zipcode.value.length <= 4) {
+        zipcode_msg.innerHTML= '우편번호 입력은 필수입니다.';
+        zipcode_msg.classList.add('span_warning');    // class 적용
+        zipcode.focus();
+
+        return false;  // 회원 가입 진행 중지
+      }
+
+      const form = document.getElementById('frm');
+      form.submit();
+    }
+  </script>
+
+  <div class="title_line">회원정보 수정(*: 수정 가능)</div>
+  <aside class="aside_right"> 
+    <a href='/member/read'>내 정보 보기</a>
+    <span class='menu_divide' >│</span> 
+    <a href='javascript:location.reload();'>새로고침</a>
+  </aside>
+
+  <div class='menu_line'></div>
+
+  <div style="width: 60%; margin: 0px auto ">
+    <form name="frm" id="frm" th:object="${memberVO}" method="post" action="/member/update">
+      <div>
+        <label for="id">아이디(이메일)</label>
+        <input type="text" name="id" id="id" th:value="${memberVO.id}" class="form-control form-control-sm" style="width: 50%;" readonly>
+      </div>
+
+      <div class="form-group">
+        <label for="name">이름*</label>
+        <input type='text' name='name' id='name' th:value='${memberVO.name}' required="required" placeholder="이름" class="form-control form-control-sm" style="width: 30%;">
+      </div>
+      
+      <div class="form-group">
+        <label for="name">생년월일*</label>
+        <input type='text' name='birth' id='birth' th:value='${memberVO.birth}' required="required" placeholder="생년월일" class="form-control form-control-sm" style="width: 30%;">
+        예) 19990505
+      </div>
+      
+      <div class="form-group">
+        <label for="tel">닉네임*</label>
+        <input type='text' name='nickname' id='nickname' th:value='${memberVO.nickname}' required="required" 
+                  placeholder="한글, 영문 및 숫자 최대 12자" maxlength="12" class="form-control form-control-sm" style="width: 30%;">
+        <button type='button' id="btn_checkNICKNAME" onclick="checkNICKNAME()" 
+                     class="btn btn-primary btn-sm" style="margin-top: 4px;">중복 확인</button>
+        <span id='nickname_msg'></span>
+      </div>
+  
+      <div class="form-group">
+        <label for="tel">전화 번호*(-없이 입력해 주세요.)</label>
+        <input type='text' name='tel' id='tel' th:value='${memberVO.tel}' required="required" 
+                  placeholder="전화번호" class="form-control form-control-sm" style="width: 30%;">
+        <span id='tel_msg'></span>
+        예) 01012345678
+      </div>
+      
+      <div class="form-group">
+        <label for="tel">성별</label><br>
+        <input type='text' name='gender' id='gender' th:value="${memberVO.gender}" 
+               class="form-control form-control-sm" style="width: 30%;" readonly>
+      </div>
+
+      <div class="form-group"> 
+        <label for="zipcode">우편 번호*</label>
+        <input type='text' name='zipcode' id='zipcode' th:value='${memberVO.zipcode}' required="required" placeholder="우편번호"
+                  class="form-control form-control-sm" style="width: 30%;">
+        <button type="button" id="btn_DaumPostcode" onclick="DaumPostcode()" 
+                  class="btn btn-primary btn-sm" style="margin-top: 4px;">우편번호 찾기</button>
+      </div>  
+  
+      <div class="form-group">
+        <label for="address" style="width: 100%;">상세 주소</label>
+        <input type='text' name='address' id='address' th:value='${memberVO.address}' placeholder="상세 주소"
+                   class="form-control form-control-sm">
+      </div>     
+
+      <!-- ------------------------------ DAUM 우편번호 API 시작 ------------------------------ -->
+      <div>
+        <div id="wrap" style="display:none;border:1px solid;width:500px;height:300px;margin:5px 0;position:relative">
+          <img src="//t1.daumcdn.net/postcode/resource/images/close.png" id="btnFoldWrap" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1" onclick="foldDaumPostcode()" alt="접기 버튼">
+        </div>
+
+        <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+        <script>
+          // 우편번호 찾기 찾기 화면을 넣을 element
+          var element_wrap = document.getElementById('wrap');
+
+          function foldDaumPostcode() {
+              // iframe을 넣은 element를 안보이게 한다.
+              element_wrap.style.display = 'none';
+          }
+
+          function DaumPostcode() {
+              // 현재 scroll 위치를 저장해놓는다.
+              var currentScroll = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
+              new daum.Postcode({
+                  oncomplete: function(data) {
+                      // 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+                      // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+                      // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+                      var addr = ''; // 주소 변수
+                      var extraAddr = ''; // 참고항목 변수
+
+                      //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+                      if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                          addr = data.roadAddress;
+                      } else { // 사용자가 지번 주소를 선택했을 경우(J)
+                          addr = data.jibunAddress;
+                      }
+
+                      /*
+                      // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+                      if(data.userSelectedType === 'R'){
+                          // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+                          // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+                          if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                              extraAddr += data.bname;
+                          }
+                          // 건물명이 있고, 공동주택일 경우 추가한다.
+                          if(data.buildingName !== '' && data.apartment === 'Y'){
+                              extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                          }
+                          // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+                          if(extraAddr !== ''){
+                              extraAddr = ' (' + extraAddr + ')';
+                          }
+                          // 조합된 참고항목을 해당 필드에 넣는다.
+                          document.getElementById("sample3_extraAddress").value = extraAddr;
+                      
+                      } else {
+                          document.getElementById("sample3_extraAddress").value = '';
+                      }
+                      */
+
+                      // 우편번호와 주소 정보를 해당 필드에 넣는다.
+                      document.getElementById('zipcode').value = data.zonecode; // 우편번호
+                      document.getElementById("address").value = addr;  // 상세 주소
+
+                      // 커서를 상세주소 필드로 이동한다.
+                      document.getElementById("address").focus();  // 상세 주소로 포커스 이동
+
+                      // iframe을 넣은 element를 안보이게 한다.
+                      // (autoClose:false 기능을 이용한다면, 아래 코드를 제거해야 화면에서 사라지지 않는다.)
+                      element_wrap.style.display = 'none';
+
+                      // 우편번호 찾기 화면이 보이기 이전으로 scroll 위치를 되돌린다.
+                      document.body.scrollTop = currentScroll;
+                  },
+                  // 우편번호 찾기 화면 크기가 조정되었을때 실행할 코드를 작성하는 부분. iframe을 넣은 element의 높이값을 조정한다.
+                  onresize : function(size) {
+                      element_wrap.style.height = size.height+'px';
+                  },
+                  width : '100%',
+                  height : '100%'
+              }).embed(element_wrap);
+
+              // iframe을 넣은 element를 보이게 한다.
+              element_wrap.style.display = 'block';
+          }
+        </script>
+      </div>
+      <!-- ------------------------------ DAUM 우편번호 API 종료 ------------------------------ -->
+
+      <div class="content_body_bottom">
+        <button type="button" onclick="update();" class="btn btn-secondary btn-sm">수정</button>
+        <button type="button" onclick="location.href='/member/update_passwd'" class="btn btn-secondary btn-sm">비밀번호 변경</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -239,3 +239,48 @@
 //     </style>
 // </body>
 // </html>
+
+
+//else if(checkNICKNAME_cnt == 1 && nicknameSession.equals(memberVO.getNickname())) {
+//        memberVO.setName(memberVO.getName().trim());
+//        memberVO.setBirth(memberVO.getBirth().trim());
+//        memberVO.setNickname(memberVO.getNickname().trim());
+//        memberVO.setTel(memberVO.getTel().trim());
+//        memberVO.setZipcode(memberVO.getZipcode().trim());
+//        memberVO.setAddress(memberVO.getAddress().trim());
+//        
+//        int cnt = this.memberProc.update(memberVO);
+//        System.out.println("update cnt: " + cnt);
+//        
+//        if (cnt == 1) {
+//          model.addAttribute("code", "update_success");
+//          model.addAttribute("memberno", memberVO.getMemberno());
+//          model.addAttribute("name", memberVO.getName());
+//          model.addAttribute("nickname", memberVO.getNickname());
+//          model.addAttribute("tel", memberVO.getTel());
+//          model.addAttribute("zipcode", memberVO.getZipcode());
+//          model.addAttribute("address", memberVO.getAddress());
+//          
+//        } else {
+//          model.addAttribute("code", "update_fail");
+//          System.out.println("update_fail");
+//        }
+//        
+//        model.addAttribute("cnt", cnt);
+//        System.out.println("update_success_cnt: " + cnt);
+//
+//        return "redirect:/member/read"; // /templates/member/read.html
+//      }
+//    }
+    
+//    if(checkNICKNAME_cnt == 0) {
+//      // ... 코드 ...
+//      return "redirect:/member/read";
+//  }
+//  else if(checkNICKNAME_cnt == 1 && nicknameSession.equals(memberVO.getNickname())) {
+//      // ... 코드 ...
+//      return "redirect:/member/read";
+//  } 
+//  else {
+//      return "redirect:/member/read";  // 이 부분을 추가해야 함
+//  }

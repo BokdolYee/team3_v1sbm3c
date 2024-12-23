@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  <div class="title_line">공지사항 삭제</div>
+  <aside class="aside_right">
+    <span class="menu_divide">|</span>
+    <a th:href="@{|/issue/update/${issueVO.issueno}|}">수정</a>
+    <span class="menu_divide">|</span>
+    <a th:href="@{|/issue/delete/${issueVO.issueno}|}">삭제</a>
+    <span class="menu_divide">|</span>
+    <a th:href="@{/issue/list}">목록</a>
+    <span class="menu_divide">|</span>
+    <a th:href="@{|/issue/create|}">등록</a>
+    <span class="menu_divide">|</span>
+    <a href="javascript: location.reload();">새로 고침</a>
+  </aside>
+
+  <div class="menu_line"></div>
+  
+  <div class="container mt-3" style="width: 60%; margin: 5px auto;">
+    <div class="alert alert-danger" role="alert">
+      <h4 class="alert-heading">정말로 삭제하시겠습니까?</h4>
+      <p>삭제된 내용은 복구할 수 없습니다. 삭제를 진행하려면 확인 버튼을 클릭하세요.</p>
+      <p><strong>제목: </strong><span th:text="${issueVO.title}"></span></p> <!-- 제목 추가 -->
+    </div>
+    <form th:action="@{|/issue/delete/${issueVO.issueno}|}" method="post">
+      <input type="hidden" name="word" th:value="${word}">
+      <input type="hidden" name="now_page" th:value="${now_page}">
+      
+      <!-- 버튼을 가운데 정렬하고 나란히 배치 -->
+      <div class="text-center">
+        <button type="submit" class="btn btn-danger mx-2">삭제 확인</button>
+        <a href="javascript: history.back();" class="btn btn-secondary mx-2">취소</a>
+      </div>
+    </form>
+  </div>
+</div>
+</html>

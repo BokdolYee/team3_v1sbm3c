@@ -12,7 +12,8 @@
 
         <aside class="aside_right">
             <span class='menu_divide'>│</span>
-            <a th:href="@{/issue/create}">등록</a>
+            <!-- 관리자일 경우에만 "등록" 버튼을 표시 -->
+            <a th:if="${isAdmin}" th:href="@{/issue/create}">등록</a>
             <span class='menu_divide'>│</span>
             <a href="javascript:location.reload();">새로고침</a>
         </aside>

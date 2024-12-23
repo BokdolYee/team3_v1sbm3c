@@ -5,7 +5,7 @@
     <!-- 공지사항 생성 -->
     <insert id="create" parameterType="dev.mvc.issue.IssueVO">
         INSERT INTO issue (issueno, cnt, content, rdate, title)
-        VALUES (SEQ_ISSUE.NEXTVAL, #{cnt}, #{content}, SYSDATE, #{title})
+        VALUES (ISSUE_SEQ.NEXTVAL, #{cnt}, #{content}, SYSDATE, #{title})
     </insert>
 
     <!-- 공지사항 조회 (상세보기) -->

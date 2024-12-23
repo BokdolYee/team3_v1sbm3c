@@ -4,25 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>뉴스 상세</title>
-    <link rel="stylesheet" href="/styles.css"> <!-- 스타일 파일 예시 -->
+    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-    <h1>뉴스 상세 보기</h1>
+    <div class="container">
+        <header>
+            <h1>뉴스 상세 보기</h1>
+        </header>
 
-    <div th:if="${news}">
-        <p th:text="${news.text}">뉴스 본문</p>
+        <div class="news-details">
+            <h2>뉴스 본문</h2>
+            <p th:text="${news.text}">뉴스 본문</p>
 
-        <h3>분석 및 요약</h3>
-        <!-- 분석 및 요약 버튼 -->
-        <form th:action="@{/news/analyze/{newsno}(newsno=${news.newsno})}" method="POST">
-            <button type="submit">분석 및 요약 요청</button>
-        </form>
+            <div class="analyze-btn">
+                <h3>분석 및 요약</h3>
+                <form th:action="@{/news/analyze/{newsno}(newsno=${news.newsno})}" method="POST">
+                    <button type="submit" class="btn btn-primary">분석 및 요약 요청</button>
+                </form>
+            </div>
+        </div>
+
+        <div th:if="${error}" class="error-message">
+            <p th:text="${error}">뉴스를 찾을 수 없습니다.</p>
+        </div>
+
+        <div class="navigation">
+            <a href="/news/list" class="btn btn-secondary">목록으로 돌아가기</a>
+        </div>
     </div>
-
-    <div th:if="${error}">
-        <p th:text="${error}">뉴스를 찾을 수 없습니다.</p>
-    </div>
-
-    <a href="/news/list">목록으로 돌아가기</a> <!-- 목록으로 돌아가는 링크 예시 -->
 </body>
 </html>

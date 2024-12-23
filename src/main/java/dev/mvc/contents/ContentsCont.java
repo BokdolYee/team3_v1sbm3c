@@ -150,35 +150,11 @@ public class ContentsCont {
       contentsVO.setMemberno(memberno);
       int cnt = this.contentsProc.create(contentsVO);
 
-      // ------------------------------------------------------------------------------
-      // PK의 return
-      // ------------------------------------------------------------------------------
-      // System.out.println("--> contentsno: " + contentsVO.getContentsno());
-      // mav.addObject("contentsno", contentsVO.getContentsno()); // redirect
-      // parameter 적용
-      // ------------------------------------------------------------------------------
-
       if (cnt == 1) {
-        // type 1, 재업로드 발생
-        // return "<h1>파일 업로드 성공</h1>"; // 연속 파일 업로드 발생
-
-        // type 2, 재업로드 발생
-        // model.addAttribute("cnt", cnt);
-        // model.addAttribute("code", "create_success");
-        // return "contents/msg";
-
-        // type 3 권장
-        // return "redirect:/contents/list_all"; // /templates/contents/list_all.html
-
-        // System.out.println("-> contentsVO.getCateno(): " + contentsVO.getCateno());
-        // ra.addFlashAttribute("cateno", contentsVO.getCateno()); // controller ->
-        // controller: X
 
         ra.addAttribute("newscateno", contentsVO.getNewscateno()); // controller -> controller: O
         return "redirect:/contents/list_by_cateno";
 
-        // return "redirect:/contents/list_by_cateno?cateno=" + contentsVO.getCateno();
-        // // /templates/contents/list_by_cateno.html
       } else {
         ra.addFlashAttribute("code", "create_fail"); // DBMS 등록 실패
         ra.addFlashAttribute("cnt", 0); // 업로드 실패
@@ -204,20 +180,6 @@ public class ContentsCont {
     if (this.memberProc.isAdmin(session)) { // 관리자만 조회 가능
       ArrayList<ContentsVO> list = this.contentsProc.list_all(); // 모든 목록
 
-      // Thymeleaf는 CSRF(크로스사이트) 스크립팅 해킹 방지 자동 지원
-      // for문을 사용하여 객체를 추출, Call By Reference 기반의 원본 객체 값 변경
-//      for (ContentsVO contentsVO : list) {
-//        String title = contentsVO.getTitle();
-//        String content = contentsVO.getContent();
-//        
-//        title = Tool.convertChar(title);  // 특수 문자 처리
-//        content = Tool.convertChar(content); 
-//        
-//        contentsVO.setTitle(title);
-//        contentsVO.setContent(content);  
-//
-//      }
-
       model.addAttribute("list", list);
       return "/contents/list_all";
 
@@ -227,65 +189,6 @@ public class ContentsCont {
     }
 
   }
-
-//  /**
-//   * 유형 1
-//   * 카테고리별 목록
-//   * http://localhost:9091/contents/list_by_cateno?cateno=5
-//   * http://localhost:9091/contents/list_by_cateno?cateno=6 
-//   * @return
-//   */
-//  @GetMapping(value="/list_by_cateno")
-//  public String list_by_cateno(HttpSession session, Model model, 
-//      @RequestParam(name="cateno", defaultValue = "") int cateno) {
-//    ArrayList<CateVOMenu> menu = this.cateProc.menu();
-//    model.addAttribute("menu", menu);
-//    
-//     CateVO cateVO = this.cateProc.read(cateno);
-//     model.addAttribute("cateVO", cateVO);
-//    
-//    ArrayList<ContentsVO> list = this.contentsProc.list_by_cateno(cateno);
-//    model.addAttribute("list", list);
-//    
-//    // System.out.println("-> size: " + list.size());
-//
-//    return "/contents/list_by_cateno";
-//  }
-
-//  /**
-//   * 유형 2
-//   * 카테고리별 목록 + 검색
-//   * http://localhost:9091/contents/list_by_cateno?cateno=5
-//   * http://localhost:9091/contents/list_by_cateno?cateno=6 
-//   * @return
-//   */
-//  @GetMapping(value="/list_by_cateno")
-//  public String list_by_cateno_search(HttpSession session, Model model, 
-//                                                   @RequestParam(name="cateno", defaultValue = "0" ) int cateno, 
-//                                                   @RequestParam(name="word", defaultValue = "") String word) {
-//    ArrayList<CateVOMenu> menu = this.cateProc.menu();
-//    model.addAttribute("menu", menu);
-//    
-//     CateVO cateVO = this.cateProc.read(cateno);
-//     model.addAttribute("cateVO", cateVO);
-//    
-//     word = Tool.checkNull(word).trim(); // 검색어 공백 삭제
-//     
-//     HashMap<String, Object> map = new HashMap<>();
-//     map.put("cateno", cateno);
-//     map.put("word", word);
-//     
-//    ArrayList<ContentsVO> list = this.contentsProc.list_by_cateno_search(map);
-//    model.addAttribute("list", list);
-//    
-//    // System.out.println("-> size: " + list.size());
-//    model.addAttribute("word", word);
-//    
-//    int search_count = this.contentsProc.list_by_cateno_search_count(map);
-//    model.addAttribute("search_count", search_count);
-//    
-//    return "/contents/list_by_cateno_search"; // /templates/contents/list_by_cateno_search.html
-//  }
 
   /**
    * 유형 3

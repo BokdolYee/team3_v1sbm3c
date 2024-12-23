@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>전체 공지사항 목록</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class='title_line'>전체 공지사항 목록</div>
+
+        <aside class="aside_right">
+            <!-- 관리자일 경우에만 "등록" 버튼을 표시 -->
+            <a th:if="${isAdmin}" th:href="@{/issue/create}">등록</a>
+            <span class='menu_divide'>│</span>
+            <a href="javascript:location.reload();">새로 고침</a>
+        </aside>
+
+        <div class='menu_line'></div>
+
+        <table class="table table-striped" style='width: 100%;'>
+            <colgroup>
+                <col style='width: 10%;'/>
+                <col style='width: 30%;'/>
+                <col style='width: 30%;'/>
+                <col style='width: 20%;'/>
+                <col style='width: 10%;'/>
+            </colgroup>
+            <tr>
+                <th class='th_bs'>번호</th>
+                <th class='th_bs'>제목</th>
+                <th class='th_bs'>조회수</th>
+                <th class='th_bs'>등록일</th>
+                <th class='th_bs'>내용</th>
+            </tr>
+
+            <tr th:each="issueVO : ${list}" 
+                th:onclick="|location.href='@{/issue/read/{issueno}(issueno=${issueVO.issueno})}'|"
+                style="cursor: pointer;">
+                <td class='td_basic' th:text="${issueVO.issueno}"></td>
+                <td class='td_left'>
+                    <span th:text="${issueVO.title}" style="font-weight: bold;"></span><br>
+                    <span th:if="${issueVO.content.length() > 160}"
+                          th:text="${issueVO.content.substring(0,160)} + '...'"></span>
+                    <span th:if="${issueVO.content.length() <= 160}"
+                          th:text="${issueVO.content}"></span>
+                </td>
+                <td class='td_basic' th:text="${issueVO.cnt}"></td>
+                <td class='td_basic' th:text="${issueVO.rdate}"></td>
+                <td class='td_basic'>
+                    <a th:href="@{/issue/read/{issueno}(issueno=${issueVO.issueno})}" 
+                       class="btn btn-info btn-sm">상세보기</a>
+                </td>
+            </tr>
+        </table>
+
+        <div class='bottom_menu'>
+            <button type='button' onclick="location.reload();" class="btn btn-primary btn-sm">새로 고침</button>
+        </div>
+
+
+  <div class="bottom_menu" th:utext="${paging}"></div>
+  <!-- 페이지 버튼 목록 출력 종료 --> 
+
+</div>
+</html>

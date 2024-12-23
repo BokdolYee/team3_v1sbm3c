@@ -42,5 +42,29 @@
         SET cnt = cnt + 1
         WHERE issueno = #{issueno}
     </update>
+  
+    <!-- 검색 갯수 -->
+    <select id="list_search_count" resultType="Integer" parameterType="String">
+        SELECT COUNT(*) AS cnt
+        FROM issue
+        <if test="word != null and word != ''"> <!-- 검색 조건 -->
+            WHERE (UPPER(title) LIKE '%' || UPPER(#{word}) || '%') 
+               OR (UPPER(content) LIKE '%' || UPPER(#{word}) || '%')
+        </if>
+    </select>
+
+    <!-- 검색 + 페이징 -->
+    <select id="list_search_paging" resultType="dev.mvc.issue.IssueVO" parameterType="Map">
+        SELECT issueno, cnt, content, rdate, title
+        FROM (
+            SELECT ROW_NUMBER() OVER (ORDER BY issueno ASC) AS r, issueno, cnt, content, rdate, title
+            FROM issue
+            <if test="word != null and word != ''"> <!-- 검색 조건 -->
+                WHERE (UPPER(title) LIKE '%' || UPPER(#{word}) || '%') 
+                   OR (UPPER(content) LIKE '%' || UPPER(#{word}) || '%')
+            </if>
+        )
+        WHERE r &gt;= #{start_num} AND r &lt;= #{end_num}  <!-- 페이징 조건 -->
+    </select>
 
 </mapper>

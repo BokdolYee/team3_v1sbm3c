@@ -17,10 +17,16 @@
 
   <!-- U: Update -->
   <update id="update" parameterType="dev.mvc.news.NewsVO">
-    UPDATE news
-    SET text = #{text}, url = #{url}, source = #{source}, publish_date = #{publishDate}
-    WHERE newsno = #{newsno}
+      UPDATE news
+      SET 
+          text = #{text}, 
+          url = #{url}, 
+          source = #{source},
+          impact = #{impact},      <!-- impact 추가 -->
+          summary = #{summary}     <!-- summary 추가 -->
+      WHERE newsno = #{newsno}
   </update>
+
 
   <!-- D: Delete -->
   <delete id="delete" parameterType="Integer">

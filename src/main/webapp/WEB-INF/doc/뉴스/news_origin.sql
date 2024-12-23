@@ -1,18 +1,15 @@
-DROP TABLE news CASCADE CONSTRAINTS; 
-DROP TABLE news;
+DROP TABLE news CASCADE CONSTRAINTS;
 
 CREATE TABLE news(
     NEWSNO                            NUMBER(10)     NOT NULL    PRIMARY KEY,
     TEXT                             CLOB  NOT NULL,
     URL                              VARCHAR(255)    NULL,
     SOURCE                            VARCHAR(300)     NULL,
+    IMPACT                          VARCHAR(800)   NULL,
+    SUMMARY                         VARCHAR(800)   NULL,
     PUBLISH_DATE                      DATE           NOT NULL
 );
 
--- news 테이블의 외래 키 추가
-ALTER TABLE news
-ADD CONSTRAINT fk_news_analysis
-FOREIGN KEY (ANALYSISNO) REFERENCES analysis (ANALYSISNO);
 
 DROP SEQUENCE NEWS_SEQ
 

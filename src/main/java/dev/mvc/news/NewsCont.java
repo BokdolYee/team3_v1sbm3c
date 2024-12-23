@@ -23,12 +23,6 @@ public class NewsCont {
 
     @Autowired  
     private NewsProc newsProc;
-
-    @Autowired
-    private AnalysisProc analysisProc;
-    
-    @Autowired
-    private SummarizeProc summarizeProc;
     
     @Autowired
     private PythonAPIClient pythonAPIClient;
@@ -53,7 +47,6 @@ public class NewsCont {
         return "/news/detail";  // news/detail.html로 이동
     }
 
-
     @PostMapping("/analyze/{newsno}")
     public String analyzeAndSummarize(@PathVariable("newsno") int newsno, Model model) {
         // 뉴스 본문 가져오기
@@ -75,12 +68,6 @@ public class NewsCont {
             // 분석 결과 디코딩 (JSON에서 데이터 추출)
             String decodedAnalysis = decodeJson(analysisResult);
 
-            // 분석 결과 저장
-            AnalysisVO analyzeVO = new AnalysisVO();
-            analyzeVO.setNewsno(newsno);
-            analyzeVO.setImpact(decodedAnalysis);
-            analysisProc.create(analyzeVO);
-
             // Python API 요약 요청
             String summary = pythonAPIClient.summarize(text);
             if (summary == null) {
@@ -90,11 +77,12 @@ public class NewsCont {
             // 요약 디코딩 (JSON에서 데이터 추출)
             String decodedSummary = decodeJson(summary);
 
-            // 요약 저장
-            SummarizeVO summarizeVO = new SummarizeVO();
-            summarizeVO.setNewsno(newsno);
-            summarizeVO.setContent(decodedSummary);
-            summarizeProc.create(summarizeVO);
+            // 분석 결과와 요약을 뉴스 객체에 저장
+            newsVO.setImpact(decodedAnalysis);
+            newsVO.setSummary(decodedSummary);
+
+            // 분석 및 요약 정보 저장 (News 테이블에 반영)
+            newsProc.update(newsVO);
 
             // 분석 결과와 요약을 모델에 담아서 analyze.html로 이동
             model.addAttribute("summary", decodedSummary);
@@ -130,5 +118,4 @@ public class NewsCont {
 
         return decodedValue;
     }
-
 }

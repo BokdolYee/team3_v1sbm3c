@@ -19,6 +19,20 @@
 
         <div class='menu_line'></div>
 
+        <!-- 검색 폼 추가 -->
+        <div style="text-align: right; clear: both;">
+            <form name="frm_search" method="get" action="/issue/list_search">
+                <input type="text" name="word" id="word" th:value="${word}" placeholder="검색어를 입력하세요">
+                <button type='submit' class='btn btn-secondary btn-sm' 
+                        style="padding: 2px 8px 3px 8px; margin: 0px 0px 2px 0px;">검색</button>
+                <span th:if="${word != null and word != ''}">
+                    <button type='button' class='btn btn-secondary btn-sm' 
+                            style="padding: 2px 8px 3px 8px; margin: 0px 0px 2px 0px;"
+                            th:onclick="|location.href='/issue/list_search?word='|">검색 취소</button>
+                </span>
+            </form>
+        </div>
+
         <table class="table table-striped" style='width: 100%;'>
             <colgroup>
                 <col style='width: 10%;'/>
@@ -59,9 +73,7 @@
             <button type='button' onclick="location.reload();" class="btn btn-primary btn-sm">새로 고침</button>
         </div>
 
-
-  <div class="bottom_menu" th:utext="${paging}"></div>
-  <!-- 페이지 버튼 목록 출력 종료 --> 
-
-</div>
+        <div class="bottom_menu" th:utext="${paging}"></div>
+    </div>
+</body>
 </html>

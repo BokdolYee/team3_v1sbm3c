@@ -10,7 +10,7 @@
 
   <!-- R: Read -->
   <select id="read" resultType="dev.mvc.news.NewsVO" parameterType="Integer">
-    SELECT newsno, text, url, source, publish_date
+    SELECT newsno, url, source, publish_date, impact, summary
     FROM news
     WHERE newsno = #{newsno}
   </select>
@@ -47,15 +47,15 @@
 
   <!-- P: Paging -->
   <select id="list_paging" resultType="dev.mvc.news.NewsVO" parameterType="Map">
-    SELECT newsno, text, url, source, publish_date, r
+    SELECT newsno, impact, summary, url, source, publish_date, r
     FROM (
-      SELECT newsno, text, url, source, publish_date, rownum AS r
+      SELECT newsno, impact, summary, url, source, publish_date, rownum AS r
       FROM (
-        SELECT newsno, text, url, source, publish_date
+        SELECT newsno, impact, summary, url, source, publish_date
         FROM news
         <if test="keyword != null and keyword != ''">
-          WHERE UPPER(text) LIKE '%' || UPPER(#{keyword}) || '%'
-             OR UPPER(source) LIKE '%' || UPPER(#{keyword}) || '%'
+          WHERE UPPER(impact) LIKE '%' || UPPER(#{keyword}) || '%'
+             OR UPPER(summary) LIKE '%' || UPPER(#{keyword}) || '%'
         </if>
         ORDER BY publish_date DESC
       )

@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;  
 
 @CrossOrigin(origins = "*") // React 앱의 주소
-@RestController
 @Controller
 @RequestMapping("/issue")
 public class IssueCont {
@@ -36,9 +35,11 @@ public class IssueCont {
 //    }
     
     @GetMapping("/create")
-    public String createForm() {
-        return "issue/create";
+    public String createForm(Model model) {
+        model.addAttribute("issueVO", new IssueVO()); // 빈 객체 전달
+        return "issue/create"; // 템플릿 이름
     }
+
 
     @PostMapping(value = "/create")
     public String create(

@@ -47,7 +47,22 @@
       }
   
       document.getElementById('frm').submit(); // required="required" 작동 안됨.
-    }    
+    }
+    function admin() { //관리자 계정 입력 버튼
+     const id = document.getElementById('id');
+     const pw = document.getElementById('passwd');
+
+      id.value = 'admin';
+      pw.value = '1234';
+    }
+    
+    function member() { // 회원 계정 입력 버튼
+      const id = document.getElementById('id');
+     const pw = document.getElementById('passwd');
+
+      id.value = 'asdas';
+      pw.value = '1234';
+    }
   </script>
 
   <div class="title_line" style='color: #FF0000;'>정상적인 접근이 아닙니다. 로그인이 필요합니다.</div>
@@ -77,6 +92,11 @@
                   placeholder="패스워드" class="form-control form-control-sm" style="width: 100%;">
         <label><input type="checkbox" name="passwd_save" id="passwd_save" value="Y" th:checked="${ck_passwd_save == 'Y'}"> 저장<label>          
         <span id='passwd_msg'></span>
+      </div>
+      
+      <div class="content_body_bottom">
+        <button type="button" onclick="admin();" class="btn btn-secondary btn-sm">관리자</button>
+        <button type="button" onclick="member();" class="btn btn-secondary btn-sm">회원</button>
       </div>
 
       <div class="content_body_bottom">

@@ -45,15 +45,70 @@
     ORDER BY grade ASC, id ASC
   </select> -->
   
-  <!-- 회원 목록 + 검색 + 페이징-->
-  <select id="list_search_paging" resultType="dev.mvc.member.MemberVO" parameterType="Map">
-    SELECT memberno, id, name, birth, nickname, tel, gender, zipcode, address, replycnt, rdate, grade, r
+  <!-- 회원 검색 목록 + 페이징 -->
+  <select id="list_search_paging" parameterType="dev.mvc.dto.SearchDTO" resultType="dev.mvc.member.MemberVO">
+    SELECT *
     FROM(
-         SELECT memberno, id, name, birth, nickname, tel, gender, zipcode, address, replycnt, rdate, grade, rownum as r
-         FROM(
-              SELECT memberno, id, name, birth, nickname, tel, gender, zipcode, address, replycnt, rdate, grade
-              FROM member
-              WHERE (UPPER
+        SELECT a.*, ROWNUM rnum
+        FROM(
+            SELECT *
+            FROM member
+            <where>
+              <if test="searchType != null and keyword != null">
+                <choose>
+                  <when test = "searchType == 'id'">
+                    AND id LIKE '%' || #{keyword} || '%'
+                  </when>
+                  <when test = "searchType == 'nickname'">
+                    AND nickname LIKE '%' || #{keyword} || '%'
+                  </when>
+                </choose>
+              </if>
+            </where>
+            ORDER BY memberno DESC
+          ) a
+          WHERE ROWNUM &lt;= #{size}
+        )
+        WHERE rnum &gt; #{offset}
+  </select>
+            
+  
+  <!-- 회원 검색 목록 + 페이징
+  <select id="list_search_paging" parameterType="dev.mvc.dto.SearchDTO" resultType="dev.mvc.member.MemberVO">
+    SELECT *
+    FROM member
+    <where>
+      <if test="searchType != null and keyword != null">
+        <choose>
+          <when test = "searchType == 'id'">
+            AND id LIKE '%' || #{keyword} || '%'
+          </when>
+          <when test = "searchType == 'nickname'">
+            AND nickname LIKE '%' || #{keyword} || '%'
+          </when>
+        </choose>
+      </if>
+    </where>
+    ORDER BY memberno DESC
+    OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
+  </select>-->
+  
+  <!-- 회원 검색된 수 -->
+  <select id="list_search_count" parameterType="dev.mvc.dto.SearchDTO" resultType="int">
+    SELECT COUNT(*)
+    FROM member
+    <where>
+      <if test="searchType != null and keyword != null">
+        <choose>
+          <when test = "searchType == 'id'">
+            AND id LIKE '%' || #{keyword} || '%'
+          </when>
+          <when test = "searchType == 'nickname'">
+            AND nickname LIKE '%' || #{keyword} || '%'
+          </when>
+        </choose>
+      </if>
+    </where>
   </select>
   
   <!-- 회원 정보 수정(name, nickname, tel, zipcode, address) -->

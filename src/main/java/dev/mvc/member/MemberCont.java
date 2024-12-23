@@ -20,6 +20,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import dev.mvc.newscate.NewsCateProcInter;
 import dev.mvc.newscate.NewsCateVOMenu;
+import dev.mvc.dto.SearchDTO;
+import dev.mvc.dto.PageDTO;
 import dev.mvc.tool.Tool;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -127,13 +129,13 @@ public class MemberCont {
     return "/index";
   }
 
-  /**
-   * 회원 목록(관리자만 접근 가능)
-   * 
-   * @param model
-   * @param session
-   * @return
-   */
+//  /**
+//   * 회원 목록(관리자만 접근 가능)
+//   * 
+//   * @param model
+//   * @param session
+//   * @return
+//   */
 //  @GetMapping(value = "/list")
 //  public String list(Model model, HttpSession session) {
 //    if (this.memberProc.isAdmin(session)) {
@@ -150,23 +152,61 @@ public class MemberCont {
 //    }
 //  }
   
-//  @GetMapping(value="/list_search")
-//  public String list_search_paging(Model model, HttpSession session,
-//        @RequestParam(name="word", defaultValue = "")String word,
-//        @RequestParam(name="now_page", defaultValue = "1")int now_page) {
-//    
-//    if(this.memberProc.isAdmin(session)) {
-//      MemberVO memberVO = new MemberVO();
-//      model.addAttribute("memberVO", memberVO);
-//      
-//      ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
-//      model.addAttribute("menu", menu);
-//      
-//      word = Tool.checkNull(word);
-//      
-//      ArrayList<>
-//    }
-//  }
+  @GetMapping(value="/list")
+  public String list_search_paging(Model model,HttpSession session,
+                                   @RequestParam(value = "page", defaultValue = "1")int page,
+                                   @RequestParam(value = "searchType", required = false)String searchType,
+                                   @RequestParam(value = "keyword", defaultValue = "")String keyword) {
+    if(this.memberProc.isAdmin(session)) {
+      ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
+      model.addAttribute("menu", menu);
+      
+      MemberVO memberVO = new MemberVO();
+      model.addAttribute(memberVO);
+      
+      // 검색 조건 설정
+      SearchDTO searchDTO = new SearchDTO();
+      searchDTO.setSearchType(searchType);
+      searchDTO.setKeyword(keyword);
+      searchDTO.setPage(page);
+      searchDTO.setSize(page * 10);
+      searchDTO.setOffset((page - 1) * 10);
+      
+      // 전체 회원 수 조회
+      int total = this.memberProc.list_search_count(searchDTO);
+      
+      //페이징 정보 계산
+      PageDTO pageDTO = new PageDTO(total, page);
+      
+      System.out.println(searchDTO.getSearchType());
+      System.out.println(searchDTO.getKeyword());
+      System.out.println(searchDTO.getPage());
+      System.out.println(searchDTO.getSize());
+      System.out.println(searchDTO.getOffset());
+      
+      /*
+       * total 나옴
+       * pageDTO 나옴
+       * searchDTO 나옴
+       * 
+       */
+      
+      //회원 목록 조회
+      ArrayList<MemberVO> list = memberProc.list_search_paging(searchDTO);
+      
+      model.addAttribute("list", list);
+      model.addAttribute("searchDTO", searchDTO);
+      model.addAttribute("pageDTO", pageDTO);
+      model.addAttribute("currentPage", page);
+      model.addAttribute("searchType", searchType);
+      model.addAttribute("keyword", keyword);
+      
+      return "/member/list_search";
+    }
+    else {
+      return "redirect:/member/login_cookie_need";
+    }
+  }
   
 
   /**

@@ -217,6 +217,7 @@ public class MemberCont {
       @RequestParam(name = "memberno", required = false) Integer memberno) {
     ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
     model.addAttribute("menu", menu);
+    
     if (this.memberProc.isMember(session) || this.memberProc.isAdmin(session)) {
       // memberno 파라미터가 없는 경우 세션에서 가져옴 (일반 회원인 경우)
       if (memberno == null) {
@@ -250,19 +251,21 @@ public class MemberCont {
   public String update_form(HttpSession session, Model model,
       @RequestParam(name = "nickname", required = false) String nickname,
       @RequestParam(name = "memberno", required = false) Integer memberno) {
+    ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
+    model.addAttribute("menu", menu);
+
     // 회원은 회원 등급만 처리, 관리자: 1 ~ 10, 회원: 11 ~ 20
-    String grade = (String) session.getAttribute("grade"); // 등급: member, admin
     memberno = (int) session.getAttribute("memberno");
 
     // 회원: member && 11 ~ 20
-    if (grade.equals("member") && memberno == (int) session.getAttribute("memberno")) {
+    if (this.memberProc.isMember(session) && memberno == (int) session.getAttribute("memberno")) {
       System.out.println("memberno: " + memberno);
       MemberVO memberVO = this.memberProc.read(memberno);
       model.addAttribute("memberVO", memberVO);
 
       return "/member/update"; // templates/member/read.html
 
-    } else if (grade.equals("admin") && memberno == (int) session.getAttribute("memberno")) { // 관리자 1~10
+    } else if (this.memberProc.isAdmin(session) && memberno == (int) session.getAttribute("memberno")) { // 관리자 1~10
       System.out.println("-> admin memberno: " + memberno);
       MemberVO memberVO = this.memberProc.read(memberno);
 
@@ -285,21 +288,17 @@ public class MemberCont {
    * @return
    */
   @PostMapping(value = "/update")
-  public String update_proc(HttpSession session, Model model, 
-      @Validated(UpdateValidationGroup.class) @ModelAttribute("memberVO") MemberVO memberVO,
-      @RequestParam(name = "memberno", required = false) Integer memberno,
-      @RequestParam(name = "nickname", required = false) String nickname) {
-
-    String grade = (String) session.getAttribute("grade");
-    memberno = (int) session.getAttribute("memberno");
+  public String update_proc(HttpSession session, Model model,
+      @Validated(UpdateValidationGroup.class) @ModelAttribute("memberVO") MemberVO memberVO) {
+    
     String nicknameSession = (String) session.getAttribute("nickname");
 
     // 회원 본인일 때
-    if ((grade.equals("member") && memberno == (int) session.getAttribute("memberno"))) {
+    if (this.memberProc.isMember(session) && memberVO.getMemberno() == (int) session.getAttribute("memberno")) {
       int checkNICKNAME_cnt = this.memberProc.checkNICKNAME(memberVO.getNickname());
       // 닉네임 중복되지 않았을 경우
       if (checkNICKNAME_cnt == 0) {
-        memberVO.setMemberno(memberno);
+        memberVO.setMemberno(memberVO.getMemberno());
         memberVO.setName(memberVO.getName().trim());
         memberVO.setBirth(memberVO.getBirth().trim());
         memberVO.setNickname(memberVO.getNickname().trim());
@@ -307,8 +306,6 @@ public class MemberCont {
         memberVO.setZipcode(memberVO.getZipcode().trim());
         memberVO.setAddress(memberVO.getAddress().trim());
 
-        
-        
         int cnt = this.memberProc.update(memberVO);
         System.out.println("update cnt1: " + cnt);
 
@@ -331,7 +328,7 @@ public class MemberCont {
       }
       // 닉네임 중복됐지만 기존 회원 닉네임이랑 같을 경우
       else if (checkNICKNAME_cnt == 1 && nicknameSession.equals(memberVO.getNickname())) {
-        memberVO.setMemberno(memberno);
+        memberVO.setMemberno(memberVO.getMemberno());
         memberVO.setName(memberVO.getName().trim());
         memberVO.setBirth(memberVO.getBirth().trim());
         memberVO.setNickname(memberVO.getNickname().trim());
@@ -359,13 +356,13 @@ public class MemberCont {
         model.addAttribute("cnt", cnt);
         System.out.println("update_success_cnt: " + cnt);
       }
-      return "redirect:/member/read"; //templates/member/read.html
+      return "redirect:/member/read"; // templates/member/read.html
     } // 관리자 본인일 때
-    else if ((grade.equals("admin") && memberno == (int) session.getAttribute("memberno"))) {
+    else if (this.memberProc.isAdmin(session) && memberVO.getMemberno() == (int) session.getAttribute("memberno")) {
       int checkNICKNAME_cnt = this.memberProc.checkNICKNAME(memberVO.getNickname());
       // 닉네임 중복되지 않았을 경우
       if (checkNICKNAME_cnt == 0) {
-        memberVO.setMemberno(memberno);
+        memberVO.setMemberno(memberVO.getMemberno());
         memberVO.setName(memberVO.getName().trim());
         memberVO.setBirth(memberVO.getBirth().trim());
         memberVO.setNickname(memberVO.getNickname().trim());
@@ -394,7 +391,7 @@ public class MemberCont {
       }
       // 닉네임 중복됐지만 기존 회원 닉네임이랑 같을 경우
       else if (checkNICKNAME_cnt == 1 && nicknameSession.equals(memberVO.getNickname())) {
-        memberVO.setMemberno(memberno);
+        memberVO.setMemberno(memberVO.getMemberno());
         memberVO.setName(memberVO.getName().trim());
         memberVO.setBirth(memberVO.getBirth().trim());
         memberVO.setNickname(memberVO.getNickname().trim());
@@ -429,7 +426,7 @@ public class MemberCont {
   }
 
   /**
-   * 패스워드 수정 폼
+   * 비밀번호 수정 폼
    * 
    * @param model
    * @param memberno
@@ -437,6 +434,9 @@ public class MemberCont {
    */
   @GetMapping(value = "/update_passwd")
   public String update_passwd_form(HttpSession session, Model model) {
+    ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
+    model.addAttribute("menu", menu);
+
     if (this.memberProc.isMember(session)) {
       int memberno = (int) session.getAttribute("memberno"); // session에서 가져오기
 
@@ -568,6 +568,36 @@ public class MemberCont {
   }
 
   /**
+   * 회원 탈퇴 폼
+   * @param session
+   * @param model
+   * @param memberno
+   * @return
+   */
+  @GetMapping(value = "/withdraw")
+  public String withdraw_form(HttpSession session, Model model,
+      @RequestParam(name = "memberno", required = false) Integer memberno) {
+    ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
+    model.addAttribute("menu", menu);
+
+    if (this.memberProc.isMember(session)) {
+      memberno = (int) session.getAttribute("memberno");
+      MemberVO memberVO = this.memberProc.read(memberno);
+      model.addAttribute("memberVO", memberVO);
+
+      return "/member/withdraw";
+    } else if (this.memberProc.isAdmin(session)) {
+      memberno = (int) session.getAttribute("memberno");
+      MemberVO memberVO = this.memberProc.read(memberno);
+      model.addAttribute("memberVO", memberVO);
+
+      return "/member/withdraw";
+    } else {
+      return "redirect:/member/login_cookie_need"; // redirect
+    }
+  }
+
+  /**
    * 회원 탈퇴 처리
    * 
    * @param model
@@ -576,31 +606,41 @@ public class MemberCont {
    */
   @PostMapping(value = "/withdraw")
   public String withdraw_process(HttpSession session, Model model, @ModelAttribute("memberVO") MemberVO memberVO) {
-    // 회원 본인일 경우
-    String grade = (String) session.getAttribute("grade");
-    if ((grade.equals("member") && memberVO.getMemberno() == (int) session.getAttribute("memberno"))) {
+    
+    //회원 및 회원 본인일 경우
+    if (this.memberProc.isMember(session) && memberVO.getMemberno() == (int) session.getAttribute("memberno")) {
       int cnt = this.memberProc.withdraw(memberVO);
 
       if (cnt == 1) {
         model.addAttribute("code", "withdraw_success");
         model.addAttribute("memberno", memberVO.getMemberno());
         model.addAttribute("grade", memberVO.getGrade());
-        return "/index";
+        
+        System.out.println("memberno: " + memberVO.getMemberno() + ", id: " + memberVO.getId() + "nickname: " + memberVO.getNickname() + " has withdrown");
+        
+        session.invalidate();
+        return "redirect:/";
       } else {
         model.addAttribute("code", "withdraw_fail");
-        return "redirect:/member/read"; // /templates/member/read.html
+        return "/member/error";
       }
-    } else if ((grade.equals("admin") && memberVO.getMemberno() == (int) session.getAttribute("memberno"))) {
+    }
+    // 관리자 및 관리자 본인일 경우
+    else if (this.memberProc.isAdmin(session) && memberVO.getMemberno() == (int) session.getAttribute("memberno")) {
       int cnt = this.memberProc.withdraw(memberVO);
 
       if (cnt == 1) {
         model.addAttribute("code", "withdraw_success");
         model.addAttribute("memberno", memberVO.getMemberno());
         model.addAttribute("grade", memberVO.getGrade());
-        return "/index";
+        
+        System.out.println("admin memberno: " + memberVO.getMemberno() + "id: " + memberVO.getId() + "nickname: " + memberVO.getNickname() + " has withdrown");
+        
+        session.invalidate();
+        return "redirect:/";
       } else {
         model.addAttribute("code", "withdraw_fail");
-        return "redirect:/member/read"; // /templates/member/read.html
+        return "/member/error";
       }
     } else {
       return "redirect:/member/login_cookie_need"; // redirect
@@ -689,10 +729,18 @@ public class MemberCont {
     if (cnt == 1) {
       // id를 이용하여 회원 정보 조회
       MemberVO memberVO = this.memberProc.readByID(id);
+      
+      if(memberVO.getGrade() == 99) {
+        ra.addFlashAttribute("cnt", 0);
+        ra.addFlashAttribute("code", "withdrawn member");
+        return "redirect:/member/login";
+      }
+      
       session.setAttribute("memberno", memberVO.getMemberno());
       session.setAttribute("id", memberVO.getId());
       session.setAttribute("name", memberVO.getName());
       session.setAttribute("nickname", memberVO.getNickname());
+      session.setAttribute("grade", memberVO.getGrade());
 
       if (memberVO.getGrade() >= 1 && memberVO.getGrade() <= 10) {
         session.setAttribute("grade", "admin");
@@ -700,8 +748,6 @@ public class MemberCont {
         session.setAttribute("grade", "member");
       } else if (memberVO.getGrade() >= 41 && memberVO.getGrade() <= 49) {
         session.setAttribute("grade", "stopped");
-      } else if (memberVO.getGrade() == 99) {
-        session.setAttribute("grade", "withdraw");
       }
 
       // Cookie 관련 코드---------------------------------------------------------

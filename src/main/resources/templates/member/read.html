@@ -9,8 +9,10 @@
     <a href="javascript:location.reload();">새로고침</a>
     <span class='menu_divide' >│</span> 
     <a href='/member/logout'>로그아웃</a>
-    <span class='menu_divide' >│</span> 
-    <a href='/member/update_passwd'>비밀번호 변경</a>
+    <span class='menu_divide' th:if="${session.id == memberVO.id}">│</span> 
+    <a href='/member/update_passwd' th:if="${session.id == memberVO.id}">비밀번호 변경</a>
+    <span class='menu_divide' th:if="${session.id == memberVO.id}">│</span>
+    <a href="/member/withdraw" th:if="${session.id == memberVO.id}">회원 탈퇴</a>
   </aside> 
 
   <div class='menu_line'></div>
@@ -77,9 +79,13 @@
                class="form-control form-control-sm" raedonly>
       </div>
 
-      <div class="content_body_bottom">
+      <div class="content_body_bottom" th:if="${session.id == memberVO.id}">
         <button type="button" onclick="location.href='/member/update';" class="btn btn-secondary btn-sm">회원정보 수정</button>
-        <button type="button" onclick="location.href='/member/update_passwd'" class="btn btn-secondary btn-sm">비밀번호 변경</button>
+        <button type="button" onclick="location.href='/member/update_passwd';" class="btn btn-secondary btn-sm">비밀번호 변경</button>
+      </div>
+
+      <div class="content_body_bottom" th:if="${session.grade == 'admin'}">
+        <button type="button" onclick="location.href='/member/list';" class="btn btn-secondary btn-sm">회원 목록</button>
       </div>
     </form>
   </div>

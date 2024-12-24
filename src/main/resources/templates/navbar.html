@@ -51,6 +51,12 @@
                         <li class="nav-item" th:if="${session.memberno != null}">
                           <a class="nav-link" th:href="@{|/member/read|}">내 정보 보기</a>
                         </li>
+                        <li class="nav-item" th:if="${session.memberno != null}">
+                            <a class="nav-link" th:href="@{|/member/update|}">회원 정보 수정</a>
+                        </li>
+                        <li class="nav-item" th:if="${session.memberno != null}">
+                            <a class="nav-link" th:href="@{|/member/withdraw|}">회원 탈퇴</a>
+                        </li>   
                     </ul>
                 </li>
                 

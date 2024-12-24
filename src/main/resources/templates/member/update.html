@@ -161,10 +161,14 @@
   </script>
 
   <div class="title_line">회원정보 수정(*: 수정 가능)</div>
-  <aside class="aside_right"> 
-    <a href='/member/read'>내 정보 보기</a>
-    <span class='menu_divide' >│</span> 
+  <aside class="aside_right">
     <a href='javascript:location.reload();'>새로고침</a>
+    <span class='menu_divide' >│</span>
+    <a href='/member/read'>내 정보 보기</a>
+    <span class='menu_divide' >│</span>
+    <a href="location.href='/member/update_passwd'">비밀번호 변경</a>
+    <span class='menu_divide' >│</span>
+    <a href="/member/withdraw">회원 탈퇴</a>
   </aside>
 
   <div class='menu_line'></div>
@@ -314,7 +318,7 @@
 
       <div class="content_body_bottom">
         <button type="button" onclick="update();" class="btn btn-secondary btn-sm">수정</button>
-        <button type="button" onclick="location.href='/member/update_passwd'" class="btn btn-secondary btn-sm">비밀번호 변경</button>
+        <button type="button" onclick="history.back();" class="btn btn-secondary btn-sm">취소</button>
       </div>
     </form>
   </div>

@@ -2,63 +2,98 @@
   <table class="table table-hover" style="width: 100%;">
     <colgroup>
       <col style='width: 10%;'/>
+      <col style='width: 20%;'/>
+      <col style='width: 15%;'/>
       <col style='width: 10%;'/>
-      <col style='width: 10%;'/>    
       <col style='width: 10%;'/>
       <col style='width: 10%;'/>
       <col style='width: 10%;'/>
-      <col style='width: 5%;'/>
+      <col style='width: 15%;'/>
     </colgroup>
     <thead>
       <tr>
         <th class="th_bs">순서</th>
         <th class="th_bs">제목</th>
+        <th class="th_bs">이미지</th>
         <th class="th_bs">시작 날</th>
         <th class="th_bs">종료 날</th>
-        <th class="th_bs">진행여부</th>
-        <th class="th_bs">인원 수</th>
+        <th class="th_bs">진행 여부</th>
+        <th class="th_bs">조회 수</th>
         <th class="th_bs">기타</th>
       </tr>
     </thead>
     <tbody>
-      <tr th:each="surveyVO, status:${list}">
-       <td class="td_bs" th:text="${no-status.index}"></td>
-<!--        
-        <td class='td_basic' style="vertical-align: middle; text-align: center;">
-        <div th:if="${surveyVO.file1.endsWith('jpg') or surveyVO.file1.endsWith('png')  or surveyVO.file1.endsWith('gif')}">
-          <img th:src="@{|/store/storage/${surveyVO.poster}|}" style="width: 120px; height: 90px;">
-        
-        </div>
+      
+      <tr th:each="surveyVO, status : ${list}">
+        <!-- 순서 -->
+        <td class="td_bs" th:text="${status.index + 1}"></td>
 
-        <div th:if="${((surveyVO.file1.endsWith('jpg') or surveyVO.file1.endsWith('png')  or surveyVO.file1.endsWith('gif')) == false) and (surveyVO.size1 > 0)}">
-          <span th:text="${surveyVO.file1}"></span>
-        </div>
+        <!-- 제목 -->
+        <td class="td_bs">
+          <a th:href="@{|/survey/read/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}" style="display:block; color:black;" th:text="${surveyVO.topic}"></a>
+        </td>
 
-        <div th:if="${surveyVO.size1 == 0}">
-          <img src="/survey/images/none1.png" style="width: 120px; height: 90px;">
-        </div>
-                
-        </td> -->
+        <!-- 이미지 -->
+        <td class='td_bs' style="vertical-align: middle; text-align: center;">
+          <div th:if="${surveyVO.file1.endsWith('jpg') or surveyVO.file1.endsWith('png') or surveyVO.file1.endsWith('gif')}">
+            <img th:src="@{|/survey/storage/${surveyVO.thumb1}|}" style="width: 120px; height: 90px;">
+          </div>
+          <div th:if="${((surveyVO.file1.endsWith('jpg') or surveyVO.file1.endsWith('png') or surveyVO.file1.endsWith('gif')) == false) and (surveyVO.size1 > 0)}">
+            <span th:text="${surveyVO.file1}"></span>
+          </div>
+          
+        </td>
 
+        <!-- 시작 날 -->
         <td class="td_bs">
-          <a th:href="@{|/survey/read/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}"  style="display:block; color:black;"  th:text="${surveyVO.survey_title}"></a>
+          <a th:href="@{|/survey/read/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}" style="display:block; color:black;" th:text="${surveyVO.startdate}"></a>
         </td>
+
+        <!-- 종료 날 -->
         <td class="td_bs">
-          <a th:href="@{|/survey/read/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}" style="display:block; color:black;" th:text="${surveyVO.start_date}"></a>
+          <a th:href="@{|/survey/read/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}" style="display:block; color:black;" th:text="${surveyVO.enddate}"></a>
         </td>
-        <td class="td_bs">
-        <a th:href="@{|/survey/read/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}" style="display:block; color:black;" th:text="${surveyVO.fin_date}"></a>
+
+        <!-- 진행 여부 -->
+        <td class="td_bs" style="text-align: center;">
+          <span th:if="${surveyVO.visible == 'Y'}">
+            <a th:href="@{|/survey/update_visible_n/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}">
+              <img src="/survey/images/show.png" class="icon" title="출력">
+            </a>
+          </span>
+          <span th:if="${surveyVO.visible == 'N'}">
+            <a th:href="@{|/survey/update_visible_y/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}">
+              <img src="/survey/images/hide.png" class="icon" title="숨김">
+            </a>
+          </span>
         </td>
-        <td class="td_bs">
-        <a th:href="@{|/survey/read/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}" style="display:block; color:black;" th:text="${surveyVO.y_n}"></a>
-        </td>
-        <td class="td_bs">
-        <a th:href="@{|/survey/read/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}" style="display:block; color:black;" th:text="${surveyVO.cnt}"></a>
+
+        <!-- 조회 수 -->
+        <td class="td_bs" style="text-align: center;">
+          <a th:href="@{|/survey/read/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}" style="display:block; color:black;" th:text="${surveyVO.cnt}"></a>
         </td> 
-        <td style="vertical-align: middle; text-align: center;">
-          <a th:href="@{|/survey/update/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}"><img src="/survey/update.png" class="icon" title="수정"></a> <!-- /static 기준 -->
-          <a th:href="@{|/survey/delete/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}"><img src="/survey/delete.png" class="icon" title="삭제"></a> <!--/* /static 기준 */-->
-          <a th:href="@{|/survey/create|}"><img src="/survey/create.png" class="icon" title="추가"></a> <!--/* /static 기준 */-->
+
+        <!-- 기타 -->
+        <td class="td_bs" style="text-align: center;">
+          <a th:href="@{|/survey/update/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}">
+            <img src="/survey/images/update.png" class="icon" title="수정">
+          </a>
+          <a th:href="@{|/survey/delete/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}">
+            <img src="/survey/images/delete.png" class="icon" title="삭제">
+          </a>
+          <a th:href="@{|/survey/create|}">
+            <img src="/survey/images/create.png" class="icon" title="추가">
+          </a>
+
+          <li class="li_none" th:if="${surveyVO.size1 > 0}">
+          <div>
+            첨부 파일 : <a th:href="@{|/download?dir=survey/storage&filename=${surveyVO.file1saved}&downname=${surveyVO.file1}|}"
+                         th:text="|${surveyVO.file1}|"></a>  
+            <a th:href="@{|/download?dir=survey/storage&filename=${surveyVO.file1saved}&downname=${surveyVO.file1}|}">
+              <img src="/survey/images/bottom.png"> 
+            </a>
+          </div>
+        </li>
         </td>
       </tr>
     </tbody>
@@ -67,6 +102,4 @@
   <!-- 페이지 버튼 목록 출력 시작 -->
   <div class="Bottom_menu" th:utext="${paging}"></div> 
   <!-- 페이지 버튼 목록 출력 종료 -->
-
 </div>
-

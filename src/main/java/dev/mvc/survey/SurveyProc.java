@@ -7,6 +7,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import dev.mvc.newscate.NewsCateVO;
+import dev.mvc.newscate.NewsCateVOMenu;
+
 
 
 
@@ -29,8 +32,8 @@ public class SurveyProc implements SurveyProcInter{
 
   @Override
   public SurveyVO read(int surveyno) {
-    SurveyVO surveyVO = this.surveyDAO.read(surveyno);
-    return surveyVO;
+    surveyDAO.increaseCnt(surveyno); // 조회수 증가
+      return surveyDAO.read(surveyno);
   }
 
   @Override
@@ -49,6 +52,18 @@ public class SurveyProc implements SurveyProcInter{
   public ArrayList<SurveyVO> list_all() {
     ArrayList<SurveyVO> list = this.surveyDAO.list_all();
     return list;
+  }
+  
+  @Override
+  public int update_visible_y(int surveyno) {
+    int cnt = this.surveyDAO.update_visible_y(surveyno);
+    return cnt;
+  }
+
+  @Override
+  public int update_visible_n(int surveyno) {
+    int cnt = this.surveyDAO.update_visible_n(surveyno);
+    return cnt;
   }
 
   @Override
@@ -183,8 +198,49 @@ public class SurveyProc implements SurveyProcInter{
     return list;
   }
 
+  @Override
+  public ArrayList<SurveyVO> list_search_paging(String word, int now_page, int record_per_page) {
+    /*
+     페이지당 10개의 레코드 출력
+     1 page: WHERE r >= 1 AND r <= 10
+     2 page: WHERE r >= 11 AND r <= 20
+     3 page: WHERE r >= 21 AND r <= 30
+     
+     now_page 1: WHERE r >= 1 AND r <= 10
+     now_page 2: WHERE r >= 11 AND r <= 20
+     now_page 3: WHERE r >= 21 AND r <= 30
+     
+     int start_num = (now_page - 1) * record_per_page;
+     int end_num=start_num + record_per_page;
+     */
+
+    int start_num = ((now_page - 1) * record_per_page) + 1;
+    int end_num=(start_num + record_per_page) - 1;
+
+    // System.out.println("WHERE r >= "+start_num+" AND r <= " + end_num);
+    
+    Map<String, Object> map = new HashMap<String, Object>();
+    map.put("word", word);
+    map.put("start_num", start_num);
+    map.put("end_num", end_num);
+    
+    ArrayList<SurveyVO> list = this.surveyDAO.list_search_paging(map);
+ 
+    
+    return list;
+  }
+
+  @Override
+  public int increaseCnt(int surveyno) {
+    // TODO Auto-generated method stub
+    return 0;
+  }
 
 
+  
+  
+
+  
 
 
 

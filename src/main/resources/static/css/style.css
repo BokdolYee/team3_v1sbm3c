@@ -2,15 +2,15 @@
   
   /* 폰트 선언 */
   @font-face {
-      font-family: 'TTHakgyoansimMonggeulmonggeulR';
-      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_keris@1.0/TTHakgyoansimMonggeulmonggeulR.woff2') format('woff2');
-      font-weight: normal;
-      font-style: normal;
+    font-family: 'HakgyoansimDunggeunmisoTTF-B';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2408-5@1.0/HakgyoansimDunggeunmisoTTF-B.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
   }
 
   /* 모든 태그에 적용 */
   *{
-     font-family: TTHakgyoansimMonggeulmonggeulR; 
+     font-family: HakgyoansimDunggeunmisoTTF-B; 
      font-size: 16px; 
      margin: 0px;  /* top right bottom left */
      padding: 0px;
@@ -28,7 +28,7 @@
   .top_menu_img {
     width: 100%;
     height: 200px;
-    background-image: url('./images/top02_1920_200.jpg');
+    background-image: url('./images/top04_1920_200.jpg');
     margin-bottom: 0px;
   }
  

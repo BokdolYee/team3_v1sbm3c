@@ -8,7 +8,7 @@
     <a href="javascript: location.reload();">새로 고침</a>
   </aside>
   
-
+  <div th:replace="~{survey/list_search_com::list_search_fragment}"></div> 
 
   <div class="menu_line"></div>
   
@@ -18,29 +18,30 @@
         <li th:switch="${code}" class="li_none">
           <div th:case="create_success">
             <span class="span_success">설문조사을 등록했습니다.</span><br>
-            등록된 설문조사명: <span th:text="${survey_title}"></span>
+            등록된 설문조사명: <span th:text="${topic}"></span>
           </div>
           <div th:case="create_fail">
-            <span class="span_success">설문조사을에 실패했습니다.</span><br>
-            등록 실패된 설문조사명: <span th:text="${survey_title}"></span>
+            <span class="span_success">설문조사 등록록에 실패했습니다.</span><br>
+            등록 실패된 설문조사명: <span th:text="${topic}"></span>
           </div>
           <div th:case="update_success">
             <span class="span_success">수정을 완료 했습니다.</span><br>
-            시작 날: <span th:text="${start_date}"></span><br>
-            완료 날: <span th:text="${fin_date}"></span>
+            설문 조사명: <span th:text="${topic}"></span><br>
+            시작 날: <span th:text="${startdate}"></span><br>
+            완료 날: <span th:text="${enddate}"></span>
           </div>
           <div th:case="update_fail">
             <span class="span_success">수정에 실패했습니다.</span><br>
-            수정 실패된 설문조사명: <span th:text="${survey_title}"></span>
+            수정 실패된 설문조사명: <span th:text="${topic}"></span>
           </div>
           <div th:case="delete_success">
             <span class="span_success">삭제를 완료 했습니다.</span><br>
-            시작 날: <span th:text="${start_date}"></span><br>
-            완료 날: <span th:text="${fin_date}"></span>
+            시작 날: <span th:text="${startdate}"></span><br>
+            완료 날: <span th:text="${enddate}"></span>
           </div>
           <div th:case="delete_fail">
             <span class="span_success">삭제에 실패했습니다.</span><br>
-            삭제 실패된 구단명: <span th:text="${survey_title}"></span>
+            삭제 실패된 설문조사명: <span th:text="${topic}"></span>
           </div>
         </li>
         

@@ -1,15 +1,32 @@
 package dev.mvc.stock;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+
+import dev.mvc.contents.ContentsVO;
 
 public interface StockProcInter {
-    public int create(StockVO stockVO); // 데이터 추가
-    
-    public StockVO read(int stockno); // 특정 데이터 읽기
-    
-    public List<StockVO> list(); // 데이터 목록 가져오기
-    
-    public int update(StockVO stockVO); // 데이터 수정
-    
-    public int delete(int stockno); // 데이터 삭제
+  public int create(StockVO stockVO);
+
+  public ArrayList<StockVO> list_all();
+
+  public StockVO read(Integer stockno);
+
+  public int update(StockVO stockVO);
+
+  public int delete(int stockno);
+
+  public Integer list_search_count(Map<String, Object> map);
+
+  public String pagingBox(int now_page, String searchSymbol, String searchName, String searchIndustry,
+                          String list_file_name, int search_count, int record_per_page, int page_per_block);
+  
+  public ArrayList<StockVO> listSearchPaging(Map<String, Object> map);
+
+  /**
+   * 파일 정보 수정
+   * @param contentsVO
+   * @return 처리된 레코드 갯수
+   */
+  public int update_file(StockVO stockVO);
 }

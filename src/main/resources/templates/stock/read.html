@@ -1,0 +1,54 @@
+<!DOCTYPE html> 
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  <div class='title_line'>
+    <span th:text="${stockVO.symbol }" class="title_line_text"></span > 
+    > <span th:text="${stockVO.name}" class="title_line_text"></span > 
+    > 종목 조회
+  </div>
+  
+  <aside class="aside_right">
+    <a href="javascript:location.reload();">새로고침</a>
+    <span class='menu_divide' >│</span>    
+    <a th:href="@{|/stock/create|}">등록</a>
+    <span class='menu_divide' >│</span>
+    <a th:href="@{|/stock/update/${stockVO.stockno}|}">종목 수정</a>
+        <span class='menu_divide' >│</span>
+    <a th:href="@{|/stock/update_file?stockno=${stockVO.stockno}|}">파일 수정</a>  
+    <span class='menu_divide' >│</span>
+    <a th:href="@{|/stock/delete/${stockVO.stockno}|}">삭제</a>
+
+ </aside> 
+
+  <aside class="aside_right">
+    <a th:href="@{|/stock/list_all|}">목록형</a>    
+    <span class='menu_divide' >│</span>
+  </aside> 
+
+  <div class='menu_line'></div>
+
+  <fieldset class="fieldset_basic">
+    <ul>
+      <li class="li_none">
+        <div style="width: 100%; word-break: break-all;">
+        
+          <div th:if="${stockVO.file1.endsWith('jpg') or stockVO.file1.endsWith('png')  or stockVO.file1.endsWith('gif')}">
+            <img th:src="@{|/contents/storage/${stockVO.file1saved}|}" style='width: 50%; float: left; margin-top: 0.5%; margin-right: 1%;'>
+          </div>
+          <!-- 주식의 심볼이 표시됨 -->
+          <span>종목코드 </span></br><span style="font-size: 1.5em; font-weight: bold;" th:text="${stockVO.symbol}"></span><br><br>
+          <span>종목명 </span></br><span style="font-size: 1.5em; font-weight: bold;" th:text="${stockVO.name}"></span><br><br>
+          <span>산업군 </span></br><span style="font-size: 1em;" th:text="${stockVO.industry}"></span><br><br>
+          <span style="font-size: 1em; display: -webkit-inline-box; margin-top: 1rem;" th:text="${stockVO.description}"></span><br><br>
+        </div>
+      </li>
+      
+      <li class="li_none" th:if="${stockVO.description != null}">
+      </li>   
+    </ul>
+  </fieldset>
+
+</div>
+
+</html>

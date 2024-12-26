@@ -1,20 +1,27 @@
 package dev.mvc.stockdata;
 
+import java.sql.Date;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter @Setter @ToString
 public class StockdataVO {
     private int sdatano;       // 데이터 번호 (Primary Key)
     private String rdate;      // 기록 날짜
     private float open_price;  // 시가
     private float close_price; // 종가
-    private String volume;      // 거래량
-    private String change;      // 변동률
-    private int stockno;       // 종목 번호 (Foreign Key)
+    private String volume;     // 거래량
+    private String change;     // 변동률
+    private Integer stockno;       // 종목 번호 (Foreign Key)
 
     // 기본 생성자
     public StockdataVO() {
     }
 
     // 매개변수 생성자
-    public StockdataVO(int sdatano, String rdate, float open_price, float close_price, String volume, String change, int stockno) {
+    public StockdataVO(int sdatano, String rdate, float open_price, float close_price, String volume, String change, Integer stockno) {
         this.sdatano = sdatano;
         this.rdate = rdate;
         this.open_price = open_price;
@@ -73,11 +80,11 @@ public class StockdataVO {
         this.change = change;
     }
 
-    public int getStockno() {
+    public Integer getStockno() {
         return stockno;
     }
 
-    public void setStockno(int stockno) {
+    public void setStockno(Integer stockno) {
         this.stockno = stockno;
     }
 
@@ -93,5 +100,10 @@ public class StockdataVO {
                 ", change=" + change +
                 ", stockno=" + stockno +
                 '}';
+    }
+
+    public void setRdate(Date date) {
+      // TODO Auto-generated method stub
+      
     }
 }

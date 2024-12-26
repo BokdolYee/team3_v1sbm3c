@@ -1,20 +1,36 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="dev.mvc.stock.StockDAOInter">
 
+    <!-- 데이터 추가 -->
     <insert id="create" parameterType="dev.mvc.stock.StockVO">
-        INSERT INTO Stock (stockno, symbol, name, sector, industry, description)
-        VALUES (#{stockno}, #{symbol}, #{name}, #{industry}, #{description})
+    INSERT INTO Stock (stockno, symbol, name, industry, description, file1, file1saved, thumb1, size1)
+    VALUES (Stock_SEQ.NEXTVAL, #{symbol}, #{name}, #{industry}, #{description}, 
+            #{file1, jdbcType=VARCHAR}, #{file1saved, jdbcType=VARCHAR}, 
+            #{thumb1, jdbcType=VARCHAR}, #{size1})
     </insert>
 
-    <select id="read" parameterType="int" resultType="dev.mvc.stock.StockVO">
-        SELECT * FROM Stock WHERE stockno = #{stockno}
+    <!-- 특정 데이터 조회 -->
+    <select id="read" parameterType="int" resultType="dev.mvc.stock.StockVO"> 
+        SELECT * FROM Stock WHERE stockno = #{stockno} 
     </select>
 
+    <!-- 전체 데이터 목록 -->
     <select id="list" resultType="dev.mvc.stock.StockVO">
         SELECT * FROM Stock ORDER BY stockno ASC
+    </select> 
+
+    <!-- 검색 (검색어가 있을 때만 필터링) -->
+    <select id="stockSearch" parameterType="HashMap" resultType="dev.mvc.stock.StockVO">
+        SELECT stockno, symbol, name, industry, description
+        FROM Stock
+        WHERE
+            (#{stockSearchSymbol} IS NULL OR symbol LIKE '%' || #{stockSearchSymbol} || '%') AND
+            (#{stockSearchName} IS NULL OR name LIKE '%' || #{stockSearchName} || '%') AND
+            (#{stockSearchIndustry} IS NULL OR industry LIKE '%' || #{stockSearchIndustry} || '%')
     </select>
 
+    <!-- 데이터 수정 -->
     <update id="update" parameterType="dev.mvc.stock.StockVO">
         UPDATE Stock
         SET symbol = #{symbol},
@@ -23,9 +39,45 @@
             description = #{description}
         WHERE stockno = #{stockno}
     </update>
+    
+      <!-- 파일 수정 -->
+  <update id="update_file" parameterType="dev.mvc.stock.StockVO">
+    UPDATE stock
+    SET file1=#{file1}, file1saved=#{file1saved}, thumb1=#{thumb1}, size1=#{size1}
+    WHERE stockno = #{stockno}
+  </update>  
 
+    <!-- 데이터 삭제 -->
     <delete id="delete" parameterType="int">
         DELETE FROM Stock WHERE stockno = #{stockno}
     </delete>
+
+    <!-- 검색된 데이터 목록 (페이징 포함) -->
+    <select id="listSearchPaging" parameterType="HashMap" resultType="dev.mvc.stock.StockVO">
+      SELECT stockno, symbol, name, industry, description, file1saved, thumb1, size1, r
+      FROM (
+          SELECT stockno, symbol, name, industry, description, file1saved, thumb1, size1, rownum AS r
+          FROM (
+              SELECT stockno, symbol, name, industry, description, file1saved, thumb1, size1
+              FROM stock
+              WHERE
+                  (#{searchSymbol} IS NULL OR symbol LIKE '%' || #{searchSymbol} || '%')
+                  AND (#{searchName} IS NULL OR name LIKE '%' || #{searchName} || '%')
+                  AND (#{searchIndustry} IS NULL OR industry LIKE '%' || #{searchIndustry} || '%')
+              ORDER BY stockno ASC
+          )
+      )
+        WHERE r &gt;= #{start_num} AND r &lt;= #{end_num} <!-- WHERE r >= 1 AND r <= 3 -->
+      </select>
+
+    <!-- 검색된 데이터 개수 -->
+    <select id="list_search_count" parameterType="HashMap" resultType="int">
+        SELECT COUNT(*)
+        FROM stock
+        WHERE 
+            (#{searchSymbol} IS NULL OR symbol LIKE '%' || #{searchSymbol} || '%')
+            AND (#{searchName} IS NULL OR name LIKE '%' || #{searchName} || '%')
+            AND (#{searchIndustry} IS NULL OR industry LIKE '%' || #{searchIndustry} || '%')
+    </select>
 
 </mapper>

@@ -1,30 +1,50 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
+ 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+
 <mapper namespace="dev.mvc.stockdata.StockdataDAOInter">
 
+    <!-- 생성 -->
     <insert id="create" parameterType="dev.mvc.stockdata.StockdataVO">
         INSERT INTO Stockdata (sdatano, rdate, open_price, close_price, volume, change, stockno)
-        VALUES (#{sdatano}, #{rdate}, #{open_price}, #{close_price}, #{volume}, #{change}, #{stockno})
+        VALUES (Stockdata_seq.nextval, sysdate, #{open_price}, #{close_price}, #{volume}, #{change}, Stock_seq.nextval)
     </insert>
 
+    <!-- Stock 데이터 조회 -->
+    <select id="readStock" parameterType="int" resultType="dev.mvc.stock.StockVO">
+        SELECT stockno, name, other_columns FROM Stock WHERE stockno = #{stockno}
+    </select>
+
+    <!-- 기존의 CRUD 쿼리들 -->
     <select id="read" parameterType="int" resultType="dev.mvc.stockdata.StockdataVO">
-        SELECT * FROM Stockdata WHERE sdatano = #{sdatano}
-    </select>
-
-    <select id="listByStockno" parameterType="int" resultType="dev.mvc.stockdata.StockdataVO">
-        SELECT * FROM Stockdata WHERE stockno = #{stockno} ORDER BY rdate ASC
-    </select>
-
-    <update id="update" parameterType="dev.mvc.stockdata.StockdataVO">
-        UPDATE Stockdata
-        SET rdate = #{rdate},
-            open_price = #{open_price},
-            close_price = #{close_price},
-            volume = #{volume},
-            change = #{change}
+        SELECT sdatano, rdate, open_price, close_price, volume, change, stockno
+        FROM Stockdata
         WHERE sdatano = #{sdatano}
+    </select>
+
+    <!-- 전체 목록 -->
+    <select id="list" resultType="dev.mvc.stockdata.StockdataVO">
+        SELECT sdatano, rdate, open_price, close_price, volume, change, stockno
+        FROM Stockdata
+        ORDER BY rdate DESC
+    </select>
+
+    <!-- 수정 -->
+    <update id="update" parameterType="dev.mvc.stockdata.StockdataVO">
+    UPDATE Stockdata
+    SET rdate = sysdate,  -- sysdate로 자동 갱신
+        open_price = #{open_price}, 
+        close_price = #{close_price},
+        volume = #{volume}, 
+        change = #{change}, 
+        stockno = #{stockno}
+    WHERE sdatano = #{sdatano}
     </update>
 
+
+
+    <!-- 삭제 -->
     <delete id="delete" parameterType="int">
         DELETE FROM Stockdata WHERE sdatano = #{sdatano}
     </delete>

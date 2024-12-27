@@ -55,6 +55,9 @@ public class MemberProc implements MemberProcInter {
     return cnt;
   }
   
+  /**
+   * 조건에 맞는 회원 수
+   */
   @Override
   public int list_search_count(SearchDTO searchDTO) {
     return memberDAO.list_search_count(searchDTO);

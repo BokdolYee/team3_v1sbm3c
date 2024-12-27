@@ -23,6 +23,14 @@
       </div>
 
       <div>
+        <label>긴급공지사항 설정</label>
+          <select name="is_urgent" class="form-control">
+            <option value="Y" th:selected="${issueVO.is_urgent == 'Y'}">Y</option>
+            <option value="N" th:selected="${issueVO.is_urgent == 'N'}">N</option>
+          </select>
+      </div>
+      
+      <div>
         <label>내용</label>
         <textarea name='content' th:text="${issueVO.content}" required="required" 
                   class="form-control" rows="12" style='width: 100%;'></textarea>

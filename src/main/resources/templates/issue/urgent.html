@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>긴급 공지사항</title>
+    <script>
+      // 10분 동안 팝업을 보지 않도록 설정하는 함수
+      function dismissUrgentNotice() {
+        // 현재 시간에 10분을 더한 시간 저장
+        let dismissTime = new Date().getTime() + (10 * 60 * 1000); // 10분 후
+        localStorage.setItem('urgentNoticeDismissed', dismissTime);
+        window.close();  // 팝업 창을 닫음
+      }
+
+      // 페이지 로드 시 10분 동안 보지 않도록 설정된 시간 확인
+      window.onload = function() {
+        // localStorage에서 dismiss 시간 가져오기
+        let dismissTime = localStorage.getItem('urgentNoticeDismissed');
+        let currentTime = new Date().getTime();
+
+        // 만약 dismiss 시간이 있고, 10분이 지난 후라면 팝업을 표시
+        if (!dismissTime || currentTime > dismissTime) {
+          document.getElementById('urgentNotice').style.display = 'block';
+        } else {
+          window.close();  // 10분 이내이면 팝업을 자동으로 닫음
+        }
+      };
+    </script>
+</head>
+</head>
+<body>
+    <h1>긴급 공지사항</h1>
+    <ul>
+        <li th:each="issue : ${urgentIssues}">
+            <h2 th:text="${issue.title}">공지 제목</h2>
+            <p th:text="${issue.content}">공지 내용</p>
+            <hr/>
+        </li>
+    </ul>
+    <button onclick="dismissUrgentNotice()">10분동안 닫기</button>
+</body>
+</html>

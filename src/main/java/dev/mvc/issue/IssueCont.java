@@ -106,7 +106,9 @@ public class IssueCont {
     }
 
     @GetMapping("/read/{issueno}")
-    public String read(@PathVariable("issueno") int issueno, Model model) {
+    public String read(@PathVariable("issueno") int issueno, Model model, HttpSession session, @ModelAttribute("memberVO") MemberVO memberVO) {
+        boolean isAdmin = memberProc.isAdmin(session);
+        model.addAttribute("isAdmin", isAdmin);
         IssueVO issueVO = issueProc.read(issueno);
         model.addAttribute("issueVO", issueVO);
         
@@ -157,10 +159,7 @@ public class IssueCont {
         @ModelAttribute("memberVO") MemberVO memberVO,
         @RequestParam(name = "word", defaultValue = "") String word,
         @RequestParam(name = "now_page", defaultValue = "1") int now_page) {
-      
-        // 세션에서 로그인한 사용자 정보 가져오기
-        MemberVO sessionMember = (MemberVO) session.getAttribute("memberVO");
-  
+
         // 관리자인지 체크
         boolean isAdmin = memberProc.isAdmin(session);  // MemberProc의 isAdmin 메서드 사용
         // 관리자인지 여부를 모델에 추가
@@ -192,6 +191,11 @@ public class IssueCont {
             return "/issue/list_search"; // /templates/issue/list_search.html
         } 
     
-
+    @GetMapping("/urgent")
+    public String urgentNotice(Model model, @ModelAttribute IssueVO issueVO) {
+      ArrayList<IssueVO> urgentIssues = issueProc.listUrgent();
+      model.addAttribute("urgentIssues", urgentIssues);
+      return "/issue/urgent"; // 팝업에 표시할 템플릿
+    }
 
 }

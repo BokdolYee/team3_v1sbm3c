@@ -8,6 +8,8 @@ CREATE TABLE contents (
 	cnt	NUMBER(10)	NULL,
 	all_cnt	NUMBER(30)	NULL,
 	visible	CHAR(1)	NULL,
-	cateno	Number(10)	NOT NULL,
+	newscateno	Number(10)	NOT NULL,
+	stockno	NUMBER(10)	NOT NULL,
+	newsno	Number(10)	NOT NULL,
     PRIMARY KEY (contentno)
 );

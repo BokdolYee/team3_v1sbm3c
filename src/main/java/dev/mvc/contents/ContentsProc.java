@@ -62,18 +62,6 @@ public class ContentsProc implements ContentsProcInter {
   }
 
   @Override
-  public int map(HashMap<String, Object> map) {
-    int cnt = this.contentsDAO.map(map);
-    return cnt;
-  }
-
-  @Override
-  public int youtube(HashMap<String, Object> map) {
-    int cnt = this.contentsDAO.youtube(map);
-    return cnt;
-  }
-
-  @Override
   public ArrayList<ContentsVO> list_by_cateno_search(HashMap<String, Object> hashMap) {
     ArrayList<ContentsVO> list = this.contentsDAO.list_by_cateno_search(hashMap);
     return list;

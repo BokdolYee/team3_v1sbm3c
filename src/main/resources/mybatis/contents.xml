@@ -5,24 +5,21 @@
 <mapper namespace="dev.mvc.contents.ContentsDAOInter">
   <!-- 등록한 레코드 갯수 1 리턴, #{memberno}: public int getAdminno() 호출됨 -->
   <insert id="create" parameterType="dev.mvc.contents.ContentsVO">
-    INSERT INTO contents(contentsno, memberno, newscateno, title, content, passwd, word,
-                                     file1, file1saved, thumb1, size1, rdate)
-    VALUES(contents_seq.nextval, #{memberno}, #{newscateno}, #{title}, #{content}, #{passwd}, #{word},
-                #{file1}, #{file1saved}, #{thumb1}, #{size1}, sysdate)
+    INSERT INTO contents(contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno)
+    VALUES(contents_seq.nextval, #{contentno}, #{title}, #{title}, #{passwd}, sysdate, #{cnt},
+                #{all_cnt}, #{visible}, #{stockno}, #{newsno})
   </insert>
 
   <!-- 모든 카테고리의 등록된 글목록 -->
   <select id="list_all" resultType="dev.mvc.contents.ContentsVO">
-    SELECT contentsno, memberno, newscateno, title, content, recom, cnt, replycnt, passwd, word, rdate,
-               file1, file1saved, thumb1, size1, mp4
+    SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno
     FROM contents
-    ORDER BY contentsno DESC
+    ORDER BY contentno DESC
   </select>
   
   <!-- 특정 카테고리의 등록된 글목록 -->
   <select id="list_by_cateno" resultType="dev.mvc.contents.ContentsVO" parameterType="int">
-    SELECT contentsno, memberno, newscateno, title, content, recom, cnt, replycnt, rdate,
-              LOWER(file1) as file1, file1saved, thumb1, size1, mp4
+    SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno
     FROM contents 
     WHERE newscateno = #{newscateno}
     ORDER BY contentsno DESC
@@ -30,30 +27,14 @@
   
   <!-- 일반적인 조회 -->
   <select id="read" resultType="dev.mvc.contents.ContentsVO" parameterType="int">
-    SELECT contentsno, memberno, newscateno, title, content, recom, cnt, replycnt, passwd, word, rdate,
-              file1, file1saved, thumb1, size1, map, youtube
+    SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno
     FROM contents
-    WHERE contentsno = #{contentsno}
+    WHERE contentno = #{contentno}
   </select>
-  
-  <!-- map 등록, 수정, 삭제, 
-         HashMap: VO 클래스는 변수가 너무 많아서 메모리 낭비가 발생함으로,
-                       보통 3개 이하의 적은 변수만 전달하는 경우 HashMap 사용 권장 -->
-  <update id="map" parameterType="HashMap">
-    UPDATE contents SET map=#{map} WHERE contentsno=#{contentsno}
-  </update>
-
-  <!-- Youtube 등록, 수정, 삭제, 
-         HashMap: VO 클래스는 변수가 너무 많아서 메모리 낭비가 발생함으로,
-                       보통 3개 이하의 적은 변수만 전달하는 경우 HashMap 사용 권장 -->
-  <update id="youtube" parameterType="HashMap">
-    UPDATE contents SET youtube=#{youtube} WHERE contentsno=#{contentsno}
-  </update>
 
   <!-- 카테고리별 검색 목록 -->
   <select id="list_by_cateno_search" resultType="dev.mvc.contents.ContentsVO" parameterType="HashMap">
-    SELECT contentsno, memberno, newscateno, title, content, recom, cnt, replycnt, word, rdate,
-            file1, file1saved, thumb1, size1, map, youtube
+    SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno
     FROM contents
     <choose>
       <when test="word == null or word == ''"> <!-- 검색하지 않는 경우 -->
@@ -65,7 +46,7 @@
                                                   OR UPPER(word) LIKE '%' || UPPER(#{word}) || '%')
       </otherwise>
     </choose>
-    ORDER BY contentsno DESC   
+    ORDER BY contentno DESC   
   </select>
    
   <!-- 카테고리별 검색 레코드 갯수 -->
@@ -86,11 +67,11 @@
 
   <!-- 카테고리별 검색 + 페이징 목록 -->
   <select id="list_by_cateno_search_paging" resultType="dev.mvc.contents.ContentsVO" parameterType="HashMap">
-   SELECT contentsno, memberno, newscateno, title, content, recom, cnt, replycnt, rdate, file1, file1saved, thumb1, size1, map, youtube, r
+   SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, r
    FROM (
-              SELECT contentsno, memberno, newscateno, title, content, recom, cnt, replycnt, rdate, file1, file1saved, thumb1, size1, map, youtube, rownum as r
+              SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, rownum as r
               FROM (
-                        SELECT contentsno, memberno, newscateno, title, content, recom, cnt, replycnt, rdate, file1, file1saved, thumb1, size1, map, youtube
+                        SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno
                         FROM contents
                         <choose>
                           <when test="word == null or word == ''"> <!-- 검색하지 않는 경우 -->
@@ -102,7 +83,7 @@
                                                               OR UPPER(word) LIKE '%' || UPPER(#{word}) || '%')
                           </otherwise>
                         </choose>
-                        ORDER BY contentsno DESC
+                        ORDER BY contentno DESC
                )
     )
     WHERE <![CDATA[ r >= #{start_num} AND r <= #{end_num} ]]>

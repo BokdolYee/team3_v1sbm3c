@@ -11,7 +11,7 @@ import dev.mvc.dto.SearchDTO;
 public class LoginlogProc implements LoginlogProcInter {
 
   @Autowired
-  private LoginlogProc loginlogDAO;
+  private LoginlogDAOInter loginlogDAO;
   
   public LoginlogProc(){
     System.out.println("-> LoginlogProc 생성됨.");

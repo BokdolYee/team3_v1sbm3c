@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- SB가 자동으로 구현하여 연동하는 interface -->
-<mapper namespace="dev.mvc.member.MemberDAOInter"> <!-- SB가 자동으로 구현하여 연동하는 interface -->
+<mapper namespace="dev.mvc.loginlog.LoginlogDAOInter"> <!-- SB가 자동으로 구현하여 연동하는 interface -->
 
   <!-- 로그인 로그 삽입 -->
   <insert id="login_log" parameterType="dev.mvc.loginlog.LoginlogVO">

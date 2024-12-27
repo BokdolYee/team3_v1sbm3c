@@ -40,20 +40,6 @@ public interface ContentsDAOInter {
   public ContentsVO read(int contentsno);
   
   /**
-   * map 등록, 수정, 삭제
-   * @param map
-   * @return 수정된 레코드 갯수
-   */
-  public int map(HashMap<String, Object> map);
-
-  /**
-   * youtube 등록, 수정, 삭제
-   * @param youtube
-   * @return 수정된 레코드 갯수
-   */
-  public int youtube(HashMap<String, Object> map);
-  
-  /**
    * 카테고리별 검색 목록
    * @param map
    * @return

@@ -1,5 +1,6 @@
 package dev.mvc.news;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +14,10 @@ import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import dev.mvc.issue.IssueVO;
+import dev.mvc.member.MemberVO;
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 @RequestMapping("/news")
 public class NewsCont {
@@ -23,6 +28,15 @@ public class NewsCont {
     @Autowired
     private PythonAPIClient pythonAPIClient;
 
+    
+    @GetMapping("/list")
+    public String list(HttpSession session, Model model, @ModelAttribute("NewsVO") NewsVO newsVO) {
+
+        ArrayList<NewsVO> list = this.newsProc.list();
+        model.addAttribute("list", list);
+        return "/news/list";
+    }
+    
     /**
      * 뉴스 상세 조회
      * @param newsno
@@ -30,15 +44,13 @@ public class NewsCont {
      */
     @GetMapping("/detail/{newsno}")
     public String getNewsDetail(@PathVariable("newsno") int newsno, Model model) {
-        System.out.printf("Spring에서 받아온 newsno: %d\n", newsno);  // newsno 값 출력 (디버깅)
-
+        System.out.printf("Spring에서 받아온 newsno: %d\n", newsno);
         // 뉴스 상세 정보 가져오기
         NewsVO newsVO = newsProc.read(newsno);
         if (newsVO == null) {
             model.addAttribute("error", "뉴스를 찾을 수 없습니다.");
             return "errorPage";  // errorPage.html로 이동
         }
-
         model.addAttribute("news", newsVO);
         return "/news/detail";  // news/detail.html로 이동
     }

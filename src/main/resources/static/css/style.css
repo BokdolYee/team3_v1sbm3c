@@ -544,9 +544,11 @@
   /* Bootstrap div input 태그 수평 center 정렬 종료                          */
   /* ---------------------------------------------------------------------- */
 
-  /* 추가 */
+  /* 페이징 관련 스타일 추가 */
   .pagination {
-        margin: 20px 0;
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
         text-align: center;
     }
     
@@ -560,9 +562,9 @@
     }
     
     .pagination a.active {
-        background-color: #007bff;
+        background-color: #4CAF50;
         color: white;
-        border: 1px solid #007bff;
+        border: 1px solid #4CAF50;
     }
     
     .pagination a:hover:not(.active) {

@@ -23,6 +23,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import dev.mvc.newscate.NewsCateProcInter;
 import dev.mvc.newscate.NewsCateVOMenu;
 import dev.mvc.dto.SearchDTO;
+import dev.mvc.loginlog.LoginlogProcInter;
+import dev.mvc.loginlog.LoginlogVO;
 import dev.mvc.member.MemberVO.UpdateValidationGroup;
 import dev.mvc.dto.PageDTO;
 import dev.mvc.tool.Tool;
@@ -38,6 +40,10 @@ public class MemberCont {
   @Autowired
   @Qualifier("dev.mvc.member.MemberProc")
   private MemberProcInter memberProc;
+  
+  @Autowired
+  @Qualifier("dev.mvc.loginlog.LoginlogProc")
+  private LoginlogProcInter loginlogProc;
 
   @Autowired
   @Qualifier("dev.mvc.newscate.NewsCateProc")
@@ -166,9 +172,6 @@ public class MemberCont {
       ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
       model.addAttribute("menu", menu);
 
-      MemberVO memberVO = new MemberVO();
-      model.addAttribute(memberVO);
-
       // 검색 조건 설정
       SearchDTO searchDTO = new SearchDTO();
       searchDTO.setSearchType(searchType);
@@ -179,14 +182,14 @@ public class MemberCont {
 
       // 전체 회원 수 조회
       int total = this.memberProc.list_search_count(searchDTO);
+      
+      // 검색 페이지 결과가 없고 페이지가 1보다 큰 경우 첫 페이지로 리다이렉트
+      if(total == 0 && page > 1) {
+        return "redirect:/member/list?searchType=" + searchType + "&keyword=" + keyword;
+      }
 
       // 페이징 정보 계산
       PageDTO pageDTO = new PageDTO(total, page);
-
-      /*
-       * total 나옴 pageDTO 나옴 searchDTO 나옴
-       * 
-       */
 
       // 회원 목록 조회
       ArrayList<MemberVO> list = memberProc.list_search_paging(searchDTO);
@@ -194,9 +197,7 @@ public class MemberCont {
       model.addAttribute("list", list);
       model.addAttribute("searchDTO", searchDTO);
       model.addAttribute("pageDTO", pageDTO);
-      model.addAttribute("currentPage", page);
-      model.addAttribute("searchType", searchType);
-      model.addAttribute("keyword", keyword);
+      model.addAttribute("total", total);
 
       return "/member/list_search";
     } else {
@@ -725,8 +726,21 @@ public class MemberCont {
 
     int cnt = this.memberProc.login(map);
     System.out.println("login_proc cnt: " + cnt);
+    
+    // 로그인 시도한 IP 주소 가져오기
+    String ip = request.getRemoteAddr();
+    
+    // 로그인 로그를 기록하기 위한 객체 생성
+    LoginlogVO loginlogVO = new LoginlogVO();
+    loginlogVO.setId(id);
+    loginlogVO.setIp(ip);
+    loginlogVO.setResult(cnt == 1 ? "T" : "F"); // 로그인 성공 여부
+    
+    // 로그인 기록 저장
+    this.loginlogProc.login_log(loginlogVO);
 
-    if (cnt == 1) {
+    if (cnt == 1) { // 로그인 성공
+      
       // id를 이용하여 회원 정보 조회
       MemberVO memberVO = this.memberProc.readByID(id);
       
@@ -796,7 +810,7 @@ public class MemberCont {
       // ----------------------------------------------------------------------------
 
       return "/index";
-    } else {
+    } else {  // 로그인 실패
       ra.addFlashAttribute("cnt", cnt); // 새로고침 시에도 cnt 값이 살아서 전달될 수 있도록 RedirectAttributes 클래스의 addFlashAttribute 함수 사용
       model.addAttribute("code", "login_fail");
       System.out.println("login_fail");

@@ -16,6 +16,7 @@
   <table class="table table-striped" style='width: 100%;'>
     <colgroup>
       <col style='width: 5%;'/>
+      <col style='width: 5%;'/>
       <col style='width: 10%;'/>
       <col style='width: 15%;'/>
       <col style='width: 15%;'/>
@@ -24,7 +25,8 @@
       <col style='width: 10%;'/>
     </colgroup>
     <tr>
-      <th class='th_bs'> </TH>
+      <th class='th_bs'>등급</th>
+      <th class='th_bs'>회원 번호</th>  
       <th class='th_bs'>아이디</th>
       <th class='th_bs'>닉네임</th>
       <th class='th_bs'>전화번호</th>
@@ -38,9 +40,10 @@
           <div th:if="${memberVO.grade >= 1 and memberVO.grade <= 10}"><img src='/member/images/admin.png' title="관리자" class="icon"></div>
           <div th:if="${memberVO.grade >= 11 and memberVO.grade <= 20}"><img src='/member/images/user.png' title="회원" class="icon"></div>
           <div th:if="${memberVO.grade >= 30 and memberVO.grade <= 39}"><img src='/member/images/pause.png' title="정지 회원" class="icon"></div>
-          <div th:if="${memberVO.grade >= 40 and memberVO.grade <= 49}"><img src='/member/images/x.png' title="탈퇴 회원" class="icon"></div>
+          <div th:if="${memberVO.grade == 99}"><img src='/member/images/x.png' title="탈퇴 회원" class="icon"></div>
         </div>
       </td>
+      <td class='td_basic' th:text="${memberVO.memberno}"></td>
       <td class='td_left'><a th:href="@{|./read?memberno=${memberVO.memberno}|}" th:text="${memberVO.id}"></a></td>
       <td class='td_left'><a th:href="@{|./read?memberno=${memberVO.memberno}|}" th:text="${memberVO.nickname}"></a></td>
       <td class='td_basic' th:text="${memberVO.tel}"></td>
@@ -54,14 +57,26 @@
   
   <!-- 페이징 -->
   <div class="pagination">
-    <a th:if="${pageDTO.prev}" th:href="@{|/member/list?page=${pageDTO.startPage - 1}&searchType=${searchDTO.searchType}&keyword=${searchDTO.keyword}|}"></a>
-    <th:block th:each="num : ${#numbers.sequence(pageDTO.startPage, pageDTO.endPage)}">
-      <a th:href="@{|/member/list?page=${num}&searchType=${searchDTO.searchType}&keyword=${searchDTO.keyword}|}"
-         th:class="${pageDTO.currentPage == num} ? 'active' : ''"
-         th:text="${num}"></a>
+    <!-- 검색 결과가 있을 때만 페이징 표시-->
+    <th:block th:if="${total > 0}">
+      <!-- 이전 페이지-->
+      <a th:if="${pageDTO.prev}" th:href="@{|/member/list?page=${pageDTO.startPage - 1}&searchType=${searchDTO.searchType}&keyword=${searchDTO.keyword}|}"></a>
+      
+      <!-- 페이지 번호-->
+      <th:block th:each="num : ${#numbers.sequence(pageDTO.startPage, pageDTO.endPage)}">
+        <a th:href="@{|/member/list?page=${num}&searchType=${searchDTO.searchType}&keyword=${searchDTO.keyword}|}"
+          th:class="${pageDTO.currentPage == num} ? 'active' : ''"
+          class="page-link"
+          th:text="${num}"></a>
+      </th:block>
+
+      <!-- 다음 페이지-->
+      <a th:if="${pageDTO.next}" th:href="@{|/member/list?page=${pageDTO.endPage + 1}&searchType=${searchDTO.searchType}&keyword=${searchDTO.keyword}|}"></a>
     </th:block>
-    <a th:if="${pageDTO.next}" th:href="@{|/member/list?page=${pageDTO.endPage + 1}&searchType=${searchDTO.searchType}&keyword=${searchDTO.keyword}|}"></a>
   </div>
+
+  <!-- 검색 결과가 없을 때 메시지 표시-->
+  <div th:if="${total == 0}" class="text-center mt-3">검색 결과가 존재하지 않습니다.</div>
 
   <script>
     function search() {

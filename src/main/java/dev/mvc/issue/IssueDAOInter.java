@@ -16,4 +16,5 @@ public interface IssueDAOInter {
   public int increaseCnt(int issueno);
   public int list_search_count(String word);
   public ArrayList<IssueVO> list_search_paging(Map<String, Object> map);
+  public ArrayList<IssueVO> listUrgent();
 }

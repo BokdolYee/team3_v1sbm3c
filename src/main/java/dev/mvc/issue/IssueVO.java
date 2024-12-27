@@ -16,4 +16,6 @@ public class IssueVO {
   private String rdate;
   /** 공지사항 제목 */
   private String title;
+  /** 긴급 공지사항 */
+  private char is_urgent;
 }

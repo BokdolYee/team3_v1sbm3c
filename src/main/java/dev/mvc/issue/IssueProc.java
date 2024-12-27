@@ -59,6 +59,12 @@ public class IssueProc implements IssueProcInter{
     return cnt;
   }
 
+  
+  @Override
+  public ArrayList<IssueVO> listUrgent() {
+      return issueDAO.listUrgent();
+  }
+
   @Override
   public ArrayList<IssueVO> list_search_paging(String word, int now_page, int record_per_page) {
 

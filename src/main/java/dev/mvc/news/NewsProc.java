@@ -38,6 +38,11 @@ public class NewsProc implements NewsProcInter {
     }
 
     @Override
+    public ArrayList<NewsVO> list() {
+        return newsDAO.list();
+    }
+    
+    @Override
     public ArrayList<NewsVO> listPaging(Map<String, Object> param) {
         return newsDAO.listPaging(param);
     }

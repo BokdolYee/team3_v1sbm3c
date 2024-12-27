@@ -10,7 +10,7 @@
 
   <!-- R: Read -->
   <select id="read" resultType="dev.mvc.news.NewsVO" parameterType="Integer">
-    SELECT newsno, url, source, publish_date, impact, summary
+    SELECT newsno, text, url, source, publish_date, impact, summary
     FROM news
     WHERE newsno = #{newsno}
   </select>
@@ -45,6 +45,13 @@
     ORDER BY publish_date DESC
   </select>
 
+    <!-- 공지사항 전체 목록 조회 -->
+    <select id="list" resultType="dev.mvc.news.NewsVO">
+        SELECT newsno, text, impact, summary, url, source, publish_date
+        FROM news
+        ORDER BY newsno DESC
+    </select>
+    
   <!-- P: Paging -->
   <select id="list_paging" resultType="dev.mvc.news.NewsVO" parameterType="Map">
     SELECT newsno, impact, summary, url, source, publish_date, r

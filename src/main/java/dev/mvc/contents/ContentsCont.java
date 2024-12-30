@@ -109,7 +109,7 @@ public class ContentsCont {
 
 
   /**
-   * 등록 처리 http://localhost:9091/contents/create
+   * 등록 처리 
    * 
    * @return
    */
@@ -123,7 +123,36 @@ public class ContentsCont {
       contentsVO.setNewscateno(newscateno);
     
       if (memberProc.isAdmin(session)) { // 관리자로 로그인한 경우
-          
+     // 파일 업로드 처리
+        String file1 = ""; // 원본 파일명 image
+        String file1saved = ""; // 저장된 파일명, image
+        String thumb1 = ""; // preview image
+
+        String upDir = Contents.getUploadDir(); // 파일을 업로드할 폴더 준비
+        MultipartFile mf = contentsVO.getFile1MF(); // 파일 처리
+
+        if (!mf.isEmpty()) { // 파일이 있는 경우
+          file1 = mf.getOriginalFilename(); // 원본 파일명
+          long size1 = mf.getSize(); // 파일 크기
+
+          if (Tool.checkUploadFile(file1)) { // 업로드 가능한 파일인지 검사
+            file1saved = Upload.saveFileSpring(mf, upDir); // 파일 저장
+            if (Tool.isImage(file1saved)) { // 이미지인지 검사
+              thumb1 = Tool.preview(upDir, file1saved, 200, 150); // 썸네일 생성
+            }
+
+            // 파일 정보 설정
+            contentsVO.setFile1(file1);
+            contentsVO.setFile1saved(file1saved);
+            contentsVO.setThumb1(thumb1);
+            contentsVO.setSize1(size1);
+          } else {
+            ra.addFlashAttribute("code", "check_upload_file_fail"); // 업로드 실패
+            ra.addFlashAttribute("cnt", 0);
+            ra.addFlashAttribute("url", "/Contents/msg");
+            return "redirect:/Contents/msg";
+          }
+        }
           // contents 테이블에 데이터 등록
           int cnt = this.contentsProc.create(contentsVO);
 
@@ -141,7 +170,7 @@ public class ContentsCont {
 
 
   /**
-   * 전체 목록, 관리자만 사용 가능 http://localhost:9091/contents/list_all
+   * 전체 목록, 관리자만 사용 가능
    * 
    * @return
    */
@@ -166,8 +195,7 @@ public class ContentsCont {
 
   /**
    * 유형 3
-   * 카테고리별 목록 + 검색 + 페이징 http://localhost:9091/contents/list_by_cateno?cateno=5
-   * http://localhost:9091/contents/list_by_cateno?cateno=6
+   * 카테고리별 목록 + 검색 + 페이징 
    * 
    * @return
    */
@@ -217,8 +245,6 @@ public class ContentsCont {
 
   /**
    * 카테고리별 목록 + 검색 + 페이징 + Grid
-   * http://localhost:9091/contents/list_by_cateno?cateno=5
-   * http://localhost:9091/contents/list_by_cateno?cateno=6
    * 
    * @return
    */
@@ -267,7 +293,7 @@ public class ContentsCont {
   }
 
   /**
-   * 조회 http://localhost:9091/contents/read?contentsno=17
+   * 조회 
    * 
    * @return
    */
@@ -299,6 +325,10 @@ public class ContentsCont {
     StockVO stockVO = this.stockProc.read(contentsVO.getStockno());
     model.addAttribute("stockVO", stockVO);
     
+    long size1 = contentsVO.getSize1();
+    String size1_label = Tool.unit(size1);
+    contentsVO.setSize1_label(size1_label);
+    
     model.addAttribute("word", word);
     model.addAttribute("now_page", now_page);
 
@@ -307,7 +337,7 @@ public class ContentsCont {
 
 
   /**
-   * 수정 폼 http:// localhost:9091/contents/update_text?contentsno=1
+   * 수정 폼 http:// localhost:9091/contents/update_text?contentno=1
    *
    */
   @GetMapping(value = "/update_text")
@@ -344,7 +374,7 @@ public class ContentsCont {
   }
 
   /**
-   * 수정 처리 http://localhost:9091/contents/update_text?contentsno=1
+   * 수정 처리 http://localhost:9091/contents/update_text?contentno=1
    * 
    * @return
    */
@@ -387,13 +417,13 @@ public class ContentsCont {
   }
 
   /**
-   * 파일 수정 폼 http://localhost:9091/contents/update_file?contentsno=1
+   * 파일 수정 폼 http://localhost:9091/contents/update_file?contentno=1
    * 
    * @return
    */
   @GetMapping(value = "/update_file")
   public String update_file(HttpSession session, Model model, 
-                                     @RequestParam(name="contentsno", defaultValue = "0") int contentsno,
+                                     @RequestParam(name="contentno", defaultValue = "0") int contentno,
                                      @RequestParam(name="word", defaultValue = "") String word, 
                                      @RequestParam(name="now_page", defaultValue = "1") int now_page) {
     ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
@@ -402,11 +432,14 @@ public class ContentsCont {
     model.addAttribute("word", word);
     model.addAttribute("now_page", now_page);
     
-    ContentsVO contentsVO = this.contentsProc.read(contentsno);
+    ContentsVO contentsVO = this.contentsProc.read(contentno);
     model.addAttribute("contentsVO", contentsVO);
 
     NewsCateVO newscateVO = this.newscateProc.read(contentsVO.getNewscateno());
     model.addAttribute("newscateVO", newscateVO);
+    
+    NewsVO newsVO = this.newsProc.read(contentsVO.getNewsno());
+    model.addAttribute("newsVO", newsVO);
 
     return "/contents/update_file";
 
@@ -479,7 +512,7 @@ public class ContentsCont {
       // -------------------------------------------------------------------
 
       this.contentsProc.update_file(contentsVO); // Oracle 처리
-      ra.addAttribute ("contentsno", contentsVO.getContentno());
+      ra.addAttribute ("contentno", contentsVO.getContentno());
       ra.addAttribute("newscateno", contentsVO.getNewscateno());
       ra.addAttribute("word", word);
       ra.addAttribute("now_page", now_page);
@@ -493,7 +526,7 @@ public class ContentsCont {
 
   /**
    * 파일 삭제 폼
-   * http://localhost:9091/contents/delete?contentsno=1
+   * http://localhost:9091/contents/delete?contentno=1
    * 
    * @return
    */
@@ -551,7 +584,26 @@ public class ContentsCont {
     
     StockVO stockVO = this.stockProc.read(stockno);
     model.addAttribute("stockVO", stockVO);
+    // -------------------------------------------------------------------
+    // 파일 삭제 시작
+    // -------------------------------------------------------------------
+    // 삭제할 파일 정보를 읽어옴.
+    ContentsVO ContentsVO_read = contentsProc.read(contentno);
+        
+    String file1saved = ContentsVO_read.getFile1saved();
+    String thumb1 = ContentsVO_read.getThumb1();
     
+    String uploadDir = Contents.getUploadDir();
+    Tool.deleteFile(uploadDir, file1saved);  // 실제 저장된 파일삭제
+    Tool.deleteFile(uploadDir, thumb1);     // preview 이미지 삭제
+    // -------------------------------------------------------------------
+    // 파일 삭제 종료
+    // -------------------------------------------------------------------
+    
+    this.contentsProc.delete(contentno); // DBMS 삭제
+    this.contentsProc.updateCntCount(contentno);
+    this.contentsProc.resetCnt(contentno);
+    this.contentsProc.updateCnt(contentno);
     this.contentsProc.delete(contentno); // DBMS 글 삭제
     
     HashMap<String, Object> map = new HashMap<String, Object>();

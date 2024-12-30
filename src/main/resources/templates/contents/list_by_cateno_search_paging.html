@@ -33,21 +33,31 @@
       <col style='width: 90%;'/>
     </colgroup>
     <tr>
-      <th class='th_bs'>종목</TH>
-      <th class='th_bs'>분석</th>
+      <th class='th_bs'>파일</TH>
+      <th class='th_bs'>제목</th>
     </tr>
    
     <tr th:if="${list.size() > 0}" th:each="contentsVO, status:${list}" 
          th:attr="onclick=|location.href='/contents/read?contentno=${contentsVO.contentno}&word=${word}&now_page=${now_page}'|"
          style="cursor: pointer; height: 90px;">
+         </td>
       <td class='td_basic' style="vertical-align: middle; text-align: center;">
-        <span th:text="${contentsVO.title}" style="font-weight: bold;"></span>
+      <div th:if="${contentsVO.file1.endsWith('jpg') or contentsVO.file1.endsWith('png')  or contentsVO.file1.endsWith('gif')}">
+        <img th:src="@{|/contents/storage/${contentsVO.thumb1}|}" style="width: 120px; height: 90px;">
+      </div>
+
+      <div th:if="${((contentsVO.file1.endsWith('jpg') or contentsVO.file1.endsWith('png')  or contentsVO.file1.endsWith('gif')) == false) and (contentsVO.size1 > 0)}">
+        <span th:text="${contentsVO.file1}"></span>
+      </div>
+
+      <div th:if="${contentsVO.size1 == 0}">
+        <img src="/contents/images/none1.png" style="width: 120px; height: 90px;">
+      </div>
       </td>
       </td>
       <td class='td_left'>
         <span th:text="${contentsVO.title}" style="font-weight: bold;"></span>
         <span th:text="${#dates.format(contentsVO.rdate, 'yyyy-MM-dd')}"></span>
-
         <span th:if="${contentsVO.content.length() > 160 }" 
                   th:text="|${contentsVO.content.substring(0, 160) }...|"></span>
         <span th:if="${contentsVO.content.length() <= 160 }" 

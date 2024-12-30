@@ -1,11 +1,13 @@
 package dev.mvc.survey;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
-import org.json.JSONObject;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +24,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 import dev.mvc.member.MemberProcInter;
+import dev.mvc.newscate.NewsCateVO;
+import dev.mvc.newscate.NewsCateVOMenu;
+import dev.mvc.surveytopic.SurveytopicProcInter;
+import dev.mvc.surveytopic.SurveytopicVO;
 import dev.mvc.tool.Tool;
 import dev.mvc.tool.Upload;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,112 +51,101 @@ public class SurveyCont {
   private SurveyProcInter surveyProc;
   
   @Autowired
+  @Qualifier("dev.mvc.surveytopic.SurveytopicProc")
+  private SurveytopicProcInter surveytopicProc; // 개별 문제를 관리하는 인터페이스 주입
+  
+  @Autowired
   @Qualifier("dev.mvc.member.MemberProc")
   private MemberProcInter memberProc;
   
   /**
-   * 등록 폼
-   * 
-   * @param model
-   * @return
+   * 등록폼
    */
-  // // http://localhost:9091/survey/create
-    @GetMapping(value = "/create")
-    public String create(HttpSession session, Model model) {
-     if (this.memberProc.isAdmin(session)) {
-        SurveyVO surveyVO = new SurveyVO();
-        model.addAttribute("surveyVO", surveyVO);
-        
-        return "/survey/create";
+  @GetMapping(value = "/create")
+  public String create(HttpSession session, Model model,
+      @RequestParam(name="word", defaultValue = "") String word,
+      @RequestParam(name = "surveyno", defaultValue = "0") int surveyno,
+      @RequestParam(name="now_page", defaultValue = "1") int now_page) {
+
+      if (this.memberProc.isAdmin(session)) {
+          SurveyVO surveyVO = new SurveyVO();
+          model.addAttribute("surveyVO", surveyVO);
+          
+          // 페이지당 항목 수를 설정 (예: 10개)
+          int recordPerPage = 10; // 원하는 개수로 조정
+          
+          // 리스트를 가져올 때 페이지 번호와 페이지당 항목 수를 넘겨줌
+          ArrayList<SurveyVO> list = this.surveyProc.list_paging(word, now_page, recordPerPage);
+          model.addAttribute("list", list);
+          
+          // 페이지네이션 처리
+          int search_count = this.surveyProc.list_search_count(word); // 검색 결과 수
+          String paging = this.surveyProc.pagingBox(now_page, word, this.list_file_name, search_count, recordPerPage, this.page_per_block);
+          model.addAttribute("paging", paging);
+          
+          return "/survey/create"; // survey/create.html로 리턴
       } else {
-        return "redirect:/member/login_cookie_need";
+          return "redirect:/member/login_cookie_need"; // 로그인 안되어 있으면 리다이렉트
       }
-    }
+  }
+
     
-  /**
-  * 등록 처리, http://localhost:9093/cate/create
-  */ 
-    @PostMapping(value = "/create")
-    public String create(HttpServletRequest request,
-                                HttpSession session,
-                                Model model, 
-                                @ModelAttribute("surveyVO") SurveyVO surveyVO, 
-                                BindingResult bindingResult,
-                                RedirectAttributes ra) {
-      if (memberProc.isAdmin(session)) { // 관리자로 로그인한경우
-      // ------------------------------------------------------------------------------
-      // 파일 전송 코드 시작
-      // ------------------------------------------------------------------------------
-      String file1 = "";
-      String file1saved = ""; // 저장된 파일명, image
-      String poster = ""; // preview image
+  @PostMapping(value = "/create")
+  public String create(
+      HttpServletRequest request,
+      HttpSession session,
+      Model model,
+      @Valid @ModelAttribute("surveyVO") SurveyVO surveyVO,
+      BindingResult bindingResult,
+      RedirectAttributes ra) {
 
-      String upDir = Survey.getUploadDir(); // 파일을 업로드할 폴더 준비
-      // upDir = upDir + "/" + 한글을 제외한 카테고리 이름
-      System.out.println("-> upDir: " + upDir);
-
-      // 전송 파일이 없어도 file1MF 객체가 생성됨.
-      // <input type='file' class="form-control" name='file1MF' id='file1MF'
-      // value='' placeholder="파일 선택">
-      MultipartFile mf = surveyVO.getFile1MF();
-      System.out.println("-> mf: " + mf);
-      
-      file1 = mf.getOriginalFilename(); // 원본 파일명 산출, 01.jpg
-      System.out.println("-> 원본 파일명 산출 file1: " + file1);
-
-      long size1 = mf.getSize(); // 파일 크기
-      if (size1 > 0) { // 파일 크기 체크, 파일을 올리는 경우
-        if (Tool.checkUploadFile(file1) == true) { // 업로드 가능한 파일인지 검사
-          // 파일 저장 후 업로드된 파일명이 리턴됨, spring.jsp, spring_1.jpg, spring_2.jpg...
-          file1saved = Upload.saveFileSpring(mf, upDir);
-
-          if (Tool.isImage(file1saved)) { // 이미지인지 검사
-            // thumb 이미지 생성후 파일명 리턴됨, width: 200, height: 150
-            poster = Tool.preview(upDir, file1saved, 200, 150);
-          }
-
-          surveyVO.setFile1saved(file1saved); // 저장된 파일명(파일명 중복 처리)
-          surveyVO.setPoster(poster); // 원본이미지 축소판
-          surveyVO.setFile1(file1);
-          surveyVO.setSize1(size1);
-        } else { // 전송 못하는 파일 형식
-          ra.addFlashAttribute("code", "check_upload_file_fail"); // 업로드 할 수 없는 파일
-          ra.addFlashAttribute("cnt", 0); // 업로드 실패
-          ra.addFlashAttribute("url", "/contents/msg"); // msg.html, redirect parameter 적용
-          return "redirect:/contents/msg"; // Post -> Get - param...
-        }
-      } else { // 글만 등록하는 경우
-        System.out.println("-> 글만 등록");
-      }
-
-      // ------------------------------------------------------------------------------
-      // 파일 전송 코드 종료
-      // ------------------------------------------------------------------------------
-      
-      if (bindingResult.hasErrors() == true) {
-        return "/survey/create";
-       }
-      
-      int cnt = this.surveyProc.create(surveyVO);
-      System.out.println("-> cnt: " + cnt);
-      
-      if (cnt == 1) {
-        return "redirect:/survey/list_search";
-      } else {
-        ra.addFlashAttribute("code", "create_fail"); // DBMS 등록 실패
-        ra.addFlashAttribute("cnt", 0); // 업로드 실패
-        ra.addFlashAttribute("url", "/survey/msg"); // msg.html, redirect parameter 적용
-        return "redirect:/survey/msg"; // Post -> Get - param...
-      }
-      
-      
-      
-      
-      } else { // 로그인 실패 한 경우
-        return "redirect:/member/login_cookie_need"; // /member/login_cookie_need.html
-      }      
-
+    // 유효성 검사 실패 시 다시 입력 폼으로 이동
+    if (bindingResult.hasErrors()) {
+      return "/survey/create"; // templates/survey/create.html
     }
+
+    // 파일 업로드 처리
+    String file1 = "";        // 원본 파일명
+    String file1saved = "";   // 저장된 파일명
+    String thumb1 = "";       // 축소판 파일명
+   
+    String upDir = Survey.getUploadDir(); // 업로드 디렉토리 경로 (Survey 클래스에 정의된 메서드 가정)
+    MultipartFile mf = surveyVO.getFile1MF(); // MultipartFile 객체 가져오기
+
+    file1 = mf.getOriginalFilename(); // 원본 파일명
+    long size1 = mf.getSize();             // 파일 크기
+
+    if (size1 > 0) { // 파일이 업로드된 경우
+      if (Tool.checkUploadFile(file1)) { // 파일 형식 검사
+        file1saved = Upload.saveFileSpring(mf, upDir); // 파일 저장
+        if (Tool.isImage(file1saved)) { // 이미지 파일인지 검사
+          thumb1 = Tool.preview(upDir, file1saved, 200, 150); // 축소판 생성
+        }
+        surveyVO.setFile1(file1);       // 원본 파일명 저장
+        surveyVO.setFile1saved(file1saved); // 저장된 파일명 저장
+        surveyVO.setThumb1(thumb1);     // 축소판 파일명 저장
+        surveyVO.setSize1(size1);       // 파일 크기 저장
+      } else {
+        ra.addFlashAttribute("code", "check_upload_file_fail"); // 업로드 실패 메시지
+        return "redirect:/survey/msg"; // 업로드 실패 메시지 페이지로 리다이렉트
+      }
+    }
+
+    // 데이터베이스에 설문 데이터 저장
+    surveyVO.setTopic(surveyVO.getTopic().trim()); // 제목 공백 제거
+    int cnt = this.surveyProc.create(surveyVO);   // 설문 등록
+    if (cnt == 1) {
+      return "redirect:/survey/list_search"; //8 설문 목록으로 이동
+    } else {
+      model.addAttribute("code", "create_fail"); // 등록 실패 메시지
+    }
+
+    model.addAttribute("cnt", cnt); // 결과 추가
+    model.addAttribute("surveyVO", surveyVO); // 이미지 경로 포함
+    return "/survey/msg"; // 메시지 페이지로 이동
+  }
+
+
     
     /**
      * 등록 폼 및 목록
@@ -159,11 +154,12 @@ public class SurveyCont {
      * @return
      */
     @GetMapping(value = "/list_all")
-    public String list_all(HttpSession session, Model model,
+    public String list_all(Model model,
                                 @RequestParam(name="word", defaultValue = "") String word,
                                 @RequestParam(name = "surveyno", defaultValue = "0") int surveyno,
                                 @RequestParam(name="now_page", defaultValue = "1") int now_page) {
-      if (this.memberProc.isAdmin(session)) {
+      
+      
       SurveyVO surveyVO = new SurveyVO();
       model.addAttribute("surveyVO", surveyVO);
       
@@ -186,23 +182,30 @@ public class SurveyCont {
       // --------------------------------------------------------------------------------------      
      
       return "/survey/list_all";
-      } else {
-        return "redirect:/member/login_cookie_need"; // redirect
-      }
-    }
+      } 
+      
+    
     
 
     /**
      * 조회 http://localhost:9093/survey/read/1
      */
     @GetMapping(value = "/read/{surveyno}")
-    public String read(Model model, @PathVariable("surveyno") Integer surveyno) {
+    public String read(Model model,
+                                    @PathVariable("surveyno") Integer surveyno,
+                                    @ModelAttribute("surveytopicVO") SurveytopicVO surveytopicVO) {
       SurveyVO surveyVO = this.surveyProc.read(surveyno);
       model.addAttribute("surveyVO", surveyVO);
+      
+      ArrayList<SurveytopicVO> surveytopicList = this.surveytopicProc.listBySurveyno(surveyno);
+      model.addAttribute("surveytopicList", surveytopicList); // 개별 문제 목록 추가
+      
+      
+      this.surveyProc.increaseCnt(surveyno);
 
       return "/survey/read";    
     }    
-    
+
     /**
      * 수정폼 http://localhost:9093/survey/update/1
      */
@@ -214,7 +217,18 @@ public class SurveyCont {
       if (this.memberProc.isAdmin(session)) {
         SurveyVO surveyVO = this.surveyProc.read(surveyno);
         model.addAttribute("surveyVO", surveyVO);
-
+        
+      //ArrayList<MovieVO> list = this.moviecateProc.list_all();
+        ArrayList<SurveyVO> list = this.surveyProc.list_paging(word, now_page, this.record_per_page);
+        model.addAttribute("list", list);
+        
+//      ArrayList<MovieVO> menu = this.moviecateProc.list_all_categrp_y();
+//      model.addAttribute("menu", menu);
+      
+       
+        
+     
+        
         // 페이지 번호 목록 생성
         int search_count = this.surveyProc.list_search_count(word);
         String paging = this.surveyProc.pagingBox(now_page, word, this.list_file_name, search_count, this.record_per_page,
@@ -228,56 +242,76 @@ public class SurveyCont {
       }
     }
     
-    /**
-     * 수정 처리, http://localhost:9091/cate/update
-     * 
-     * @param model         Controller -> Thymeleaf HTML로 데이터 전송에 사용
-     * @param cateVO        Form 태그 값 -> 검증 -> cateVO 자동 저장, request.getParameter()
-     *                      자동 실행
-     * @param bindingResult 폼에 에러가 있는지 검사 지원
-     * @return
-     */
+    
+ // 파일 수정 처리 POST 방식
     @PostMapping(value = "/update")
-    public String update(HttpSession session, Model model, @Valid @ModelAttribute("surveyVO") SurveyVO surveyVO, BindingResult bindingResult,
-                                    @RequestParam(name = "now_page", defaultValue = "") int now_page, 
-                                    @RequestParam(name="word", defaultValue = "") String word,
-                                    RedirectAttributes ra) {
-      if (this.memberProc.isAdmin(session)) {
-        
-        if (bindingResult.hasErrors() == true) { // 에러가 있으면 폼으로 돌아갈 것.
-          return "/cate/update"; // /templates/cate/update.html
+    public String update(HttpSession session, Model model, RedirectAttributes ra,
+        @ModelAttribute("surveyVO") SurveyVO surveyVO,
+        @RequestParam(name = "word", defaultValue = "") String word, 
+        @RequestParam(name = "now_page", defaultValue = "1") int now_page) {
+
+        // 관리자 권한 체크
+        if (this.memberProc.isAdmin(session)) {
+            // 기존 데이터 읽어오기
+            SurveyVO surveyVO_old = surveyProc.read(surveyVO.getSurveyno());
+
+            String file1saved = surveyVO_old.getFile1saved(); // 기존 저장된 파일명
+            String thumb1 = surveyVO_old.getThumb1(); // 기존 썸네일 파일명
+            long size1 = 0;
+
+            String upDir = Survey.getUploadDir(); // 파일 저장 경로
+
+            // 기존 파일 삭제 처리 (파일명이 존재하면 삭제)
+            if (file1saved != null && !file1saved.isEmpty()) {
+                Tool.deleteFile(upDir, file1saved); // 기존 파일 삭제
+                Tool.deleteFile(upDir, thumb1); // 기존 썸네일 삭제
+            }
+
+            // 새 파일 처리 (파일 전송)
+            String file1 = ""; // 원본 파일명
+            MultipartFile mf = surveyVO.getFile1MF(); // 업로드된 파일 객체
+            file1 = mf.getOriginalFilename(); // 원본 파일명
+            size1 = mf.getSize(); // 파일 크기
+
+            if (size1 > 0) { // 새 파일이 업로드 된 경우
+                // 새 파일 저장
+                file1saved = Upload.saveFileSpring(mf, upDir); // 파일 저장
+
+                // 이미지 파일인 경우 썸네일 생성
+                if (Tool.isImage(file1saved)) {
+                    thumb1 = Tool.preview(upDir, file1saved, 250, 200); // 썸네일 생성
+                }
+            } else { // 파일을 삭제만 하는 경우
+                file1 = "";
+                file1saved = "";
+                thumb1 = "";
+                size1 = 0;
+            }
+
+            // surveyVO에 새 파일 정보 세팅
+            surveyVO.setFile1(file1);
+            surveyVO.setFile1saved(file1saved);
+            surveyVO.setThumb1(thumb1);
+            surveyVO.setSize1(size1);
+
+            // 파일 업데이트 처리
+            this.surveyProc.update(surveyVO); // DB 업데이트
+
+            // 리다이렉트 시 필요한 정보 전달
+            ra.addAttribute("surveyno", surveyVO.getSurveyno());
+            ra.addAttribute("word", word);
+            ra.addAttribute("now_page", now_page);
+
+            // 업데이트 완료 후 리다이렉트
+            return "redirect:/survey/list_search";
+        } else {
+            ra.addAttribute("url", "/member/login_cookie_need");
+            return "redirect:/survey/msg"; // 권한이 없을 경우 로그인 페이지로 리다이렉트
         }
-
-//      System.out.println(cateVO.getName());
-//      System.out.println(cateVO.getSeqno());
-//      System.out.println(cateVO.getVisible());
-
-      int cnt = this.surveyProc.update(surveyVO);
-      System.out.println("-> cnt: " + cnt);
-
-      if (cnt == 1) {
-        ra.addAttribute("now_page", now_page); // redirect로 데이터 전송
-
-        return "redirect:/survey/update/" + surveyVO.getSurveyno(); // @GetMapping(value="/update/{cateno}")
-      } else {
-        model.addAttribute("code", "update_fail");
-      }
-
-      model.addAttribute("cnt", cnt);
-
-      // 페이지 번호 목록 생성
-      int search_count = this.surveyProc.list_search_count(word);
-      String paging = this.surveyProc.pagingBox(now_page, word, this.list_file_name, search_count, this.record_per_page,
-          this.page_per_block);
-      model.addAttribute("paging", paging);
-      model.addAttribute("now_page", now_page);
-
-      return "/survey/msg"; // /templates/cate/msg.html
-      } else {
-        return "redirect:/member/login_cookie_need";  // redirect
-      }
-      
     }
+
+
+   
     
     /**
      * 삭제폼 http://localhost:9091/cate/delete/1
@@ -289,6 +323,11 @@ public class SurveyCont {
       if (this.memberProc.isAdmin(session)) {
         SurveyVO surveyVO = this.surveyProc.read(surveyno);
         model.addAttribute("surveyVO", surveyVO);
+       
+        ArrayList<SurveyVO> list = this.surveyProc.list_search_paging(word, now_page, this.record_per_page);
+        model.addAttribute("list", list);
+        
+        model.addAttribute("word", word);
         model.addAttribute("now_page", now_page);
 
         // 페이지 번호 목록 생성
@@ -297,7 +336,9 @@ public class SurveyCont {
             this.page_per_block);
         model.addAttribute("paging", paging);
         model.addAttribute("now_page", now_page);
-
+        
+        int no = search_count - ((now_page - 1) * this.record_per_page);
+        model.addAttribute("no", no);
 
         return "/survey/delete"; // templaes/cate/delete.html
 
@@ -318,6 +359,7 @@ public class SurveyCont {
      */
     @PostMapping(value = "/delete")
     public String delete_process(HttpSession session, Model model, @RequestParam(name = "surveyno", defaultValue = "0") Integer surveyno,
+        @RequestParam(name="word", defaultValue="") String word,
         @RequestParam(name = "now_page", defaultValue = "") int now_page, RedirectAttributes ra) {
       if (this.memberProc.isAdmin(session)) {
         System.out.println("-> delete_process");
@@ -329,11 +371,37 @@ public class SurveyCont {
         int cnt = this.surveyProc.delete(surveyno);
         System.out.println("-> cnt: " + cnt);
 
-        return "/survey/msg"; // /templates/cate/msg.html
+        if (cnt ==1) {
+//        model.addAttribute("code", "delete_success");
+//        model.addAttribute("genre", movieVO.getGenre());
+//        model.addAttribute("name", movieVO.getName());
+        ra.addAttribute("word", word); // redirect로 데이터 전송
+        
+        
+        // ----------------------------------------------------------------------------------------------------------
+        // 마지막 페이지에서 모든 레코드가 삭제되면 페이지수를 1 감소 시켜야함.
+        int search_cnt = this.surveyProc.list_search_count(word);
+        if (search_cnt % this.record_per_page == 0) {
+          now_page = now_page - 1;
+          if (now_page < 1) {
+            now_page = 1; // 최소 시작 페이지
+          }
+        }
+        
+        ra.addAttribute("now_page", now_page); // redirect로 데이터 전송
+        
+        return "redirect:/survey/list_search";
+        
       } else {
-        return "redirect:/member/login_cookie_need";  // redirect
+        model.addAttribute("code", "delete_fail");
       }
-
+      
+      model.addAttribute("cnt", cnt);
+      
+      return "/survey/msg"; //templates/cate/msg.html
+    } else {
+      return "redirect:/member/login_cookie_need";  // redirect
+    }
     }
     
     /**
@@ -347,15 +415,17 @@ public class SurveyCont {
         @RequestParam(name = "surveyno", defaultValue = "0") int surveyno,
         @RequestParam(name = "now_page", defaultValue = "1") int now_page) {
      
-      if (this.memberProc.isAdmin(session)) {
+      
         SurveyVO surveyVO = new SurveyVO();
 
         
         model.addAttribute("surveyVO", surveyVO);
         
         word = Tool.checkNull(word);
+        
+        
 
-        ArrayList<SurveyVO> list = this.surveyProc.list_paging(word, now_page, this.record_per_page);
+        ArrayList<SurveyVO> list = this.surveyProc.list_search_paging(word, now_page, this.record_per_page);
         model.addAttribute("list", list);
 
 
@@ -374,8 +444,57 @@ public class SurveyCont {
         model.addAttribute("no", no);
 
         return "/survey/list_search"; 
-      } else {
-        return "redirect:/member/login_cookie_need";
       }
+      
+      
+    
+    /**
+     *   <!-- 카테고리 공개 설정 -->,  http://localhost:9091/cate/update_visible_y/1
+     * @param model Controller -> Thymleaf HTML로 데이터 전송에 사용
+     * @return
+     */
+    @GetMapping(value="/update_visible_y/{surveyno}")
+    public String update_visible_y(HttpSession session, Model model, @PathVariable("surveyno") Integer surveyno,
+        @RequestParam(name="word", defaultValue="") String word,
+        @RequestParam(name="now_page", defaultValue = "") int now_page,
+        RedirectAttributes ra ) {
+      
+      if (this.memberProc.isAdmin(session)) {
+        this.surveyProc.update_visible_y(surveyno);
+        
+        ra.addAttribute("word", word); // redirect로 데이터 전송
+        ra.addAttribute("now_page", now_page); // redirect로 데이터 전송
+        
+        return "redirect:/survey/list_search"; // @GetMapping(value="/list_all")
+      
+      } else {
+        return "redirect:/member/login_cookie_need";  // redirect
+      }
+      
+    }
+    
+    /**
+     *   <!-- 카테고리 비공개 설정 -->,  http://localhost:9091/cate/update_visible_n/1
+     * @param model Controller -> Thymleaf HTML로 데이터 전송에 사용
+     * @return
+     */
+    @GetMapping(value="/update_visible_n/{surveyno}")
+    public String update_visible_n(HttpSession session, Model model, @PathVariable("surveyno") Integer surveyno,
+        @RequestParam(name="word", defaultValue="") String word,
+        @RequestParam(name="now_page", defaultValue = "") int now_page,
+        RedirectAttributes ra ) {
+      
+      if (this.memberProc.isAdmin(session)) {
+        this.surveyProc.update_visible_n(surveyno);
+        
+        ra.addAttribute("word", word); // redirect로 데이터 전송
+        ra.addAttribute("now_page", now_page); // redirect로 데이터 전송
+        
+        return "redirect:/survey/list_search"; // @GetMapping(value="/list_all")
+      } else {
+        return "redirect:/member/login_cookie_need";  // redirect
+      }
+
+     
     }
 }

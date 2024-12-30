@@ -16,13 +16,13 @@ public class Survey {
     String path = "";
 
     if (osName.contains("win")) { // Windows
-      path = "C:\\\\kd\\\\team1\\\\resort\\\\contents\\\\storage\\\\";
+      path = "C:\\kd\\deploy\\team3\\survey\\storage\\";
       // System.out.println("Windows: " + path);
     } else if (osName.contains("mac")) { // MacOS
-      path = "/Users/yourusername/deploy/resort/contents/storage/";
+      path = "/Users/yourusername/deploy/team3/survey/storage/";
       // System.out.println("MacOS: " + path);
     } else { // Linux
-      path = "/home/ubuntu/deploy/resort/contents/storage/";
+      path = "/home/ubuntu/deploy/team3/survey/storage/";
       // System.out.println("Linux: " + path);
     }
 

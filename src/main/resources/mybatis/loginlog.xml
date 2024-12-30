@@ -29,7 +29,7 @@
         SELECT a.*, ROWNUM rnum
         FROM(
             SELECT *
-            FROM member
+            FROM loginlog
             <where>
               <if test="searchType != null and keyword != null">
                 <choose>
@@ -45,7 +45,7 @@
                 </choose>
               </if>
             </where>
-            ORDER BY memberno DESC
+            ORDER BY loginlogno DESC
           ) a
           WHERE ROWNUM &lt;= #{size}
         )
@@ -55,7 +55,7 @@
   <!-- 로그인 로그 검색된 수 -->
   <select id="list_search_count" parameterType="dev.mvc.dto.SearchDTO" resultType="int">
     SELECT COUNT(*)
-    FROM member
+    FROM loginlog
     <where>
       <if test="searchType != null and keyword != null">
         <choose>
@@ -63,7 +63,7 @@
             AND id LIKE '%' || #{keyword} || '%'
           </when>
           <when test = "searchType == 'ip'">
-            AND nickname LIKE '%' || #{keyword} || '%'
+            AND ip LIKE '%' || #{keyword} || '%'
           </when>
           <when test = "searchType == 'result'">
             AND result LIKE '%' || #{keyword} || '%'

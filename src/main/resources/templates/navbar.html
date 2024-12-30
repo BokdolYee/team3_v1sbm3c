@@ -1,5 +1,6 @@
 <div th:fragment="navbarFragment">
   <div class="top_menu_img">
+    <div class="top_menu_label">HoaK</div>
     <div class="top_menu_label">NEWS HOAK</div>
   </div>
   
@@ -66,6 +67,7 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <li class="nav-item"><a class="nav-link" th:href="@{|/member/list|}">회원 목록</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{|/loginlog/list|}">로그인 기록</a></li>
                         <li class="nav-item"><a class="nav-link" th:href="@{|/newscate/list_search?word=${word}|}">카테고리 목록</a></li>
                         <li class="nav-item"><a class="nav-link" href="/contents/list_all">전체 글 목록</a></li>
                         <li class="nav-item"><a class="nav-link" th:href="@{|/news/list|}">뉴스 목록</a></li>

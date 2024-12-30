@@ -1,63 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
- 
-
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="dev.mvc.survey.SurveyDAOInter"> 
+  <!-- 등록 -->
   <insert id="create" parameterType="dev.mvc.survey.SurveyVO">
-    INSERT INTO survey(surveyno, topic, startdate, enddate, poster, cnt, visible) 
-    VALUES(survey_seq.nextval, #{topic}, #{startdate}, #{enddate}, #{poster}, #{cnt}, #{visible})
+    INSERT INTO survey(surveyno, topic, startdate, enddate, cnt, visible, file1, file1saved, thumb1, size1) 
+    VALUES(survey_seq.nextval, #{topic}, #{startdate}, #{enddate}, #{cnt}, #{visible},  #{file1}, #{file1saved}, #{thumb1}, #{size1})
   </insert>
-  
+
+  <!-- 조회 -->
   <select id="read" resultType="dev.mvc.survey.SurveyVO" parameterType="Integer">
-    SELECT surveyno, topic, startdate, enddate, poster, cnt, poster
+    SELECT surveyno, topic, startdate, enddate, cnt, visible, file1, file1saved, thumb1, size1
     FROM survey
     WHERE surveyno=#{surveyno}
   </select>  
-  
+
+  <!-- 수정 -->
   <update id="update" parameterType="dev.mvc.survey.SurveyVO">
     UPDATE survey 
-    SET topic=#{topic}, startdate=#{startdate}, poster=#{poster} 
+    SET topic=#{topic}, startdate=#{startdate}, cnt=#{cnt}, visible=#{visible}, file1=#{file1}, file1saved=#{file1saved}, thumb1=#{thumb1}, size1=#{size1}
     WHERE surveyno=#{surveyno}
   </update> 
-  
+
+  <!-- 삭제 -->
   <delete id="delete" parameterType="int">
     DELETE FROM survey WHERE surveyno=#{surveyno}
   </delete>
-  
+
+  <!-- 전체 목록 -->
   <select id="list_all" resultType="dev.mvc.survey.SurveyVO">
-    SELECT surveyno, topic, startdate, enddate, poster, cnt, visible
+    SELECT surveyno, topic, startdate, enddate, cnt, visible, file1, file1saved, thumb1, size1
     FROM survey 
     ORDER BY surveyno ASC
   </select>
-  
-    <!-- 검색 갯수 -->
+
+  <!-- 공개 설정 -->
+  <update id="update_visible_y" parameterType="Integer">
+    UPDATE survey SET visible='Y' 
+    WHERE surveyno=#{surveyno}
+  </update>
+
+  <!-- 비공개 설정 -->
+  <update id="update_visible_n" parameterType="Integer">
+    UPDATE survey SET visible='N' 
+    WHERE surveyno=#{surveyno}
+  </update>
+
+  <!-- 검색 개수 -->
   <select id="list_search_count" resultType="Integer" parameterType="String">
     SELECT COUNT(*) as cnt
     FROM survey
-    <if test="word != null and word != ''"> <!-- 검색 상태라면 WHERE 생성 -->
-      WHERE (UPPER(topic) LIKE '%' || UPPER(#{word}) || '%') 
-    </if> 
-    ORDER BY startdate ASC
+    <if test="word != null and word != ''">
+      WHERE UPPER(topic) LIKE '%' || UPPER(#{word}) || '%'
+    </if>
   </select>
-  
-   <select id="list_search" resultType="dev.mvc.survey.SurveyVO" parameterType="String">
-    SELECT surveyno, topic, startdate, enddate, poster, cnt, visible
+
+  <!-- 검색 목록 -->
+  <select id="list_search" resultType="dev.mvc.survey.SurveyVO" parameterType="String">
+    SELECT surveyno, topic, startdate, enddate, cnt, visible,  file1, file1saved, thumb1, size1
     FROM survey
-    <if test="word != null and word != ''"> <!-- 검색 상태라면 WHERE 생성 -->
-      WHERE (UPPER(topic) LIKE '%' || UPPER(#{word}) || '%') 
-    </if> 
+    <if test="word != null and word != ''">
+      WHERE UPPER(topic) LIKE '%' || UPPER(#{word}) || '%'
+    </if>
     ORDER BY startdate ASC
   </select>
   
-    <!-- 페이징 -->
+  
+
+  <!-- 페이징 -->
   <select id="list_paging" resultType="dev.mvc.survey.SurveyVO" parameterType="Map">
-    SELECT surveyno, topic, startdate, enddate, poster, cnt, visible, r
+    SELECT surveyno, topic, startdate, enddate, cnt, visible,  file1, file1saved, thumb1, size1, r
     FROM (
-        SELECT surveyno, topic, startdate, enddate, poster, cnt, visible, 
-               ROW_NUMBER() OVER (ORDER BY startdate ASC) as r
-        FROM survey
-    ) 
-    WHERE r &gt;= #{start_num} AND r &lt;= #{end_num}
+        SELECT surveyno, topic, startdate, enddate, cnt, visible,  file1, file1saved, thumb1, size1, rownum as r
+        FROM (
+            SELECT surveyno, topic, startdate, enddate, cnt, visible,  file1, file1saved, thumb1, size1
+            FROM survey
+            ORDER BY startdate ASC
+        )
+        WHERE rownum &lt;= #{end_num}
+    )
+    WHERE r &gt;= #{start_num}
   </select>
+
+  <!-- 검색 + 페이징 -->
+  <select id="list_search_paging" resultType="dev.mvc.survey.SurveyVO" parameterType="Map">
+    SELECT surveyno, topic, startdate, enddate, cnt, visible,  file1, file1saved, thumb1, size1, r
+    FROM (
+        SELECT surveyno, topic, startdate, enddate, cnt, visible,  file1, file1saved, thumb1, size1, rownum as r
+        FROM (
+            SELECT surveyno, topic, startdate, enddate, cnt, visible,  file1, file1saved, thumb1, size1
+            FROM survey
+            WHERE (UPPER(topic) LIKE '%' || UPPER(#{word}) || '%') OR (UPPER(surveyno) LIKE '%' || UPPER(#{word}) || '%')
+            ORDER BY startdate ASC
+        )
+      
+    )
+    WHERE r &gt;= #{start_num}  AND r &lt;= #{end_num}  <!-- WHERE r >= 1 AND r <= 3 -->
+  </select>
+
+  <!-- 조회수 증가 -->
+     <update id="increaseCnt" parameterType="int">
+        UPDATE survey
+        SET cnt = cnt + 1
+        WHERE surveyno = #{surveyno}
+    </update>
+    
+  
   
 </mapper>

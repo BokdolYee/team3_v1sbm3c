@@ -12,5 +12,10 @@ java.home=
 jvm.arguments=
 offline.mode=false
 override.workspace.settings=false
+<<<<<<< HEAD
+show.console.view=true
+show.executions.view=true
+=======
 show.console.view=false
 show.executions.view=false
+>>>>>>> 2e113f09c2d96cce0fd0f9bf01ab5c7250b139e1

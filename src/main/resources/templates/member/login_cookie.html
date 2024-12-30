@@ -55,6 +55,8 @@
         return false;  // 로그인 진행 중지
         
       }
+
+      
   
       document.getElementById('frm').submit(); // required="required" 작동 안됨.
     }
@@ -107,7 +109,7 @@
       </div>
       
       <div class="msg_warning" th:if="${cnt == 0}">
-        아이디 또는 비밀번호를 잘못 입력하셨거나 등록되지 않은 아이디입니다.
+        아이디 또는 비밀번호를 잘못 입력하셨거나 등록되지 않은 아이디입니다.<br>
       </div>
 
       <div class="content_body_bottom">

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.mvc.surveyitem.SurveyitemDAOInter"> 
+  <!-- 등록 -->
+  <insert id="create" parameterType="dev.mvc.surveyitem.SurveyitemVO">
+    INSERT INTO surveyitem(surveyitemno, surveyno, seqno, item, cnt) 
+    VALUES(surveytiem_seq.nextval, #{surveyitemno}, #{surveyno}, #{seqno}, #{item}, #{cnt})
+  </insert>
+
+  <!-- 조회 -->
+  <select id="read" resultType="dev.mvc.surveyitem.SurveyitemVO" parameterType="Integer">
+    SELECT (surveyitemno, surveyno, seqno, item, cnt
+    FROM surveyitem
+    WHERE surveyitemno=#{surveyitemno}
+  </select>  
+
+  <!-- 수정 -->
+  <update id="update" parameterType="dev.mvc.surveyitem.SurveyitemVO">
+    UPDATE surveyitem 
+    SET seqno=#{seqno}, item=#{item}, cnt=#{cnt}
+    WHERE surveyitemno=#{surveyitemno}
+  </update> 
+
+  <!-- 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM surveyitem WHERE surveyitemno=#{surveyitemno}
+  </delete>
+
+  <!-- 전체 목록 -->
+  <select id="list_all" resultType="dev.mvc.surveyitem.SurveyitemVO">
+    SELECT (surveyitemno, surveyno, seqno, item, cnt
+    FROM surveyitem 
+    ORDER BY surveyitemno ASC
+  </select>
+
+     <!--우선 순위 높임, 10 등 -> 1 등-->
+    <update id="update_itemseqno_forward" parameterType="Integer">
+    Update surveyitem Set seqno=seqno-1
+    Where surveyitemno=#{surveyitemno}
+    </update>
+    
+      <!--우선 순위 낮춤, 1 등 -> 10 등-->
+    <update id="update_itemseqno_backward" parameterType="Integer">
+    Update surveyitem Set seqno=seqno+1
+    Where itemseqno=#{itemseqno}
+    </update>
+  
+
+
+  <!-- 조회수 증가 -->
+     <update id="increaseCnt" parameterType="int">
+        UPDATE surveyitem
+        SET cnt = cnt + 1
+        WHERE surveyitemno = #{surveyitemno}
+    </update>
+    
+  
+  
+</mapper>

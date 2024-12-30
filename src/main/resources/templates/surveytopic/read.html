@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속 -->
+<div layout:fragment="content">
+    <div class="title_line">설문조사</div>
+  
+    <aside class="aside_right">
+        <a th:href="@{|/surveytopic/create?surveytopicno=${surveytopicVO.surveytopicno}|}" style="color: black">등록</a>
+        <span class="menu_divide" style="color: black">|</span>
+        <a href="javascript: location.reload();" style="color: black">새로 고침</a>
+        <span class="menu_divide">|</span>
+        <a th:href="@{|/surveytopic/read?surveytopicno=${surveytopicVO.surveytopicno}|}" style="color: black">목록</a>
+    </aside>
+  
+
+    
+    <div style="width: 50%; margin: 0px auto;">
+        <div th:each="surveytopicVO, status:${surveytopicList}" style="display: flex; align-items: center; background-color:rgb(81, 138, 75); color: white; padding: 10px; margin-bottom: 300px; border-radius: 5px;">
+            <!-- 썸네일 -->
+            <div th:if="${surveytopicVO.file1.endsWith('jpg') or surveytopicVO.file1.endsWith('png') or surveytopicVO.file1.endsWith('gif')}">
+                <img th:src="@{|/surveytopic/storage/${surveytopicVO.filethumb}|}" style="width: 30px; height: 30px;">
+              </div>
+              <div th:if="${((surveytopicVO.file1.endsWith('jpg') or surveytopicVO.file1.endsWith('png') or surveytopicVO.file1.endsWith('gif')) == false) and (surveytopicVO.filesize > 0)}">
+                <span th:text="${surveytopicVO.file1}"></span>
+              </div>
+            
+            <!-- 출력 순서 -->
+            <div style="text-align: center; margin-right: 20px;">
+                <span th:text="${surveytopicVO.seqno}"style="color: white;"></span>
+                <span style="color: white;">.</span> <!-- 점 추가 -->
+            </div>
+            
+            <!-- 제목 중앙 정렬 -->
+            <div style="flex-grow: 1; text-align: center; margin-right: 20px;">
+                <span th:text="${surveytopicVO.topic}" style="color: white;"></span>
+            </div>
+            
+            <!-- 수정 및 삭제 아이콘 -->
+            <div>
+                <a th:href="@{|/surveytopic/update?surveytopicno=${surveytopicVO.surveytopicno}&surveyno=${surveytopicVO.surveyno}|}">
+                    <img src="/surveytopic/images/update.png" class="icon" title="수정">
+                </a>
+                <a th:href="@{|/surveytopic/delete?surveytopicno=${surveytopicVO.surveytopicno}&surveyno=${surveytopicVO.surveyno}|}">
+                    <img src="/surveytopic/images/delete.png" class="icon" title="삭제">
+                </a>                             
+            </div>
+        </div>       
+        
+    </div>
+</div>
+</html>
+
+

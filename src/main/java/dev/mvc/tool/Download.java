@@ -35,6 +35,7 @@ public class Download {
     // C:/kd/deploy/resort/member/storage
     // C:/kd/deploy/resort/product/storage
     File file = new File(Tool.getUploadDir() + dir, filename);
+
     
     if(!file.exists()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -42,7 +43,9 @@ public class Download {
       Resource resource = new FileSystemResource(file);
       // 한글 파일명을 UTF-8로 인코딩
       String encodedDownname = "";
-      
+
+
+        
       try {
           encodedDownname = URLEncoder.encode(downname, "UTF-8").replaceAll("\\+", "%20");
       } catch (UnsupportedEncodingException e) {
@@ -56,3 +59,5 @@ public class Download {
   }
     
 }
+
+

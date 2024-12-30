@@ -3,6 +3,9 @@ package dev.mvc.survey;
 import java.util.ArrayList;
 import java.util.Map;
 
+import dev.mvc.newscate.NewsCateVO;
+import dev.mvc.newscate.NewsCateVOMenu;
+
 
 
 public interface SurveyProcInter {
@@ -68,4 +71,15 @@ public interface SurveyProcInter {
    * @return
    */
   public ArrayList<SurveyVO> list_paging(String word, int now_page, int record_per_page);
+  
+  public int update_visible_n(int surveyno);
+  
+  public int update_visible_y(int surveyno);
+  
+  public ArrayList<SurveyVO> list_search_paging(String word, int now_page, int record_per_page);
+  
+  public int increaseCnt(int surveyno);
+  
+
+
 }

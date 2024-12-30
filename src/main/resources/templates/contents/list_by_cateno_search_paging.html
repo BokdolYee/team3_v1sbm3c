@@ -39,7 +39,7 @@
     </tr>
    
     <tr th:if="${list.size() > 0}" th:each="contentsVO, status:${list}" 
-         th:attr="onclick=|location.href='/contents/read?contentsno=${contentsVO.contentsno}&word=${word}&now_page=${now_page}'|"
+         th:attr="onclick=|location.href='/contents/read?contentno=${contentsVO.contentno}&word=${word}&now_page=${now_page}'|"
          style="cursor: pointer; height: 90px;">
       <td class='td_basic' style="vertical-align: middle; text-align: center;">
         <div th:if="${contentsVO.file1.endsWith('jpg') or contentsVO.file1.endsWith('png')  or contentsVO.file1.endsWith('gif')}">
@@ -60,7 +60,7 @@
       </td>
       <td class='td_left'>
         <span th:text="${contentsVO.title}" style="font-weight: bold;"></span>
-        <span th:text="| ${contentsVO.rdate.substring(0, 10)}|"></span><br>
+        <span th:text="${#dates.format(contentsVO.rdate, 'yyyy-MM-dd')}"></span>
 
         <span th:if="${contentsVO.content.length() > 160 }" 
                   th:text="|${contentsVO.content.substring(0, 160) }...|"></span>

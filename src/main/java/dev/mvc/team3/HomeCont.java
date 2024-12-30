@@ -34,13 +34,11 @@ public class HomeCont {
   public String home(Model model, @ModelAttribute("issueVO") IssueVO issueVO) {
     // 긴급 공지사항 목록 가져오기
     ArrayList<IssueVO> urgentIssues = issueProc.listUrgent();
-    System.out.println("긴급 공지사항 목록: " + urgentIssues); // 목록 출력
     
     model.addAttribute("urgentIssues", urgentIssues);
     
     // 긴급 공지사항이 있으면 팝업을 위한 URL 설정
     if (urgentIssues != null && !urgentIssues.isEmpty()) {
-        System.out.println("긴급 공지사항 있음, URL 설정: /issue/urgent");
         model.addAttribute("urgentIssueUrl", "/issue/urgent");
     } else {
         System.out.println("긴급 공지사항 없음, URL 설정 안됨");

@@ -29,7 +29,7 @@
        
   <div style='width: 100%;'> <!-- 갤러리 Layout  시작 -->
     <div th:if="${list.size() > 0}"  th:each="contentsVO, status:${list}" 
-         th:attr="onclick=|location.href='/contents/read?contentsno=${contentsVO.contentsno}&word=${word}&now_page=${now_page}'|"
+         th:attr="onclick=|location.href='/contents/read?contentno=${contentsVO.contentno}&word=${word}&now_page=${now_page}'|"
          style='width: 24%; height: 200px; float: left; margin: 0.5%; padding: 0.5%; background-color: #EEEFFF; text-align: left; cursor: pointer;'>
 
       <div th:if="${contentsVO.file1.endsWith('jpg') or contentsVO.file1.endsWith('png')  or contentsVO.file1.endsWith('gif')}"

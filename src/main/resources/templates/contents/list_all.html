@@ -22,7 +22,7 @@
     </tr>
    
     <tr th:each="contentsVO, status:${list}" 
-         th:attr="onclick=|location.href='/contents/read?contentsno=${contentsVO.contentsno}'|"
+         th:attr="onclick=|location.href='/contents/read?contentno=${contentsVO.contentno}'|"
          style="cursor: pointer;">
       <td class='td_basic' th:text="${contentsVO.file1}"></td>
       <td class='td_left'>

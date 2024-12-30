@@ -44,6 +44,13 @@
       
       <li class="li_none">
         <div style="margin-top: 20px;">
+          <strong>종목:</strong>
+          <span th:text="${stockVO.symbol + ' : ' + stockVO.name}"></span>
+        </div>
+      </li>
+      
+      <li class="li_none">
+        <div style="margin-top: 20px;">
           <strong>분석:</strong><br>
           <span th:text="${newsVO.impact}"></span>
         </div>

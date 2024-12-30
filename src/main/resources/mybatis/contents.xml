@@ -22,7 +22,7 @@
     SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, newscateno
     FROM contents 
     WHERE newscateno = #{newscateno}
-    ORDER BY contentsno DESC
+    ORDER BY contentno DESC
   </select> 
   
   <!-- 일반적인 조회 -->
@@ -97,14 +97,14 @@
   <select id="password_check" resultType="int" parameterType="HashMap">
     SELECT COUNT(*) as cnt 
     FROM contents
-    WHERE contentsno = #{contentsno} AND passwd=#{passwd}
+    WHERE contentno = #{contentno} AND passwd=#{passwd}
   </select>
   
   <!-- 글 수정 -->
   <update id="update_text" parameterType="dev.mvc.contents.ContentsVO">
     UPDATE contents
-    SET title=#{title}, content=#{content},  word=#{word}
-    WHERE contentsno = #{contentsno}
+    SET title=#{title}
+    WHERE contentno = #{contentno}
   </update>
 
 
@@ -112,13 +112,13 @@
   <update id="update_file" parameterType="dev.mvc.contents.ContentsVO">
     UPDATE contents
     SET file1=#{file1}, file1saved=#{file1saved}, thumb1=#{thumb1}, size1=#{size1}
-    WHERE contentsno = #{contentsno}
+    WHERE contentno = #{contentno}
   </update>  
 
   <!-- 글 삭제 -->
   <delete id="delete" parameterType="int">
     DELETE FROM contents
-    WHERE contentsno=#{contentsno}
+    WHERE contentno=#{contentno}
   </delete>
   
   <!-- FK newcateno 컬럼에 대응하는 필수 SQL -->
@@ -153,14 +153,14 @@
    <update id="increaseReplycnt" parameterType="int">
      UPDATE contents
      SET replycnt = replycnt + 1
-     WHERE contentsno = #{contentsno}
+     WHERE contentno = #{contentno}
    </update>
 
    <!-- 댓글 수 감소 -->
    <update id="decreaseReplycnt" parameterType="int">
      UPDATE contents
      SET replycnt = replycnt - 1
-     WHERE contentsno = #{contentsno}
+     WHERE contentno = #{contentno}
    </update>
    
     <update id="updateCntCount" parameterType="dev.mvc.contents.ContentsVO">

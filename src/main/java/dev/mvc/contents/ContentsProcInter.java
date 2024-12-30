@@ -32,10 +32,10 @@ public interface ContentsProcInter {
   
   /**
    * 조회
-   * @param contentsno
+   * @param contentno
    * @return
    */
-  public ContentsVO read(int contentsno);
+  public ContentsVO read(int contentno);
   
   /**
    * 카테고리별 검색 목록
@@ -97,10 +97,10 @@ public interface ContentsProcInter {
   
   /**
    * 삭제
-   * @param contentsno
+   * @param contentno
    * @return 삭제된 레코드 갯수
    */
-  public int delete(int contentsno);
+  public int delete(int contentno);
   
   /**
    * FK cateno 값이 같은 레코드 갯수 산출
@@ -135,14 +135,14 @@ public interface ContentsProcInter {
    * @param 
    * @return
    */ 
-  public int increaseReplycnt(int contentsno);
+  public int increaseReplycnt(int contentno);
  
   /**
    * 글 수 감소
    * @param 
    * @return
    */   
-  public int decreaseReplycnt(int contentsno);
+  public int decreaseReplycnt(int contentno);
 
   public void updateCntCount(int newscateno);
 

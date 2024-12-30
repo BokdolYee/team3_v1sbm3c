@@ -29,7 +29,7 @@
     </tr>
    
     <tr th:each="contentsVO, status:${list}" 
-         th:attr="onclick=|location.href='/contents/read?contentsno=${contentsVO.contentsno}'|"
+         th:attr="onclick=|location.href='/contents/read?contentno=${contentsVO.contentno}'|"
          style="cursor: pointer; height: 90px;">
       <td class='td_basic' style="vertical-align: middle; text-align: center;">
         <div th:if="${contentsVO.file1.endsWith('jpg') or contentsVO.file1.endsWith('png')  or contentsVO.file1.endsWith('gif')}">

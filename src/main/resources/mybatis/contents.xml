@@ -5,10 +5,10 @@
 <mapper namespace="dev.mvc.contents.ContentsDAOInter">
   <!-- 등록한 레코드 갯수 1 리턴, #{memberno}: public int getAdminno() 호출됨 -->
   <insert id="create" parameterType="dev.mvc.contents.ContentsVO">
-    INSERT INTO contents(contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno)
-    VALUES(contents_seq.nextval, #{contentno}, #{title}, #{title}, #{passwd}, sysdate, #{cnt},
-                #{all_cnt}, #{visible}, #{stockno}, #{newsno})
+    INSERT INTO contents (contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, newscateno)
+    VALUES (contents_seq.nextval, #{title}, #{passwd}, sysdate, #{cnt}, #{all_cnt}, #{visible}, #{stockno}, #{newsno}, #{newscateno})
   </insert>
+
 
   <!-- 모든 카테고리의 등록된 글목록 -->
   <select id="list_all" resultType="dev.mvc.contents.ContentsVO">
@@ -19,7 +19,7 @@
   
   <!-- 특정 카테고리의 등록된 글목록 -->
   <select id="list_by_cateno" resultType="dev.mvc.contents.ContentsVO" parameterType="int">
-    SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno
+    SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, newscateno
     FROM contents 
     WHERE newscateno = #{newscateno}
     ORDER BY contentsno DESC
@@ -27,7 +27,7 @@
   
   <!-- 일반적인 조회 -->
   <select id="read" resultType="dev.mvc.contents.ContentsVO" parameterType="int">
-    SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno
+    SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, newscateno
     FROM contents
     WHERE contentno = #{contentno}
   </select>

@@ -14,12 +14,12 @@
       <a th:href="@{|/contents/create?newscateno=${newscateVO.newscateno}|}">등록</a>
       <span class="menu_devide">│</span>    
     </span>
-    
     <a href="javascript:location.reload();">새로고침</a>
-    <span class='menu_divide' >│</span>    
+    <span class='menu_divide' >│</span>
     <a th:href="@{|./list_by_cateno?newscateno=${newscateVO.newscateno }&word=${word }&now_page=${now_page}|}">목록형</a>    
     <span class='menu_divide' >│</span>
-    <a th:href="@{|./list_by_cateno_grid?newscateno=${newscateVO.newscateno }&word=${word }&now_page=${now_page}|}">갤러리형</a>    
+    <a th:href="@{|./list_by_cateno_grid?newscateno=${newscateVO.newscateno }&word=${word }&now_page=${now_page}|}">갤러리형</a>
+    
   </aside> 
 
   <!-- /contents/list_search_com.html 파일의 list_search_fragment import -->

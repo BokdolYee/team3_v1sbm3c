@@ -17,7 +17,9 @@
     <span class='menu_divide' >│</span>
     <a th:href="@{|/contents/create?newscateno=${newscateVO.newscateno}|}">등록</a>
     <span class='menu_divide' >│</span>
-    <a th:href="@{|/contents/update_text?contentno=${contentsVO.contentno}&now_page=${now_page}&word=${word }|}">글 수정</a>
+    <a th:href="@{|/contents/update_text?contentno=${contentsVO.contentno}&now_page=${now_page}&word=${word }|}">제목 수정</a>
+    <span class='menu_divide' >│</span>
+    <a th:href="@{|./update_file?contentno=${contentsVO.contentno}&word=${word}&now_page=${now_page}|}">파일 수정</a>  
     <span class='menu_divide' >│</span>
     <a th:href="@{|./delete?contentno=${contentsVO.contentno}&word=${word}&now_page=${now_page}&newscateno=${contentsVO.newscateno}|}">삭제</a>  
  </aside> 
@@ -36,10 +38,26 @@
     <ul>
       <li class="li_none">
         <div style="width: 100%; word-break: break-all;">
-
+          <div th:if="${contentsVO.file1.endsWith('jpg') or contentsVO.file1.endsWith('png')  or contentsVO.file1.endsWith('gif')}">
+            <img th:src="@{|/contents/storage/${contentsVO.file1saved}|}" style='width: 50%; float: left; margin-top: 0.5%; margin-right: 1%;'>
+          </div>
+          
           <span style="font-size: 1.5em; font-weight: bold;" th:text="${contentsVO.title}"></span>
           <span style="font-size: 1em;" th:text="${contentsVO.rdate }"></span><br><br>
-          <div style="white-space: pre-wrap;"><span th:text="${contentsVO.newsno}"></span></div>
+        </div>
+      </li>
+      
+      <li class="li_none">
+        <div style="margin-top: 20px;">
+          <strong>종목:</strong>
+          <span th:text="${stockVO.symbol + ' : ' + stockVO.name}"></span>
+        </div>
+      </li>
+      
+      <li class="li_none">
+        <div style="margin-top: 20px;">
+          <strong>분석:</strong><br>
+          <span th:text="${newsVO.impact}"></span>
         </div>
       </li>
       
@@ -49,18 +67,16 @@
           <span th:text="${newsVO.summary}"></span>
         </div>
       </li>
-
-      <!-- 분석 결과 표시 -->
-      <li class="li_none">
-        <div style="margin-top: 20px;">
-          <strong>분석:</strong><br>
-          <span th:text="${newsVO.impact}"></span>
-        </div>
-      </li>
       
       <li class="li_none" th:text="|검색어(키워드): ${contentsVO.word }|">
       </li>
-        
+        <li class="li_none" th:if="${contentsVO.size1 > 0}">
+        <div >
+          첨부 파일: <a th:href='@{|/download?dir=contents/storage&filename=${contentsVO.file1saved}&downname=${contentsVO.file1}|}'
+                             th:text='|${contentsVO.file1}|'></a> <span th:text="|(${contentsVO.size1_label})|"></span>  
+                        <a th:href='@{|/download?dir=contents/storage&filename=${contentsVO.file1saved}&downname=${contentsVO.file1}|}'><img src="/contents/images/download.png"></a>
+        </div>
+      </li>   
     </ul>
   </fieldset>
 

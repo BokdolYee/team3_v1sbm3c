@@ -5,7 +5,7 @@
   <div class='title_line'>
     <span th:text="${newscateVO.genre }" class="title_line_text"></span > 
     > <span th:text="${newscateVO.name}" class="title_line_text"></span > 
-    > 글 수정
+    > 제목 수정
   </div>
   
   <aside class="aside_right">
@@ -22,7 +22,7 @@
   
   <form name='frm' method='post' th:object="${contentsVO}" action='./update_text'>
     <input type="hidden" name="newscateno" th:value="${newscateVO.newscateno }">
-    <input type="hidden" name="contentsno" th:value="${contentsVO.contentsno }">
+    <input type="hidden" name="contentno" th:value="${contentsVO.contentno }">
     <input type="hidden" name="now_page" th:value="${now_page}">
     <input type="hidden" name="search_word" th:value="${word}">
     
@@ -32,23 +32,31 @@
                  autofocus="autofocus" class="form-control" style='width: 100%;'>
     </div>
     <div>
-       <label>내용</label>
-       <textarea name='content' required="required" class="form-control" rows="12" style='width: 100%;' 
-                      th:text='${contentsVO.content}'></textarea>
-    </div>
-    <div>
-       <label>검색어</label>
-       <input type='text' name='word' th:value='${contentsVO.word}' required="required" 
-                 class="form-control" style='width: 100%;'>
-    </div>   
-    <div>
        <label>패스워드</label>
        <input type='password' name='passwd' th:value='1234' required="required" 
                  class="form-control" style='width: 50%;'>
     </div>
+
+    <!-- 분석 및 요약 출력 추가 부분 -->
+    <ul>
+      <li class="li_none">
+        <div style="margin-top: 20px;">
+          <strong>분석:</strong><br>
+          <span th:text="${newsVO.impact}"></span>
+        </div>
+      </li>
+      
+      <li class="li_none">
+        <div style="margin-top: 20px;">
+          <strong>요약:</strong><br>
+          <span th:text="${newsVO.summary}"></span>
+        </div>
+      </li>
+    </ul>
+
     <div class="content_body_bottom">
       <button type="submit" class="btn btn-secondary btn-sm">저장</button>
-      <button type="button" th:attr="onclick=|location.href='./list_by_cateno_search_paging?cateno=${cateno}'|" class="btn btn-secondary btn-sm">목록</button>
+      <button type="button" th:attr="onclick=|location.href='./list_by_cateno_search_paging?newscateno=${newscateno}'|" class="btn btn-secondary btn-sm">목록</button>
     </div>
   
   </form>

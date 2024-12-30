@@ -13,9 +13,9 @@
     <span class='menu_divide' >│</span>
     <a href="javascript:location.reload();">새로고침</a>
     <span class='menu_divide' >│</span>
-    <a th:href="@{|./list_by_cateno_search_paging?cateno=${newscateVO.newscateno }|}">기본 목록형</a>    
-    <span class='menu_divide' >│</span>
-    <a th:href="@{|./list_by_cateno_grid?cateno=${newscateVO.newscateno }|}">갤러리형</a>
+    <a th:href="@{|./list_by_cateno?newscateno=${newscateVO.newscateno }&word=${word }&now_page=${now_page}|}">목록형</a>
+    <span class='menu_divide'>│</span>
+    <a th:href="@{|./list_by_cateno_grid?newscateno=${newscateVO.newscateno }&word=${word }&now_page=${now_page}|}">갤러리형</a>
   </aside>
   
   <div class='menu_line'></div>
@@ -38,16 +38,20 @@
         <div th:if="${contentsVO.size1 == 0}" style="text-align: center; width: 50%; float: left;">
           <img src="/contents/images/none1.png" style="width: 90%;">
         </div>
-  
         <div style='text-align: left; width: 47%; float: left;'>
           <span style='font-size: 1.5em;' th:text="${contentsVO.title}"></span>
           <br>
           <form name='frm' method='POST' action='./delete'>
-            <input type="hidden" name="cateno" th:value="${newscateVO.newscateno }">
-            <input type="hidden" name="contentsno" th:value="${contentsVO.contentsno }">
+            <input type="hidden" name="newscateno" th:value="${newscateVO.newscateno }">
+            <input type="hidden" name="contentno" th:value="${contentsVO.contentno }">
             <input type="hidden" name="now_page" th:value="${now_page}">
             <input type="hidden" name="search_word" th:value="${word}">
-                
+                <li class="li_none">
+                  <div style="margin-top: 20px;">
+                    <strong>종목:</strong>
+                    <span th:text="${stockVO.symbol + ' : ' + stockVO.name}"></span>
+                  </div>
+                </li>
             <br> 
             <div style='margin-top: 20px; clear: both;'>
               <span style="color: #FF0000; font-weight: bold;">삭제를 진행 하시겠습니까? 삭제하시면 복구 할 수 없습니다.</span>

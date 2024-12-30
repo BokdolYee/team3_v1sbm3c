@@ -21,8 +21,8 @@ public class StockProc implements StockProcInter {
   }
 
   @Override
-  public ArrayList<StockVO> list_all() {
-    return stockDAO.list_all();
+  public ArrayList<StockVO> list() {
+    return stockDAO.list();
   }
 
   @Override

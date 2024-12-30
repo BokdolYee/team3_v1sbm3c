@@ -84,6 +84,7 @@
           <a th:href="@{|/survey/create|}">
             <img src="/survey/images/create.png" class="icon" title="추가">
           </a>
+          <a th:href="@{|/surveytopic/create?surveyno=${surveyVO.surveyno}|}"><img src="/survey/images/append.png" class="icon" title="추가"></a>
 
           <li class="li_none" th:if="${surveyVO.size1 > 0}">
           <div>

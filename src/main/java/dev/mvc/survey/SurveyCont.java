@@ -26,6 +26,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.mvc.member.MemberProcInter;
 import dev.mvc.newscate.NewsCateVO;
 import dev.mvc.newscate.NewsCateVOMenu;
+import dev.mvc.surveytopic.SurveytopicProcInter;
+import dev.mvc.surveytopic.SurveytopicVO;
 import dev.mvc.tool.Tool;
 import dev.mvc.tool.Upload;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,6 +49,10 @@ public class SurveyCont {
   @Autowired
   @Qualifier("dev.mvc.survey.SurveyProc")
   private SurveyProcInter surveyProc;
+  
+  @Autowired
+  @Qualifier("dev.mvc.surveytopic.SurveytopicProc")
+  private SurveytopicProcInter surveytopicProc; // 개별 문제를 관리하는 인터페이스 주입
   
   @Autowired
   @Qualifier("dev.mvc.member.MemberProc")
@@ -185,13 +191,21 @@ public class SurveyCont {
      * 조회 http://localhost:9093/survey/read/1
      */
     @GetMapping(value = "/read/{surveyno}")
-    public String read(Model model, @PathVariable("surveyno") Integer surveyno) {
+    public String read(Model model,
+                                    @PathVariable("surveyno") Integer surveyno,
+                                    @ModelAttribute("surveytopicVO") SurveytopicVO surveytopicVO) {
       SurveyVO surveyVO = this.surveyProc.read(surveyno);
       model.addAttribute("surveyVO", surveyVO);
+      
+      ArrayList<SurveytopicVO> surveytopicList = this.surveytopicProc.listBySurveyno(surveyno);
+      model.addAttribute("surveytopicList", surveytopicList); // 개별 문제 목록 추가
+      
+      
+      this.surveyProc.increaseCnt(surveyno);
 
       return "/survey/read";    
     }    
-    
+
     /**
      * 수정폼 http://localhost:9093/survey/update/1
      */

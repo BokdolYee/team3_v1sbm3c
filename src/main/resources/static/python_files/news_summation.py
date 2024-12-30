@@ -12,7 +12,7 @@ def summarize_text(text):
     response = client.chat.completions.create(
         model="gpt-4",  # 사용할 모델
         messages=[ 
-            {"role": "system", "content": "너는 텍스트 요약을 전문으로 하는 AI야."},  # 시스템 역할 정의
+            {"role": "system", "content": "너는 텍스트를 한국어로 요약을 전문으로 하는 AI야."},  # 시스템 역할 정의
             {"role": "user", "content": f"다음 텍스트를 3문장으로 요약해줘 문장들은 끝맺음이 확실해야해. 글자수 최대 300자인데 그게 넘어가지 않게 요약해:\n{text}"}  # 사용자 메시지
         ],
         max_tokens=300,  # 최대 토큰 수

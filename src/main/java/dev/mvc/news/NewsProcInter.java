@@ -49,5 +49,7 @@ public interface NewsProcInter {
    * @param record_per_page
    * @return
    */
-  public ArrayList<NewsVO> listPaging(Map<String, Object> param); 
+  public ArrayList<NewsVO> listPaging(Map<String, Object> param);
+
+  public ArrayList<NewsVO> list(); 
 }

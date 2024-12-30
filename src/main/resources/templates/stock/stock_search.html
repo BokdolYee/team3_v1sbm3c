@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{layout}">
+<div layout:fragment="content">
+
+    <div class="title_line">검색된 종목 목록</div>
+
+    <aside class="aside_right">
+        <a href="javascript:location.reload();">새로고침</a>
+        <span> | </span>
+        <a th:href="@{|/stock/create|}">등록</a>
+        <span> | </span>
+        <a th:href="@{|/stock/list_all|}">목록</a>
+
+        <!-- 검색 폼 추가 -->
+        <form action="" method="get" class="search-form" style="display: inline-block; margin-left: 20px;">
+            <input type="text" name="searchSymbol" placeholder="심볼" class="form-control" style="width: 120px; display: inline-block;"/>
+            <input type="text" name="searchName" placeholder="주식명" class="form-control" style="width: 120px; display: inline-block;"/>
+            <input type="text" name="searchIndustry" placeholder="산업군" class="form-control" style="width: 120px; display: inline-block;"/>
+            <button type="submit" class="btn btn-primary btn-sm">검색</button>
+        </form>
+    </aside>
+
+    <div class="menu_line"></div>
+
+    <div th:if="${#lists.isEmpty(searchResults)}">
+        <p>검색된 결과가 없습니다.</p>
+    </div>
+
+    <table class="table table-striped" style="width: 100%;">
+        <colgroup>
+            <col style="width: 15%;" />
+            <col style="width: 20%;" />
+            <col style="width: 25%;" />
+            <col style="width: 40%;" />
+        </colgroup>
+        <tr>
+            <th class="th_bs">심볼</th>
+            <th class="th_bs">주식명</th>
+            <th class="th_bs">산업</th>
+            <th class="th_bs">설명</th>
+        </tr>
+
+        <tr th:each="stockVO : ${searchResults}"
+            th:attr="onclick=|location.href='/stock/read/${stockVO.stockno}'|"
+            style="cursor: pointer;">
+            <td class="td_basic" th:text="${stockVO.symbol}"></td>
+            <td class="td_left">
+                <span th:text="${stockVO.name}" style="font-weight: bold;"></span><br>
+            </td>
+            <td class="td_basic" th:text="${stockVO.industry}"></td>
+            <td class="td_basic">
+                <span th:if="${stockVO.description.length() > 100}"
+                      th:text="|${stockVO.description.substring(0, 100)}...|"></span>
+                <span th:if="${stockVO.description.length() <= 100}"
+                      th:text="|${stockVO.description}|"></span>
+            </td>
+        </tr>
+    </table>
+
+    <div class="bottom_menu">
+    </div>
+
+</div>
+</html>

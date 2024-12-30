@@ -4,20 +4,20 @@
 
     <!-- 공지사항 생성 -->
     <insert id="create" parameterType="dev.mvc.issue.IssueVO">
-        INSERT INTO issue (issueno, cnt, content, rdate, title)
-        VALUES (ISSUE_SEQ.NEXTVAL, #{cnt}, #{content}, SYSDATE, #{title})
+        INSERT INTO issue (issueno, cnt, content, rdate, title, is_urgent)
+        VALUES (ISSUE_SEQ.NEXTVAL, #{cnt}, #{content}, SYSDATE, #{title}, #{is_urgent})
     </insert>
 
     <!-- 공지사항 조회 (상세보기) -->
     <select id="read" parameterType="int" resultType="dev.mvc.issue.IssueVO">
-        SELECT issueno, cnt, content, rdate, title
+        SELECT issueno, cnt, content, rdate, title, is_urgent
         FROM issue
         WHERE issueno = #{issueno}
     </select>
 
     <!-- 공지사항 전체 목록 조회 -->
     <select id="list" resultType="dev.mvc.issue.IssueVO">
-        SELECT issueno, cnt, content, rdate, title
+        SELECT issueno, cnt, content, rdate, title, is_urgent
         FROM issue
         ORDER BY issueno DESC
     </select>
@@ -26,7 +26,8 @@
     <update id="update" parameterType="dev.mvc.issue.IssueVO">
         UPDATE issue
         SET title = #{title},
-            content = #{content}
+            content = #{content},
+            is_urgent = #{is_urgent}
         WHERE issueno = #{issueno}
     </update>
 
@@ -42,5 +43,37 @@
         SET cnt = cnt + 1
         WHERE issueno = #{issueno}
     </update>
+  
+    <!-- 검색 갯수 -->
+    <select id="list_search_count" resultType="Integer" parameterType="String">
+        SELECT COUNT(*) AS cnt
+        FROM issue
+        <if test="word != null and word != ''"> <!-- 검색 조건 -->
+            WHERE (UPPER(title) LIKE '%' || UPPER(#{word}) || '%') 
+               OR (UPPER(content) LIKE '%' || UPPER(#{word}) || '%')
+        </if>
+    </select>
+
+    <!-- 검색 + 페이징 -->
+    <select id="list_search_paging" resultType="dev.mvc.issue.IssueVO" parameterType="Map">
+        SELECT issueno, cnt, content, rdate, title
+        FROM (
+            SELECT ROW_NUMBER() OVER (ORDER BY issueno ASC) AS r, issueno, cnt, content, rdate, title
+            FROM issue
+            <if test="word != null and word != ''"> <!-- 검색 조건 -->
+                WHERE (UPPER(title) LIKE '%' || UPPER(#{word}) || '%') 
+                   OR (UPPER(content) LIKE '%' || UPPER(#{word}) || '%')
+            </if>
+        )
+        WHERE r &gt;= #{start_num} AND r &lt;= #{end_num}  <!-- 페이징 조건 -->
+    </select>
+
+    <!-- 긴급공지사항 설정 -->
+    <select id="listUrgent" resultType="dev.mvc.issue.IssueVO">
+        SELECT *
+        FROM issue
+        WHERE is_urgent = 'Y'
+        ORDER BY rdate DESC
+    </select>
 
 </mapper>

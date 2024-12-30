@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- SB가 자동으로 구현하여 연동하는 interface -->
+<mapper namespace="dev.mvc.loginlog.LoginlogDAOInter"> <!-- SB가 자동으로 구현하여 연동하는 interface -->
+
+  <!-- 로그인 로그 삽입 -->
+  <insert id="login_log" parameterType="dev.mvc.loginlog.LoginlogVO">
+    INSERT INTO loginlog(loginlogno, id, ip, result, ldate)
+    VALUES(loginlog_seq.nextval, #{id}, #{ip}, #{result}, sysdate)
+  </insert>
+  
+  <!-- 로그인 정보 조회 -->
+  <select id="read" resultType="dev.mvc.loginlog.LoginlogVO" parameterType="String">
+    SELECT loginlogno, id, ip, result, ldate)
+    FROM loginlog
+    WHERE id=#{id}
+  </select>
+  
+  <!-- 로그인 기록 삭제(평소엔 쓸 일 없지만 나중에 db 사용량 요금 때문에 필요) -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM loginlog
+    WHERE loginlogno=#{loginlogno}
+  </delete>
+  
+  <!-- 로그인 로그 검색 목록 + 페이징 -->
+  <select id="list_search_paging" parameterType="dev.mvc.dto.SearchDTO" resultType="dev.mvc.loginlog.LoginlogVO">
+    SELECT *
+    FROM(
+        SELECT a.*, ROWNUM rnum
+        FROM(
+            SELECT *
+            FROM loginlog
+            <where>
+              <if test="searchType != null and keyword != null">
+                <choose>
+                  <when test = "searchType == 'id'">
+                    AND id LIKE '%' || #{keyword} || '%'
+                  </when>
+                  <when test = "searchType == 'ip'">
+                    AND ip LIKE '%' || #{keyword} || '%'
+                  </when>
+                  <when test = "searchType == 'result'">
+                    AND result LIKE '%' || #{keyword} || '%'
+                  </when>
+                </choose>
+              </if>
+            </where>
+            ORDER BY loginlogno DESC
+          ) a
+          WHERE ROWNUM &lt;= #{size}
+        )
+        WHERE rnum &gt; #{offset}
+  </select>
+  
+  <!-- 로그인 로그 검색된 수 -->
+  <select id="list_search_count" parameterType="dev.mvc.dto.SearchDTO" resultType="int">
+    SELECT COUNT(*)
+    FROM loginlog
+    <where>
+      <if test="searchType != null and keyword != null">
+        <choose>
+          <when test = "searchType == 'id'">
+            AND id LIKE '%' || #{keyword} || '%'
+          </when>
+          <when test = "searchType == 'ip'">
+            AND ip LIKE '%' || #{keyword} || '%'
+          </when>
+          <when test = "searchType == 'result'">
+            AND result LIKE '%' || #{keyword} || '%'
+          </when>
+        </choose>
+      </if>
+    </where>
+  </select>
+  
+</mapper>

@@ -11,7 +11,7 @@
       <span class="menu_divide">|</span>
       <a th:href="@{|/issue/delete/${issueVO.issueno}|}">삭제</a>
       <span class="menu_divide">|</span>
-      <a th:href="@{/issue/list}">목록</a>
+      <a th:href="@{/issue/list_search}">목록</a>
       <span class="menu_divide">|</span>
       <a th:href="@{|/issue/create|}">등록</a>
       <span class="menu_divide">|</span>
@@ -24,6 +24,7 @@
       <div class="alert alert-danger" role="alert">
         <h4 class="alert-heading">정말로 삭제하시겠습니까?</h4>
         <p>삭제된 내용은 복구할 수 없습니다. 삭제를 진행하려면 확인 버튼을 클릭하세요.</p>
+        <p><strong>번호: </strong><span th:text="${issueVO.issueno}"></span></p>
         <p><strong>제목: </strong><span th:text="${issueVO.title}"></span></p> <!-- 제목 추가 -->
       </div>
       <form th:action="@{|/issue/delete/${issueVO.issueno}|}" method="post">

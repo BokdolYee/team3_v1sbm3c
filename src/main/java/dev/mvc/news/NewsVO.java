@@ -28,9 +28,13 @@ public class NewsVO {
 
     /** 발행일 */
     @NotEmpty(message = "발행일은 필수 입력 항목입니다.")
-    private String publishDate;
+    private String publish_date;
 
-    /** 분석 번호 */
-    @NotNull(message = "분석 번호는 필수 입력 항목입니다.")
-    private Integer analysisno = 0;
+    /** 분석 */
+    private String impact;
+    
+    /* 요약 */
+    private String summary;
+    
+    
 }

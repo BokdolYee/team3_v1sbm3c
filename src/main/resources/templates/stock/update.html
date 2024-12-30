@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  <div class='title_line'>
+    <span th:text="'종목 수정'" class="title_line_text"></span> 
+  </div>
+
+  <aside class="aside_right">
+    <a th:href="@{|/stock/create|}">등록</a>
+    <span class='menu_divide'>│</span>
+    <a href="javascript:location.reload();">새로고침</a>
+    <span class='menu_divide'>│</span>
+    <a th:href="@{|/stock/list_all|}">목록</a>
+  </aside>
+
+  <div class='menu_line'></div>
+
+  <form name="frm" method="post" th:object="${stockVO}" action="/stock/update">
+    <input type="hidden" name="stockno" th:value="${stockVO.stockno}">
+    
+    <div>
+       <label>심볼</label>
+       <input type='text' name='symbol' th:value="${stockVO.symbol}" required="required" 
+              autofocus="autofocus" class="form-control" style="width: 100%;">
+    </div>
+
+    <div>
+       <label>주식명</label>
+       <input type='text' name='name' th:value="${stockVO.name}" required="required" 
+              class="form-control" style="width: 100%;">
+    </div>
+
+    <div>
+       <label>산업</label>
+       <input type='text' name='industry' th:value="${stockVO.industry}" 
+              class="form-control" style="width: 100%;">
+    </div>
+
+    <div>
+       <label>설명</label>
+        <textarea name="description" required="required" class="form-control" rows="12" 
+          style="width: 100%;" th:text="${stockVO.description}"></textarea>
+
+    </div>
+
+    <div class="content_body_bottom">
+      <button type="submit" class="btn btn-secondary btn-sm">저장</button>
+      <button type="button" th:attr="onclick=|location.href='/stock/list_all'|" 
+              class="btn btn-secondary btn-sm">목록</button>
+    </div>
+  
+  </form>
+
+</div>
+</html>

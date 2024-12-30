@@ -55,6 +55,8 @@
         return false;  // 로그인 진행 중지
         
       }
+
+      
   
       document.getElementById('frm').submit(); // required="required" 작동 안됨.
     }
@@ -71,7 +73,7 @@
       const id = document.getElementById('id');
      const pw = document.getElementById('pw');
 
-      id.value = 'asdas';
+      id.value = 'goddoo';
       pw.value = '1234';
     }
     
@@ -107,16 +109,12 @@
       </div>
       
       <div class="msg_warning" th:if="${cnt == 0}">
-        아이디 또는 비밀번호를 잘못 입력하셨거나 등록되지 않은 아이디입니다.
-      </div>
-      
-      
-      <div class="content_body_bottom">
-        <button type="button" onclick="admin();" class="btn btn-secondary btn-sm">관리자</button>
-        <button type="button" onclick="member();" class="btn btn-secondary btn-sm">회원</button>
+        아이디 또는 비밀번호를 잘못 입력하셨거나 등록되지 않은 아이디입니다.<br>
       </div>
 
       <div class="content_body_bottom">
+        <button type="button" onclick="admin();" class="btn btn-secondary btn-sm">관리자</button>
+        <button type="button" onclick="member();" class="btn btn-secondary btn-sm">회원</button>
         <button type="button" onclick="send();" class="btn btn-secondary btn-sm">로그인</button>
         <button type="button" onclick="history.back();" class="btn btn-secondary btn-sm">취소</button>
       </div>

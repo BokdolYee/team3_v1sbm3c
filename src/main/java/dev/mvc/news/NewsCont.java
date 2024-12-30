@@ -1,5 +1,6 @@
 package dev.mvc.news;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,10 +13,10 @@ import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.mvc.analysis.AnalysisProc;
-import dev.mvc.analysis.AnalysisVO;
-import dev.mvc.summarize.SummarizeProc;
-import dev.mvc.summarize.SummarizeVO;
+
+import dev.mvc.issue.IssueVO;
+import dev.mvc.member.MemberVO;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/news")
@@ -23,16 +24,19 @@ public class NewsCont {
 
     @Autowired  
     private NewsProc newsProc;
-
-    @Autowired
-    private AnalysisProc analysisProc;
-    
-    @Autowired
-    private SummarizeProc summarizeProc;
     
     @Autowired
     private PythonAPIClient pythonAPIClient;
 
+    
+    @GetMapping("/list")
+    public String list(HttpSession session, Model model, @ModelAttribute("NewsVO") NewsVO newsVO) {
+
+        ArrayList<NewsVO> list = this.newsProc.list();
+        model.addAttribute("list", list);
+        return "/news/list";
+    }
+    
     /**
      * 뉴스 상세 조회
      * @param newsno
@@ -40,19 +44,16 @@ public class NewsCont {
      */
     @GetMapping("/detail/{newsno}")
     public String getNewsDetail(@PathVariable("newsno") int newsno, Model model) {
-        System.out.printf("Spring에서 받아온 newsno: %d\n", newsno);  // newsno 값 출력 (디버깅)
-
+        System.out.printf("Spring에서 받아온 newsno: %d\n", newsno);
         // 뉴스 상세 정보 가져오기
         NewsVO newsVO = newsProc.read(newsno);
         if (newsVO == null) {
             model.addAttribute("error", "뉴스를 찾을 수 없습니다.");
             return "errorPage";  // errorPage.html로 이동
         }
-
         model.addAttribute("news", newsVO);
         return "/news/detail";  // news/detail.html로 이동
     }
-
 
     @PostMapping("/analyze/{newsno}")
     public String analyzeAndSummarize(@PathVariable("newsno") int newsno, Model model) {
@@ -75,12 +76,6 @@ public class NewsCont {
             // 분석 결과 디코딩 (JSON에서 데이터 추출)
             String decodedAnalysis = decodeJson(analysisResult);
 
-            // 분석 결과 저장
-            AnalysisVO analyzeVO = new AnalysisVO();
-            analyzeVO.setNewsno(newsno);
-            analyzeVO.setImpact(decodedAnalysis);
-            analysisProc.create(analyzeVO);
-
             // Python API 요약 요청
             String summary = pythonAPIClient.summarize(text);
             if (summary == null) {
@@ -90,11 +85,12 @@ public class NewsCont {
             // 요약 디코딩 (JSON에서 데이터 추출)
             String decodedSummary = decodeJson(summary);
 
-            // 요약 저장
-            SummarizeVO summarizeVO = new SummarizeVO();
-            summarizeVO.setNewsno(newsno);
-            summarizeVO.setContent(decodedSummary);
-            summarizeProc.create(summarizeVO);
+            // 분석 결과와 요약을 뉴스 객체에 저장
+            newsVO.setImpact(decodedAnalysis);
+            newsVO.setSummary(decodedSummary);
+
+            // 분석 및 요약 정보 저장 (News 테이블에 반영)
+            newsProc.update(newsVO);
 
             // 분석 결과와 요약을 모델에 담아서 analyze.html로 이동
             model.addAttribute("summary", decodedSummary);
@@ -130,5 +126,4 @@ public class NewsCont {
 
         return decodedValue;
     }
-
 }

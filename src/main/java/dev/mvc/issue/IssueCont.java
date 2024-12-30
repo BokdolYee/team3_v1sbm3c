@@ -1,6 +1,8 @@
 package dev.mvc.issue;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -10,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import dev.mvc.member.MemberVO;
+import dev.mvc.tool.Tool;
 import dev.mvc.member.MemberProc;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -26,6 +29,15 @@ public class IssueCont {
     @Autowired
     private MemberProc memberProc; // MemberProc 추가
 
+    /** 페이지당 출력할 레코드 갯수, nowPage는 1부터 시작 */
+    public int record_per_page = 8;
+
+    /** 블럭당 페이지 수, 하나의 블럭은 10개의 페이지로 구성됨 */
+    public int page_per_block = 10;
+    
+    /** 페이징 목록 주소 */
+    private String list_file_name = "/issue/list_search";
+    
     // 관리자 권한 확인 메서드
     private boolean checkAdmin(HttpSession session, Model model) {
         if (!memberProc.isAdmin(session)) {  // MemberProc의 isAdmin 메서드 사용
@@ -94,7 +106,9 @@ public class IssueCont {
     }
 
     @GetMapping("/read/{issueno}")
-    public String read(@PathVariable("issueno") int issueno, Model model) {
+    public String read(@PathVariable("issueno") int issueno, Model model, HttpSession session, @ModelAttribute("memberVO") MemberVO memberVO) {
+        boolean isAdmin = memberProc.isAdmin(session);
+        model.addAttribute("isAdmin", isAdmin);
         IssueVO issueVO = issueProc.read(issueno);
         model.addAttribute("issueVO", issueVO);
         
@@ -119,7 +133,7 @@ public class IssueCont {
 
         issueVO.setIssueno(issueno); // issueno를 명시적으로 설정
         issueProc.update(issueVO);
-        return "redirect:/issue/list"; 
+        return "redirect:/issue/list_search"; 
     }
 
     @GetMapping("/delete/{issueno}")
@@ -136,6 +150,52 @@ public class IssueCont {
         boolean isAdmin = memberProc.isAdmin(session);
         model.addAttribute("isAdmin", isAdmin);
         issueProc.delete(issueno);
-        return "redirect:/issue/list"; // 삭제 후 공지사항 목록으로 이동
+        return "redirect:/issue/list_search"; // 삭제 후 공지사항 목록으로 이동
     }
+    
+    // 페이징 처리된 공지사항 목록을 가져오는 메서드
+    @GetMapping(value = "/list_search")
+    public String list_search_paging(HttpSession session, Model model,
+        @ModelAttribute("memberVO") MemberVO memberVO,
+        @RequestParam(name = "word", defaultValue = "") String word,
+        @RequestParam(name = "now_page", defaultValue = "1") int now_page) {
+
+        // 관리자인지 체크
+        boolean isAdmin = memberProc.isAdmin(session);  // MemberProc의 isAdmin 메서드 사용
+        // 관리자인지 여부를 모델에 추가
+        model.addAttribute("isAdmin", isAdmin);
+        
+            word = Tool.checkNull(word);
+
+            // 검색 결과 목록 가져오기
+            ArrayList<IssueVO> list = this.issueProc.list_search_paging(word, now_page, this.record_per_page);
+            model.addAttribute("list", list);
+
+            // 검색 결과 카운트
+            int search_cnt = this.issueProc.list_search_count(word);
+            model.addAttribute("search_cnt", search_cnt);
+
+            model.addAttribute("word", word); // 검색어
+
+            // 페이지 번호 목록 생성
+            int search_count = this.issueProc.list_search_count(word);
+            String paging = this.issueProc.pagingBox(now_page, word, this.list_file_name, search_count, this.record_per_page,
+                this.page_per_block);
+            model.addAttribute("paging", paging);
+            model.addAttribute("now_page", now_page);
+
+            // 일련 번호 생성: 레코드 갯수 - ((현재 페이지수 -1) * 페이지당 레코드 수)
+            int no = search_count - ((now_page - 1) * this.record_per_page);
+            model.addAttribute("no", no);
+
+            return "/issue/list_search"; // /templates/issue/list_search.html
+        } 
+    
+    @GetMapping("/urgent")
+    public String urgentNotice(Model model, @ModelAttribute IssueVO issueVO) {
+      ArrayList<IssueVO> urgentIssues = issueProc.listUrgent();
+      model.addAttribute("urgentIssues", urgentIssues);
+      return "/issue/urgent"; // 팝업에 표시할 템플릿
+    }
+
 }

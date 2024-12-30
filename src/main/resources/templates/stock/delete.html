@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layout}">
+<div layout:fragment="content">
+  <div class='title_line'>
+    <span th:text="'주식 삭제'" class="title_line_text"></span>
+  </div>
+  
+  <aside class="aside_right">
+    <a th:href="@{/stock/create}">등록</a>
+    <span class='menu_divide'>│</span>
+    <a href="javascript:location.reload();">새로고침</a>
+    <span class='menu_divide'>│</span>
+    <a th:href="@{/stock/list_all}">목록</a>    
+  </aside>
+  
+  <div class='menu_line'></div>
+
+  <ul>
+    <li class="li_none">
+      <div style='text-align: left; width: 47%; float: left;'>
+        <span style='font-size: 1.5em;' th:text="${stockVO.name}"></span>
+        <br>
+        <!-- 삭제 폼 -->
+        <form name='frm' method='POST' th:action="@{/stock/delete}">
+          <input type="hidden" name="stockno" th:value="${stockVO.stockno}">
+          <input type="hidden" name="now_page" th:value="${now_page}">
+          <input type="hidden" name="search_word" th:value="${word}">
+          
+          <br> 
+          <div style='margin-top: 20px; clear: both;'>
+            <span style="color: #FF0000; font-weight: bold;">삭제를 진행 하시겠습니까? 삭제하시면 복구 할 수 없습니다.</span>
+            <br><br><br>  
+            <button type="submit" class="btn btn-secondary btn-sm">삭제</button>
+            <button type="button" onclick="history.back();" class="btn btn-secondary btn-sm">취소</button>
+          </div>  
+        </form>
+      </div>
+    </li>
+  </ul>
+</div>
+</html>

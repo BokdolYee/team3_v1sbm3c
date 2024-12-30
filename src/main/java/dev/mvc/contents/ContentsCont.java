@@ -26,10 +26,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import dev.mvc.newscate.NewsCateProcInter;
 import dev.mvc.newscate.NewsCateVO;
 import dev.mvc.newscate.NewsCateVOMenu;
+import dev.mvc.stock.StockProcInter;
+import dev.mvc.stock.StockVO;
 import dev.mvc.member.MemberProcInter;
 import dev.mvc.news.NewsProcInter;
 import dev.mvc.news.NewsVO;
-import dev.mvc.newscate.NewsCateProcInter;
 import dev.mvc.tool.Tool;
 import dev.mvc.tool.Upload;
 
@@ -51,6 +52,10 @@ public class ContentsCont {
   @Autowired
   @Qualifier("dev.mvc.contents.ContentsProc") // @Component("dev.mvc.contents.ContentsProc")
   private ContentsProcInter contentsProc;
+  
+  @Autowired
+  @Qualifier("dev.mvc.stock.StockProc") // @Component("dev.mvc.contents.ContentsProc")
+  private StockProcInter stockProc;
 
   public ContentsCont() {
     System.out.println("-> ContentsCont created.");
@@ -75,8 +80,11 @@ public class ContentsCont {
   public String create(Model model, 
       @ModelAttribute("contentsVO") ContentsVO contentsVO, 
       @ModelAttribute("newsVO") NewsVO newsVO,
-      @RequestParam(name="newscateno", defaultValue="0") int newscateno,
-      @RequestParam(name = "newsno", defaultValue = "0") int newsno) {
+      @RequestParam(name = "newscateno", defaultValue = "1") int newscateno,
+      @RequestParam(name = "word", defaultValue = "") String word,
+      @RequestParam(name = "now_page", defaultValue = "1") int now_page,
+      @RequestParam(name = "newsno", defaultValue = "0") int newsno,
+      @RequestParam(name = "stockno", defaultValue = "0") int stockno) {
       
       // 뉴스 카테고리 메뉴
       ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
@@ -90,6 +98,11 @@ public class ContentsCont {
       ArrayList<NewsVO> newsList = this.newsProc.list();
       model.addAttribute("newsList", newsList);
 
+      ArrayList<StockVO> stockList = this.stockProc.list();
+      model.addAttribute("stockList", stockList);
+      
+      model.addAttribute("word", word);
+      model.addAttribute("now_page", now_page);
       // newsno에 해당하는 뉴스의 요약과 분석 정보 조회
       if (newsno != 0) {
           NewsVO newsDetail = this.newsProc.read(newsno);  // DB에서 해당 뉴스 정보를 가져옴
@@ -221,7 +234,7 @@ public class ContentsCont {
   @GetMapping(value = "/list_by_cateno_grid")
   public String list_by_cateno_search_paging_grid(HttpSession session, 
       Model model, 
-      @RequestParam(name = "newscateno", defaultValue = "0") int newscateno,
+      @RequestParam(name = "newscateno", defaultValue = "1") int newscateno,
       @RequestParam(name = "word", defaultValue = "") String word,
       @RequestParam(name = "now_page", defaultValue = "1") int now_page) {
 
@@ -232,7 +245,7 @@ public class ContentsCont {
 
     NewsCateVO newscateVO = this.newscateProc.read(newscateno);
     model.addAttribute("newscateVO", newscateVO);
-
+    
     word = Tool.checkNull(word).trim();
 
     HashMap<String, Object> map = new HashMap<>();
@@ -269,7 +282,7 @@ public class ContentsCont {
    */
   @GetMapping(value = "/read")
   public String read(Model model, 
-      @RequestParam(name="contentno", defaultValue = "0") int contentno, 
+      @RequestParam(name="contentno", defaultValue = "1") int contentno, 
       @RequestParam(name="word", defaultValue = "") String word, 
       @RequestParam(name="now_page", defaultValue = "1") int now_page,
       @RequestParam(name = "newsno", defaultValue = "0") int newsno) {

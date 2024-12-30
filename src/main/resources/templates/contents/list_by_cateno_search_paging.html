@@ -14,12 +14,11 @@
       <a th:href="@{|/contents/create?newscateno=${newscateVO.newscateno}|}">등록</a>
       <span class="menu_devide">│</span>    
     </span>
-    
     <a href="javascript:location.reload();">새로고침</a>
     <span class='menu_divide' >│</span>    
     <a th:href="@{|./list_by_cateno?newscateno=${newscateVO.newscateno }&word=${word }&now_page=${now_page}|}">목록형</a>    
     <span class='menu_divide' >│</span>
-    <a th:href="@{|./list_by_cateno_grid?cateno=${newscateVO.newscateno }&word=${word }&now_page=${now_page}|}">갤러리형</a>
+    <a th:href="@{|./list_by_cateno_grid?newscateno=${newscateVO.newscateno }&word=${word }&now_page=${now_page}|}">갤러리형</a>
     
   </aside> 
 
@@ -34,28 +33,15 @@
       <col style='width: 90%;'/>
     </colgroup>
     <tr>
-      <th class='th_bs'>파일</TH>
-      <th class='th_bs'>제목</th>
+      <th class='th_bs'>종목</TH>
+      <th class='th_bs'>분석</th>
     </tr>
    
     <tr th:if="${list.size() > 0}" th:each="contentsVO, status:${list}" 
          th:attr="onclick=|location.href='/contents/read?contentno=${contentsVO.contentno}&word=${word}&now_page=${now_page}'|"
          style="cursor: pointer; height: 90px;">
       <td class='td_basic' style="vertical-align: middle; text-align: center;">
-        <div th:if="${contentsVO.file1.endsWith('jpg') or contentsVO.file1.endsWith('png')  or contentsVO.file1.endsWith('gif')}">
-          <img th:src="@{|/contents/storage/${contentsVO.thumb1}|}" style="width: 120px; height: 90px;">
-        </div>
-
-        <!-- % 이미지가 아닌 파일은 파일명만 출력 % -->
-        <div th:if="${((contentsVO.file1.endsWith('jpg') or contentsVO.file1.endsWith('png')  or contentsVO.file1.endsWith('gif')) == false) and (contentsVO.size1 > 0)}">
-          <span th:text="${contentsVO.file1}"></span>
-        </div>
-
-        <!-- % 파일이 없는 경우 기본이미지 출력 % -->
-        <div th:if="${contentsVO.size1 == 0}">
-          <img src="/contents/images/none1.png" style="width: 120px; height: 90px;">
-        </div>
-                
+        <span th:text="${contentsVO.title}" style="font-weight: bold;"></span>
       </td>
       </td>
       <td class='td_left'>

@@ -8,7 +8,7 @@ import dev.mvc.contents.ContentsVO;
 public interface StockDAOInter {
   public int create(StockVO stockVO);
 
-  public ArrayList<StockVO> list_all();
+  public ArrayList<StockVO> list();
 
   public StockVO read(Integer stockno);
 

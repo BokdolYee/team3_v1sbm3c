@@ -39,7 +39,13 @@
 
           <span style="font-size: 1.5em; font-weight: bold;" th:text="${contentsVO.title}"></span>
           <span style="font-size: 1em;" th:text="${contentsVO.rdate }"></span><br><br>
-          <div style="white-space: pre-wrap;"><span th:text="${contentsVO.newsno}"></span></div>
+        </div>
+      </li>
+      
+      <li class="li_none">
+        <div style="margin-top: 20px;">
+          <strong>분석:</strong><br>
+          <span th:text="${newsVO.impact}"></span>
         </div>
       </li>
       
@@ -47,14 +53,6 @@
         <div style="margin-top: 20px;">
           <strong>요약:</strong><br>
           <span th:text="${newsVO.summary}"></span>
-        </div>
-      </li>
-
-      <!-- 분석 결과 표시 -->
-      <li class="li_none">
-        <div style="margin-top: 20px;">
-          <strong>분석:</strong><br>
-          <span th:text="${newsVO.impact}"></span>
         </div>
       </li>
       

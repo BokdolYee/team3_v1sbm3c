@@ -12,7 +12,7 @@
 
   <!-- 모든 카테고리의 등록된 글목록 -->
   <select id="list_all" resultType="dev.mvc.contents.ContentsVO">
-    SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno
+    SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, newscateno
     FROM contents
     ORDER BY contentno DESC
   </select>
@@ -34,7 +34,7 @@
 
   <!-- 카테고리별 검색 목록 -->
   <select id="list_by_cateno_search" resultType="dev.mvc.contents.ContentsVO" parameterType="HashMap">
-    SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno
+    SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, newscateno
     FROM contents
     <choose>
       <when test="word == null or word == ''"> <!-- 검색하지 않는 경우 -->

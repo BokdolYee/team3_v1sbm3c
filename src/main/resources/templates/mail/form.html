@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>메일 쓰기 http://localhost:9091/mail/form</title>
+<link href="/css/style.css" rel="Stylesheet" type="text/css"> <!-- /static 기준 -->
+</head>
+
+<script>
+  function send(form) {
+    let panel = document.getElementById('panel');
+    panel.innerHTML = "메일 전송 중...";
+
+    form.submit();
+  }
+</script>
+
+<body>
+<div style='width: 40%; margin: 0px auto;'>
+<div class='title_line'>mail 쓰기</div>
+<form name='frm' method='post' action="/mail/send">
+  <table class='table_basic'>
+    <colgroup>
+      <col style='width: 30%;' />   <!-- 출력 순서 -->
+      <col style='width: 70%;' /> <!-- 제목 -->
+    </colgroup>
+    <tr>
+      <th class='th_basic'>받는 사람</th>
+      <td class='td_left'><input type="text" name="receiver" value='zmffpdkq1213@gmail.com' class='input_basic' style='width: 90%;'></td>
+    </tr>
+    <tr>
+      <th class='th_basic'>보내는 사람</th>
+      <td class='td_left'><input type="text" name="from" value='zmffpdkq1213@gmail.com' class='input_basic' style='width: 90%;'></td>
+  </tr>
+  <tr>
+    <th class='th_basic'>제 목</th>
+    <td class='td_left'><input type="text" name="title" value="호우!!!! IP: 142" class='input_basic' style='width: 90%;'></td>
+  </tr>
+  <tr>
+    <td class='td_left' colspan="2">
+      <textarea name="content" rows="15"  style='width: 100%; border: #AAAAAA 1px solid;'>오늘 점심 뭐 먹지</textarea>
+    </td>
+  </tr>
+</table>
+<div id='panel' style="width: 40%; margin:0px auto; background-color: beige; text-align: center;"></div> <!-- 전송 메시지 -->
+ 
+<div  class="bottom_menu">
+  <input type="button" value="보내기" onclick="send(this.form)">
+  <input type="button" value="취소" onclick="history.back()">
+</div>
+</form>
+</div>
+ 
+</body>
+</html>
+

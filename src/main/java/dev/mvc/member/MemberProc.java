@@ -180,5 +180,29 @@ public class MemberProc implements MemberProcInter {
     int cnt = this.memberDAO.update_passwd(map);
     return cnt;
   }
+
+  @Override
+  public int update_passwd_find(HashMap<String, Object> map) {
+    String passwd = (String)map.get("passwd");
+    passwd = this.security.aesEncode(passwd);
+    map.put("passwd", passwd);
+    
+    int cnt = this.memberDAO.update_passwd_find(map);
+    return cnt;
+  }
+  
+  @Override
+  public int find_id_check(HashMap<String, String> map) {
+    int cnt = this.memberDAO.find_id_check(map);
+    
+    return cnt;
+  }
+  
+  @Override
+  public int find_passwd(String id, String tel) {
+    int cnt = this.memberDAO.find_passwd(id, tel);
+    
+    return cnt;
+  }
  
 }

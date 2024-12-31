@@ -146,7 +146,7 @@
     WHERE memberno=#{memberno}
   </update>
   
-  <!-- 회원 정보 수정(passwd) - 비밀번호 찾기에서 문자 인증을 성공했을 때-->
+  <!-- 비밀번호 변경 - 비밀번호 찾기에서 문자 인증을 성공했을 때-->
   <update id="update_passwd_find" parameterType="HashMap">
     UPDATE member
     SET passwd=#{passwd}
@@ -154,7 +154,7 @@
   </update>
   
   <!-- 아이디 찾기 회원 정보 일치 검증(name, tel) -->
-  <select id="find_id_check" resultType="int" parameterType="String">
+  <select id="find_id_check" resultType="int" parameterType="HashMap">
     SELECT COUNT(id) as cnt
     FROM member
     WHERE name=#{name} AND tel=#{tel}

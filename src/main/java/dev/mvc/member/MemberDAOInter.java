@@ -75,20 +75,39 @@ public interface MemberDAOInter {
   public int login(HashMap<String, Object> map);
   
   /**
-   * 현재 패스워드 검사
+   * 현재 비밀번호 검사
    * @param map
    * @return 1: 일치, 0: 불일치
    */
   public int passwd_check(HashMap<String, Object> map);
   
   /**
-   * passwd 수정 처리
+   * 비밀번호 수정 처리
    * @param map
    * @return 변경된 passwd 개수
    */
   public int update_passwd(HashMap<String, Object> map);
   
-  public int find_id(String name, String tel);
+  /**
+   * 문자 인증 성공 시 비밀번호 수정 처리
+   * @param map
+   * @return 수정한 비밀번호 개수
+   */
+  public int update_passwd_find(HashMap<String, Object> map);
   
+  /**
+   * 이름, 전화번호 입력받아서 일치하는 회원이 있는지 검사
+   * @param name
+   * @param tel
+   * @return 찾은 id 개수
+   */
+  public int find_id_check(HashMap<String, String> map);
+  
+  /**
+   * 아이디, 전화번호 입력받아서 일치하는 회원이 있는지 검사
+   * @param name
+   * @param tel
+   * @return 찾은 id 개수
+   */
   public int find_passwd(String id, String tel);
 }

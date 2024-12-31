@@ -1,6 +1,9 @@
 package dev.mvc.stockdata;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -21,6 +24,10 @@ public class StockdataCont {
   @Autowired
   @Qualifier("dev.mvc.stock.StockProc")
   private StockProcInter stockProc;
+  
+  public int record_per_page = 4;
+  public int page_per_block = 10;
+  private String list_file_name = "/stockdata/list_search";
 
   // 1. Create - 데이터 추가 폼
   @GetMapping("/create")
@@ -84,13 +91,43 @@ public class StockdataCont {
       return "stockdata/read";
   }
 
-  // 3. List - 전체 데이터 목록
   @GetMapping("/list_all")
-  public String list(Model model) {
-      List<StockdataVO> stockdataList = stockdataProc.list(); // 모든 데이터 목록 가져오기
+  public String list(@RequestParam(name = "searchName", defaultValue = "") String searchName,
+                     @RequestParam(name = "now_page", defaultValue = "1") int now_page,
+                     Model model) {
+
+      int start_num = (now_page - 1) * record_per_page + 1;
+      int end_num = start_num + record_per_page - 1;
+
+      Map<String, Object> params = new HashMap<>();
+      params.put("searchName", searchName);
+      params.put("nowPage", now_page);
+      params.put("start_num", start_num); // start_num
+      params.put("end_num", end_num);     // end_num
+      params.put("recordsPerPage", this.record_per_page);
+
+      // 페이징 및 검색 데이터 목록
+      List<StockdataVO> stockdataList = stockdataProc.listSearchPaging(params);
       model.addAttribute("stockdataList", stockdataList); // stockdataList 모델에 추가
+
+      // stockno로 name을 가져오기
+      for (StockdataVO stockdataVO : stockdataList) {
+          String stockName = stockdataProc.getStockNameByStockno(stockdataVO.getStockno()); // stockno로 이름 조회
+          stockdataVO.setStock_name(stockName); // stock_name 설정
+      }
+
+      // 전체 개수
+      int search_count = stockdataProc.list_search_count(params);
+
+      // 페이징 HTML 생성
+      String paging = stockdataProc.pagingBox(now_page, searchName, "/stockdata/list_all", search_count, this.record_per_page, this.page_per_block);
+      model.addAttribute("paging", paging);
+      model.addAttribute("now_page", now_page);
+
       return "stockdata/list_all"; // list_all.html로 이동
   }
+
+
 
   // 4. Update - 데이터 수정 폼
   @GetMapping("/update/{sdatano}")
@@ -99,9 +136,9 @@ public class StockdataCont {
       StockdataVO stockdataVO = stockdataProc.read(sdatano); // 수정할 주식 데이터 조회
       model.addAttribute("stockdataVO", stockdataVO);
 
-      // stockno가 null이 아닌지 확인하고, stockno에 해당하는 StockVO 조회
       if (stockdataVO.getStockno() != null) {
           StockVO stockVO = stockProc.read(stockdataVO.getStockno()); // stockno에 해당하는 종목 정보
+          stockdataVO.setStockVO(stockVO); // stockVO에 해당하는 종목 정보 설정
           model.addAttribute("stockVO", stockVO);  // stockVO를 모델에 추가
       } else {
           model.addAttribute("errorMessage", "No stock information found for the given stockno.");
@@ -110,13 +147,37 @@ public class StockdataCont {
       return "stockdata/update"; // update.html로 이동
   }
 
-  // 4. Update - 데이터 수정 처리
+
   @PostMapping("/update")
-  public String update(@ModelAttribute StockdataVO stockdataVO) {
-      // rdate를 수동으로 설정하지 않고, 쿼리에서 sysdate가 자동으로 처리되도록 함
-      stockdataProc.update(stockdataVO); // 수정된 데이터 처리
-      return "redirect:/stockdata/list_all"; // 데이터 수정 후 목록 페이지로 이동
+  public String update(@ModelAttribute StockdataVO stockdataVO, Model model) {
+      try {
+          // stockdataVO 값 확인
+          System.out.println("Received stockdataVO: " + stockdataVO);
+
+          // sdatano가 0일 경우 처리
+          if (stockdataVO.getSdatano() == 0) {
+              model.addAttribute("errorMessage", "Invalid sdatano value received.");
+              return "errorPage"; // sdatano가 0일 경우 에러 페이지로 이동
+          }
+
+          // 데이터 수정
+          int result = stockdataProc.update(stockdataVO);
+          
+          // 수정 후 결과 확인
+          if (result > 0) {
+              return "redirect:/stockdata/list_all"; // 수정 성공 시 목록 페이지로 리다이렉트
+          } else {
+              model.addAttribute("errorMessage", "No rows were updated.");
+              return "errorPage"; // 수정이 안된 경우 에러 페이지로 이동
+          }
+      } catch (Exception e) {
+          // 예외 발생 시 상세 정보 출력
+          e.printStackTrace();  // 로그로 상세 예외 출력
+          model.addAttribute("errorMessage", "An error occurred: " + e.getMessage());  // 모델에 예외 메시지 추가
+          return "errorPage";  // 에러 페이지로 이동
+      }
   }
+
 
 
 

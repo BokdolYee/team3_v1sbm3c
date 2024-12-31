@@ -20,7 +20,7 @@
   <form name="frm" method="post" th:object="${stockdataVO}" th:action="@{/stockdata/create}">
   
       <!-- Stockno를 hidden으로 포함 -->
-      <input type="hidden" id="stockno" name="stockno" th:value="${stockdataVO.stockno != null ? stockdataVO.stockno : 0}">
+      <input type="numer" id="stockno" name="stockno" th:value="${stockdataVO.stockno}" required="required" class="form-control" style="width: 100%;">
        
       <div>
           <label for="open_price">시가</label>

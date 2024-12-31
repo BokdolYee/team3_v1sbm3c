@@ -19,8 +19,12 @@
     <form name="frm" method="post" th:object="${stockdataVO}" th:action="@{/stockdata/update}">
         <div>
             <label for="stockno">종목</label>
-            <input type="text" id="stockno" name="stockno" th:value="${stockVO != null ? stockVO.name : '0'}" class="form-control" readonly="readonly" />
+            <!-- stockno를 hidden 필드로 변경 -->
+            <input type="hidden" id="stockno" name="stockno" th:value="${stockdataVO.stockno}" />
+            <input type="number" id="stockno_display" value="${stockdataVO.stockno}" class="form-control" readonly="readonly" />
         </div>
+  
+        <input type="hidden" id="sdatano" name="sdatano" th:value="${stockdataVO.sdatano}" />
   
         <div>
             <label for="open_price">시가</label>

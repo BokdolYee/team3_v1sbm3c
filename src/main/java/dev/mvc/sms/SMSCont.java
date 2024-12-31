@@ -6,31 +6,36 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
+@RequestMapping("/sms")
 public class SMSCont {
   public SMSCont() {
     System.out.println("-> SMSCont created.");
   }
 
-  // http://localhost:9093/sms/form.do
+  // http://localhost:9093/sms/form
   /**
    * 사용자의 전화번호 입력 화면
    * 
    * @return
    */
-  @RequestMapping(value = {"/sms/form.do"}, method = RequestMethod.GET)
-  public ModelAndView form() {
-    ModelAndView mav = new ModelAndView();
-    mav.setViewName("/sms/form"); // /WEB-INF/views/sms/form.jsp
-
-    return mav;
+  @GetMapping(value = "/form")
+  public String form(HttpSession session) {
+    // ID 찾은 경우 어느 회원의 패스워드를 변경하는지 확인할 목적으로 id를 session 에 저장
+    session.setAttribute("id", "user1");
+    
+    return "/th/sms/form";
   }
 
-  // http://localhost:9093/sms/proc.do
+  // http://localhost:9093/sms/proc
   /**
    * 사용자에게 인증 번호를 생성하여 전송
    * 
@@ -38,7 +43,7 @@ public class SMSCont {
    * @param request
    * @return
    */
-  @RequestMapping(value = { "/sms/proc.do" }, method = RequestMethod.POST)
+  @PostMapping(value = "/proc")
   public ModelAndView proc(HttpSession session, HttpServletRequest request) {
     ModelAndView mav = new ModelAndView();
 
@@ -70,21 +75,18 @@ public class SMSCont {
     return mav;
   }
 
-  // http://localhost:9093/sms/proc_next.do
+  // http://localhost:9093/sms/proc_next
   /**
    * 사용자가 수신받은 인증번호 입력 화면
    * 
    * @return
    */
-  @RequestMapping(value = { "/sms/proc_next.do" }, method = RequestMethod.GET)
-  public ModelAndView proc_next() {
-    ModelAndView mav = new ModelAndView();
-    mav.setViewName("/sms/proc_next"); // /WEB-INF/views/sms/proc_next.jsp
-
-    return mav;
+  @GetMapping(value = "/proc_next")
+  public String proc_next() {
+    return "/th/sms/proc_next";
   }
 
-  // http://localhost:9093/sms/confirm.do
+  // http://localhost:9093/sms/confirm
   /**
    * 문자로 전송된 번호와 사용자가 입력한 번호를 비교한 결과 화면
    * 
@@ -92,10 +94,10 @@ public class SMSCont {
    * @param auth_no 사용자가 입력한 번호
    * @return
    */
-  @RequestMapping(value = { "/sms/confirm.do" }, method = RequestMethod.POST)
-  public ModelAndView confirm(HttpSession session, String auth_no) {
-    ModelAndView mav = new ModelAndView();
+  @PostMapping(value = "/confirm")
+  public String confirm(Model model, HttpSession session, @RequestParam(name="auth_no", defaultValue = "")String auth_no) {
 
+    System.out.println("-> auth_no: " + auth_no);
     String session_auth_no = (String) session.getAttribute("auth_no"); // 사용자에게 전송된 번호 session에서 꺼냄
 
     String msg = "";
@@ -106,13 +108,12 @@ public class SMSCont {
       msg += "패스워드 수정 화면등 출력";
     } else {
       msg = "입력된 번호가 일치하지않습니다. 다시 인증 번호를 요청해주세요.";
-      msg += "<br><br><A href='./form.do'>인증번호 재요청</A>";
+      msg += "<br><br><A href='./form'>인증번호 재요청</A>";
     }
 
-    mav.addObject("msg", msg); // request.setAttribute("msg")
-    mav.setViewName("/sms/confirm"); // /WEB-INF/views/sms/confirm.jsp
+    model.addAttribute("msg", msg); // request.setAttribute("msg")
 
-    return mav;
+    return "/th/sms/confirm";
   }
 
 }

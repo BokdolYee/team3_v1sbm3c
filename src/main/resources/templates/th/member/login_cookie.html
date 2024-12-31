@@ -1,10 +1,20 @@
 <!DOCTYPE html>
 
-<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
 
 <div layout:fragment="content">
   <script>
     window.onload = () => {
+      const idField = document.getElementById('id');
+      const passwdField = document.getElementById('passwd');
+
+      if (!idField.value) { // id 필드가 비어있을 경우
+        idField.value = 'admin';  // 테스트 수월하게 하기 위한 기본 아이디 설정
+      }
+
+      if (!passwdField.value) { // passwd 필드가 비어있을 경우
+        passwdField.value = '1234';  // 테스트 수월하게 하기 위한 기본 비밀번호 설정
+      }
       document.querySelector('#id').addEventListener('keypress', (event) => {
       // document.getElementById('passwd').addEventListener('keypress', (event) => {
         if(event.key === 'Enter') { // ===: 타입까지 확인
@@ -45,9 +55,28 @@
         return false;  // 로그인 진행 중지
         
       }
+
+      
   
       document.getElementById('frm').submit(); // required="required" 작동 안됨.
-    }    
+    }
+    
+    function admin() { //관리자 계정 입력 버튼
+     const id = document.getElementById('id');
+     const pw = document.getElementById('pw');
+
+      id.value = 'admin';
+      pw.value = '1234';
+    }
+    
+    function member() { // 회원 계정 입력 버튼
+      const id = document.getElementById('id');
+     const pw = document.getElementById('pw');
+
+      id.value = 'goddoo';
+      pw.value = '1234';
+    }
+    
   </script>
 
   <div class="title_line">로그인</div>
@@ -65,21 +94,34 @@
     <form name="frm" id="frm" th:object="${memberVO}" method="post" action="/member/login">
       <div>
         <label for="id">아이디(이메일)</label>
-        <input type="text" name="id" id="id" value="user1@gmail.com" autofocus="autofocus"
-               class="form-control fom-control-sm" style="width: 100%;">
-        <span id='id_msg'></span>
+        <input type="text" name="id" id="id" th:value="${ck_id}" autofocus="autofocus"
+               placeholder="Hoak ID(아이디 또는 이메일)" class="form-control fom-control-sm" style="width: 100%;">
+        <label><input type="checkbox" name="id_save" id="id_save" value="Y" th:checked="${ck_id_save == 'Y'}"> 저장<label>       
+        <span id='id_msg'></span>  
       </div>
       
       <div class="form-group">
         <label for="passwd">비밀번호</label> 
-        <input type='password' name='passwd' id='passwd' value='1234' required="required" 
+        <input type='password' name='passwd' id='passwd' th:value="${ck_passwd}" required="required" 
                   placeholder="비밀번호" class="form-control form-control-sm" style="width: 100%;">
+        <label><input type="checkbox" name="passwd_save" id="passwd_save" value="Y" th:checked="${ck_passwd_save == 'Y'}"> 저장<label>          
         <span id='passwd_msg'></span>
+      </div>
+      
+      <div class="msg_warning" th:if="${cnt == 0}">
+        아이디 또는 비밀번호를 잘못 입력하셨거나 등록되지 않은 아이디입니다.<br>
       </div>
 
       <div class="content_body_bottom">
+        <button type="button" onclick="admin();" class="btn btn-secondary btn-sm">관리자</button>
+        <button type="button" onclick="member();" class="btn btn-secondary btn-sm">회원</button>
         <button type="button" onclick="send();" class="btn btn-secondary btn-sm">로그인</button>
         <button type="button" onclick="history.back();" class="btn btn-secondary btn-sm">취소</button>
+      </div>
+
+      <div class="content_body_bottom">
+        <button type="button" onclick="location.href='/mail/form'" class="btn btn-secondary btn-sm">아이디 찾기</button>
+        <button type="button" onclick="location.href='/sms/form'" class="btn btn-secondary btn-sm">비밀번호 찾기</button>
       </div>
 
 

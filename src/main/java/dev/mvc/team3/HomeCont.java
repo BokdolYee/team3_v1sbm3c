@@ -48,7 +48,7 @@ public class HomeCont {
     ArrayList<NewsCateVOMenu> menu = this.newsCateProc.menu();
     model.addAttribute("menu", menu);
     
-    return "index"; // /templates/index.html
+    return "/th/index"; // /templates/index.html
   }
   
 }

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속 -->
+<div layout:fragment="content" style="width: 80%; margin: 50px auto; text-align: center;">
+
+  <form action="./confirm" method="post">
+    <p>문자 메시지 전송후 처리되는 파일입니다.</p>
+    예)<br>
+    전송된 인증된 번호를 입력해주세요<br>
+    <input type='text' name='auth_no' size='15' autofocus="autofocus">
+    <button type='submit'>인증 확인</button>
+  </form>
+
+</div>
+
+</html>

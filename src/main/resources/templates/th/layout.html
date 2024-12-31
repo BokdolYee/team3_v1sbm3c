@@ -16,7 +16,7 @@
 <body>
 <div class='container_main'>
 
-  <nav th:replace="~{navbar::navbarFragment}"></nav> <!-- navbar.html navbarFragment import -->
+  <nav th:replace="~{th/navbar::navbarFragment}"></nav> <!-- navbar.html navbarFragment import -->
   
   <div class='content_body'> <!-- width: 90% -->
     <th:block layout:fragment="content"></th:block> <!-- 각 파일의 내용 출력 -->

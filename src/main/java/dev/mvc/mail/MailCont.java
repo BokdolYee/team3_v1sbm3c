@@ -27,7 +27,7 @@ public class MailCont {
   @GetMapping(value = "/form")
   public String form(Model model) {
 
-    return "/mail/form";
+    return "/th/mail/form";
   }
 
   // http://localhost:9093/mail/send
@@ -41,6 +41,6 @@ public class MailCont {
     MailTool mailTool = new MailTool();
     mailTool.send(receiver, from, title, content); // 메일 전송
 
-    return "/mail/sended";
+    return "/th/mail/sended";
   }
 }

@@ -73,7 +73,7 @@
       const id = document.getElementById('id');
      const pw = document.getElementById('pw');
 
-      id.value = 'goddoo';
+      id.value = 'goddoo@naver.com';
       pw.value = '1234';
     }
     
@@ -94,17 +94,17 @@
     <form name="frm" id="frm" th:object="${memberVO}" method="post" action="/member/login">
       <div>
         <label for="id">아이디(이메일)</label>
-        <input type="text" name="id" id="id" th:value="${ck_id}" autofocus="autofocus"
+        <input type="text" name="id" id="id" th:value="${check_id}" autofocus="autofocus"
                placeholder="Hoak ID(아이디 또는 이메일)" class="form-control fom-control-sm" style="width: 100%;">
-        <label><input type="checkbox" name="id_save" id="id_save" value="Y" th:checked="${ck_id_save == 'Y'}"> 저장<label>       
+        <label><input type="checkbox" name="id_save" id="id_save" value="Y" th:checked="${check_id_save == 'Y'}"> 저장<label>       
         <span id='id_msg'></span>  
       </div>
       
       <div class="form-group">
         <label for="passwd">비밀번호</label> 
-        <input type='password' name='passwd' id='passwd' th:value="${ck_passwd}" required="required" 
+        <input type='password' name='passwd' id='passwd' th:value="${check_passwd}" required="required" 
                   placeholder="비밀번호" class="form-control form-control-sm" style="width: 100%;">
-        <label><input type="checkbox" name="passwd_save" id="passwd_save" value="Y" th:checked="${ck_passwd_save == 'Y'}"> 저장<label>          
+        <label><input type="checkbox" name="passwd_save" id="passwd_save" value="Y" th:checked="${check_passwd_save == 'Y'}"> 저장<label>          
         <span id='passwd_msg'></span>
       </div>
       

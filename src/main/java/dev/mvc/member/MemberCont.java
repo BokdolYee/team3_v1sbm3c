@@ -677,23 +677,22 @@ public class MemberCont {
       for (int i = 0; i < cookies.length; i++) {
         cookie = cookies[i]; // 쿠키 객체 추출
 
-        if (cookie.getName().equals("ck_id")) { // 아이디
+        if (cookie.getName().equals("check_id")) { // 아이디
           check_id = cookie.getValue(); // email
-        } else if (cookie.getName().equals("ck_id_save")) { // 아이디 저장 여부
+        } else if (cookie.getName().equals("check_id_save")) { // 아이디 저장 여부
           check_id_save = cookie.getValue(); // Y, N
-        } else if (cookie.getName().equals("ck_passwd")) { // 비밀번호
+        } else if (cookie.getName().equals("check_passwd")) { // 비밀번호
           check_passwd = cookie.getValue(); // 1234
-        } else if (cookie.getName().equals("ck_passwd_save")) { // 비밀번호 저장 여부
+        } else if (cookie.getName().equals("check_passwd_save")) { // 비밀번호 저장 여부
           check_passwd_save = cookie.getValue(); // Y, N
         }
       }
     }
     // ----------------------------------------------------------------------------
-    model.addAttribute("ck_id", check_id);
-    model.addAttribute("ck_id_save", check_id_save);
-
-    model.addAttribute("ck_passwd", check_passwd);
-    model.addAttribute("ck_passwd_save", check_passwd_save);
+    model.addAttribute("check_id", check_id);
+    model.addAttribute("check_id_save", check_id_save);
+    model.addAttribute("check_passwd", check_passwd);
+    model.addAttribute("check_passwd_save", check_passwd_save);
 
     return "/th/member/login_cookie"; // templates/member/login_cookie.html
   }
@@ -859,7 +858,7 @@ public class MemberCont {
           check_id = cookie.getValue(); // email
         } else if (cookie.getName().equals("check_id_save")) {
           check_id_save = cookie.getValue(); // Y, N
-        } else if (cookie.getName().equals("ck_passwd")) {
+        } else if (cookie.getName().equals("check_passwd")) {
           check_passwd = cookie.getValue(); // 1234
         } else if (cookie.getName().equals("check_passwd_save")) {
           check_passwd_save = cookie.getValue(); // Y, N

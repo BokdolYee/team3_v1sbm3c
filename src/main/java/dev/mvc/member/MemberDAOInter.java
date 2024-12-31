@@ -87,4 +87,8 @@ public interface MemberDAOInter {
    * @return 변경된 passwd 개수
    */
   public int update_passwd(HashMap<String, Object> map);
+  
+  public int find_id(String name, String tel);
+  
+  public int find_passwd(String id, String tel);
 }

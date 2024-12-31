@@ -42,7 +42,7 @@ public class NewsCateCont {
   public int page_per_block = 10;
   
   /** 페이징 목록 주소 */
-  private String list_file_name = "/newscate/list_search";
+  private String list_file_name = "/th/newscate/list_search";
   
   @Autowired
   @Qualifier("dev.mvc.member.MemberProc")
@@ -59,7 +59,7 @@ public class NewsCateCont {
 //  }
 //  @GetMapping(value="/create") //  http://localhost:9092/cate/create
 //  public String create() {
-//    return "/cate/create"; // /templates/cate/create.html
+//    return "/cate/create"; // /templates/th/cate/create.html
 //  }
   
   @GetMapping(value="/create") //  http://localhost:9092/cate/create
@@ -69,7 +69,7 @@ public class NewsCateCont {
     
     newscateVO.setGenre("장르");
     newscateVO.setName("카테고리 이름을 입력하세요."); // Form으로 초기값을 전달
-    return "/newscate/create"; // /templates/cate/create.html
+    return "/th/newscate/create"; // /templates/th/cate/create.html
   }
   /**
    * 등록처리,  http://localhost:9092/cate/create
@@ -83,7 +83,7 @@ public class NewsCateCont {
  //   System.out.println("-> create post");
     if(bindingResult.hasErrors() == true) { // 에러가 있으면 폼으로 돌아갈 것.
    //   System.out.println("-> ERROR 발생");
-      return "/newscate/create"; //templates/cate/create.html
+      return "/th/newscate/create"; //templates/th/cate/create.html
     }
     
     newscateVO.setGenre(newscateVO.getGenre().trim());
@@ -107,7 +107,7 @@ public class NewsCateCont {
     
     model.addAttribute("cnt", cnt);
     
-    return "/newscate/msg"; //templates/cate/msg.html
+    return "/th/newscate/msg"; //templates/th/cate/msg.html
   }
   
   /**
@@ -137,7 +137,7 @@ public class NewsCateCont {
     ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
     model.addAttribute("menu", menu);
     
-    return "/newscate/list_all"; // templates/cate/list_all.html
+    return "/th/newscate/list_all"; // templates/th/cate/list_all.html
   }
   
   /**
@@ -178,7 +178,7 @@ public class NewsCateCont {
     int no = search_count - ((now_page - 1) * this.record_per_page);
     model.addAttribute("no", no);
     
-    return "/newscate/read";
+    return "/th/newscate/read";
   }
   
   /**
@@ -224,7 +224,7 @@ public class NewsCateCont {
       int no = search_count - ((now_page - 1) * this.record_per_page);
       model.addAttribute("no", no);
       
-      return "/newscate/update"; //templates/cate/update.html
+      return "/th/newscate/update"; //templates/th/cate/update.html
     } else {
       return "redirect:/member/login_cookie_need";  // redirect
     }
@@ -251,7 +251,7 @@ public class NewsCateCont {
       //   System.out.println("-> update post");
       if(bindingResult.hasErrors() == true) { // 에러가 있으면 폼으로 돌아갈 것.
      //   System.out.println("-> ERROR 발생");
-        return "/cate/update"; //templates/cate/update.html
+        return "/th/cate/update"; //templates/th/cate/update.html
       }
       
 //      System.out.println(movieVO.getName());
@@ -293,7 +293,7 @@ public class NewsCateCont {
       model.addAttribute("no", no);
       // --------------------------------------------------------------------------------------
       
-      return "/newscate/msg"; //templates/cate/msg.html
+      return "/th/newscate/msg"; //templates/th/cate/msg.html
     } else {
       return "redirect:/member/login_cookie_need";  // redirect
     }
@@ -340,7 +340,7 @@ public class NewsCateCont {
       int no = search_count - ((now_page - 1) * this.record_per_page);
       model.addAttribute("no", no);
       // ---------------
-      return "/newscate/delete"; //templates/cate/delete.html
+      return "/th/newscate/delete"; //templates/th/cate/delete.html
     } else {
       return "redirect:/member/login_cookie_need";  // redirect
     }
@@ -403,7 +403,7 @@ public class NewsCateCont {
       
       model.addAttribute("cnt", cnt);
       
-      return "/newscate/msg"; //templates/cate/msg.html
+      return "/th/newscate/msg"; //templates/th/cate/msg.html
     } else {
       return "redirect:/member/login_cookie_need";  // redirect
     }
@@ -534,7 +534,7 @@ public class NewsCateCont {
 //    
 //    model.addAttribute("word", word);
 //    
-//    return "/cate/list_search"; // templates/cate/list_search.html
+//    return "/cate/list_search"; // templates/th/cate/list_search.html
 //  }
   
   /**
@@ -589,7 +589,7 @@ public class NewsCateCont {
       model.addAttribute("no", no);
       // --------------------------------------------------------------------------------------    
       
-      return "/newscate/list_search";  // /templates/cate/list_search.html
+      return "/th/newscate/list_search";  // /templates/th/cate/list_search.html
     } else {
       return "redirect:/member/login_cookie_need";  // redirect
     }

@@ -88,7 +88,7 @@ public class LoginlogCont {
       model.addAttribute("pageDTO", pageDTO);
       model.addAttribute("total", total);
 
-      return "/loginlog/list_search";
+      return "/th/loginlog/list_search";
     } else {
       return "redirect:/member/login_cookie_need";
     }

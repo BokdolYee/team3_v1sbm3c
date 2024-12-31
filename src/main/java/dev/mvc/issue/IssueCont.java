@@ -36,7 +36,7 @@ public class IssueCont {
     public int page_per_block = 10;
     
     /** 페이징 목록 주소 */
-    private String list_file_name = "/issue/list_search";
+    private String list_file_name = "/th/issue/list_search";
     
     // 관리자 권한 확인 메서드
     private boolean checkAdmin(HttpSession session, Model model) {
@@ -53,7 +53,7 @@ public class IssueCont {
         boolean isAdmin = memberProc.isAdmin(session);
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("issueVO", new IssueVO()); // 빈 객체 전달
-        return "issue/create"; // 템플릿 이름
+        return "/th/issue/create"; // 템플릿 이름
     }
 
     @PostMapping(value = "/create")
@@ -65,12 +65,12 @@ public class IssueCont {
     ) {
         if (bindingResult.hasErrors()) {
             System.out.println("-> 유효성 검사 실패");
-            return "/issue/create";
+            return "/th/issue/create";
         }
 
         // 관리자 권한 확인
         if (!checkAdmin(session, model)) {  // 공통 메서드 사용
-            return "issue/msg"; // 관리자 권한이 없으면 실패 메시지 출력
+            return "/th/issue/msg"; // 관리자 권한이 없으면 실패 메시지 출력
         }
 
         // 공지사항 생성 처리
@@ -84,7 +84,7 @@ public class IssueCont {
         }
 
         model.addAttribute("cnt", cnt);
-        return "issue/msg";
+        return "/th/issue/msg";
     }
 
     @GetMapping("/list")
@@ -102,7 +102,7 @@ public class IssueCont {
         // 관리자인지 여부를 모델에 추가
         model.addAttribute("isAdmin", isAdmin);
 
-        return "/issue/list";
+        return "/th/issue/list";
     }
 
     @GetMapping("/read/{issueno}")
@@ -112,7 +112,7 @@ public class IssueCont {
         IssueVO issueVO = issueProc.read(issueno);
         model.addAttribute("issueVO", issueVO);
         
-        return "issue/read";
+        return "/th/issue/read";
     }
 
     @GetMapping("/update/{issueno}")
@@ -121,14 +121,14 @@ public class IssueCont {
         model.addAttribute("isAdmin", isAdmin);
         IssueVO issueVO = issueProc.read(issueno);
         model.addAttribute("issueVO", issueVO);
-        return "issue/update";
+        return "/th/issue/update";
     }
 
     @PostMapping("/update/{issueno}")
     public String update(@PathVariable("issueno") int issueno, @ModelAttribute IssueVO issueVO, HttpSession session, Model model) {
         // 관리자 권한 확인
         if (!checkAdmin(session, model)) {  // 공통 메서드 사용
-            return "issue/msg"; // 관리자 권한이 없으면 실패 메시지 출력
+            return "/th/issue/msg"; // 관리자 권한이 없으면 실패 메시지 출력
         }
 
         issueVO.setIssueno(issueno); // issueno를 명시적으로 설정
@@ -142,7 +142,7 @@ public class IssueCont {
         model.addAttribute("isAdmin", isAdmin);
         IssueVO issueVO = issueProc.read(issueno); 
         model.addAttribute("issueVO", issueVO);
-        return "issue/delete"; 
+        return "/th/issue/delete"; 
     }
 
     @PostMapping("/delete/{issueno}")
@@ -188,14 +188,14 @@ public class IssueCont {
             int no = search_count - ((now_page - 1) * this.record_per_page);
             model.addAttribute("no", no);
 
-            return "/issue/list_search"; // /templates/issue/list_search.html
+            return "/th/issue/list_search"; // /templates/issue/list_search.html
         } 
     
     @GetMapping("/urgent")
     public String urgentNotice(Model model, @ModelAttribute IssueVO issueVO) {
       ArrayList<IssueVO> urgentIssues = issueProc.listUrgent();
       model.addAttribute("urgentIssues", urgentIssues);
-      return "/issue/urgent"; // 팝업에 표시할 템플릿
+      return "/th/issue/urgent"; // 팝업에 표시할 템플릿
     }
 
 }

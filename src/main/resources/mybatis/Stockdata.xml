@@ -8,7 +8,7 @@
     <!-- 생성 -->
     <insert id="create" parameterType="dev.mvc.stockdata.StockdataVO">
         INSERT INTO Stockdata (sdatano, rdate, open_price, close_price, volume, change, stockno)
-        VALUES (Stockdata_seq.nextval, sysdate, #{open_price}, #{close_price}, #{volume}, #{change}, Stock_seq.nextval)
+        VALUES (Stockdata_seq.nextval, sysdate, #{open_price}, #{close_price}, #{volume}, #{change}, #{stockno})
     </insert>
 
     <!-- Stock 데이터 조회 -->
@@ -25,9 +25,49 @@
 
     <!-- 전체 목록 -->
     <select id="list" resultType="dev.mvc.stockdata.StockdataVO">
+        SELECT sd.sdatano, sd.rdate, sd.open_price, sd.close_price, sd.volume, sd.change, sd.stockno, s.name
+        FROM Stockdata sd 
+        JOIN Stock s ON sd.stockno = s.stockno 
+        ORDER BY sd.rdate DESC 
+    </select>
+
+    <!-- 검색 (검색어가 있을 때만 필터링) -->
+    <select id="stockSearch" parameterType="HashMap" resultType="dev.mvc.stockdata.StockdataVO">
         SELECT sdatano, rdate, open_price, close_price, volume, change, stockno
         FROM Stockdata
-        ORDER BY rdate DESC
+        WHERE
+            (#{SearchName} IS NULL OR stockno IN 
+                (SELECT stockno FROM Stock WHERE name LIKE '%' || #{SearchName} || '%'))
+    </select>
+
+    <!-- 검색된 데이터 개수 -->
+    <select id="list_search_count" parameterType="HashMap" resultType="int">
+        SELECT COUNT(*)
+        FROM Stockdata sd
+        WHERE 
+            (#{searchName} IS NULL OR sd.stockno IN 
+                (SELECT stockno FROM Stock WHERE name LIKE '%' || #{searchName} || '%'))
+    </select>
+    
+    <!-- 검색된 데이터 목록 (페이징 포함) -->
+    <select id="listSearchPaging" parameterType="HashMap" resultType="dev.mvc.stockdata.StockdataVO">
+        SELECT sdatano, rdate, open_price, close_price, volume, change, stockno
+        FROM (
+            SELECT sdatano, rdate, open_price, close_price, volume, change, stockno, rownum AS r
+            FROM Stockdata
+            WHERE 
+                (#{searchName} IS NULL OR stockno IN 
+                    (SELECT stockno FROM Stock WHERE name LIKE '%' || #{searchName} || '%'))
+            ORDER BY rdate DESC
+        )
+        WHERE r &gt;= #{start_num} AND r &lt;= #{end_num} <!-- WHERE r >= 1 AND r <= 3 -->
+    </select>
+
+    <!-- stockno를 이용하여 name을 가져오는 쿼리 -->
+    <select id="getStockNameByStockno" parameterType="int" resultType="String">
+        SELECT name
+        FROM Stock
+        WHERE stockno = #{stockno}
     </select>
 
     <!-- 수정 -->
@@ -41,8 +81,6 @@
         stockno = #{stockno}
     WHERE sdatano = #{sdatano}
     </update>
-
-
 
     <!-- 삭제 -->
     <delete id="delete" parameterType="int">

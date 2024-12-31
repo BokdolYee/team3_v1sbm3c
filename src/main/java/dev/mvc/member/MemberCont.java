@@ -586,7 +586,7 @@ public class MemberCont {
       MemberVO memberVO = this.memberProc.read(memberno);
       model.addAttribute("memberVO", memberVO);
 
-      return "/member/withdraw";
+      return "/th/member/withdraw";
     } else if (this.memberProc.isAdmin(session)) {
       memberno = (int) session.getAttribute("memberno");
       MemberVO memberVO = this.memberProc.read(memberno);

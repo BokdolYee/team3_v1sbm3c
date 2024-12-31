@@ -57,7 +57,7 @@ public class SurveytopicCont {
           model.addAttribute("surveyVO", surveyVO);
 
           
-          return "/surveytopic/create"; // survey/create.html로 리턴
+          return "/th/surveytopic/create"; // survey/create.html로 리턴
       } 
   
 
@@ -74,7 +74,7 @@ public class SurveytopicCont {
     if (this.memberProc.isAdmin(session)) {
     // 유효성 검사 실패 시 다시 입력 폼으로 이동
     if (bindingResult.hasErrors()) {
-      return "/surveytopic/create"; // templates/survey/create.html
+      return "/th/surveytopic/create"; // templates/th/survey/create.html
     }
     System.out.println("Received surveyno: " + surveytopicVO.getSurveyno());
     
@@ -116,7 +116,7 @@ public class SurveytopicCont {
 
     model.addAttribute("cnt", cnt); // 결과 추가
     model.addAttribute("surveytopicVO", surveytopicVO); // 이미지 경로 포함
-    return "/surveytopic/msg"; // 메시지 페이지로 이동
+    return "/th/surveytopic/msg"; // 메시지 페이지로 이동
   } else {
     return "redirect:/member/login_cookie_need"; // redirect
   }
@@ -148,7 +148,7 @@ public class SurveytopicCont {
       model.addAttribute("surveytopicList", surveytopicList);
       
       System.out.println("-> surveytopicList:" + surveytopicList );
-      return "/survey/read";    
+      return "/th/survey/read";    
     }    
     
     /**
@@ -171,7 +171,7 @@ public class SurveytopicCont {
         
 
   
-        return "/surveytopic/update"; // templaes/cate/update.html
+        return "/th/surveytopic/update"; // templaes/th/cate/update.html
       } else {
         return "redirect:/member/login_cookie_need"; // redirect
       }
@@ -225,7 +225,7 @@ public class SurveytopicCont {
         SurveytopicVO surveytopicVO = this.surveytopicProc.read(surveytopicno);
         model.addAttribute("surveytopicVO", surveytopicVO);
 
-        return "/surveytopic/delete"; // templaes/cate/delete.html
+        return "/th/surveytopic/delete"; // templaes/th/cate/delete.html
         
       } else {
         model.addAttribute("code", "delete_fail");

@@ -2,6 +2,7 @@ package dev.mvc.stockdata;
 
 import java.sql.Date;
 
+import dev.mvc.stock.StockVO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -16,6 +17,17 @@ public class StockdataVO {
     private String change;     // 변동률
     private Integer stockno;       // 종목 번호 (Foreign Key)
 
+    private String stock_name;
+    
+    private StockVO stockVO;
+    
+    private String searchName;   // 검색할 이름
+    
+    // 페이징 관련 필드
+    private int nowPage;       // 현재 페이지
+    private int totalRecords;  // 전체 레코드 수
+    private int recordsPerPage = 4; // 한 페이지에 표시할 레코드 수, 기본 4
+    
     // 기본 생성자
     public StockdataVO() {
     }
@@ -99,6 +111,11 @@ public class StockdataVO {
                 ", volume=" + volume +
                 ", change=" + change +
                 ", stockno=" + stockno +
+                ", stock_name='" + stock_name + '\'' +
+                ", searchName='" + searchName + '\'' +
+                ", nowPage=" + nowPage +
+                ", totalRecords=" + totalRecords +
+                ", recordsPerPage=" + recordsPerPage +
                 '}';
     }
 
@@ -106,4 +123,45 @@ public class StockdataVO {
       // TODO Auto-generated method stub
       
     }
+    
+    public void setStock_name(String stock_name) {
+      this.stock_name = stock_name;
+    }
+    
+    public String getStock_name() {
+      return stock_name;
+  }
+    
+    public String getSearchName() {
+      return searchName;
+  }
+
+  public void setSearchName(String searchName) {
+      this.searchName = searchName;
+  }
+  
+//페이징 필드에 대한 Getter, Setter 추가
+  public int getNowPage() {
+      return nowPage;
+  }
+
+  public void setNowPage(int nowPage) {
+      this.nowPage = nowPage;
+  }
+
+  public int getTotalRecords() {
+      return totalRecords;
+  }
+
+  public void setTotalRecords(int totalRecords) {
+      this.totalRecords = totalRecords;
+  }
+
+  public int getRecordsPerPage() {
+      return recordsPerPage;
+  }
+
+  public void setRecordsPerPage(int recordsPerPage) {
+      this.recordsPerPage = recordsPerPage;
+  }
 }

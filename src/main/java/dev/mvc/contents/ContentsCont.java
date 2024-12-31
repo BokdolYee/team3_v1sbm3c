@@ -104,7 +104,7 @@ public class ContentsCont {
       model.addAttribute("word", word);
       model.addAttribute("now_page", now_page);
 
-      return "/contents/create"; // /templates/contents/create.html
+      return "/th/contents/create"; // /templates/th/contents/create.html
   }
 
 
@@ -184,7 +184,7 @@ public class ContentsCont {
       ArrayList<ContentsVO> list = this.contentsProc.list_all(); // 모든 목록
 
       model.addAttribute("list", list);
-      return "/contents/list_all";
+      return "/th/contents/list_all";
 
     } else {
       return "redirect:/member/login_cookie_need";
@@ -229,7 +229,7 @@ public class ContentsCont {
     model.addAttribute("word", word);
 
     int search_count = this.contentsProc.list_by_cateno_search_count(map);
-    String paging = this.contentsProc.pagingBox(newscateno, now_page, word, "/contents/list_by_cateno", search_count,
+    String paging = this.contentsProc.pagingBox(newscateno, now_page, word, "/th/contents/list_by_cateno", search_count,
         Contents.RECORD_PER_PAGE, Contents.PAGE_PER_BLOCK);
     model.addAttribute("paging", paging);
     model.addAttribute("now_page", now_page);
@@ -240,7 +240,7 @@ public class ContentsCont {
     int no = search_count - ((now_page - 1) * Contents.RECORD_PER_PAGE);
     model.addAttribute("no", no);
 
-    return "/contents/list_by_cateno_search_paging"; // /templates/contents/list_by_cateno_search_paging.html
+    return "/th/contents/list_by_cateno_search_paging"; // /templates/contents/list_by_cateno_search_paging.html
   }
 
   /**
@@ -277,7 +277,7 @@ public class ContentsCont {
     model.addAttribute("word", word);
 
     int search_count = this.contentsProc.list_by_cateno_search_count(map);
-    String paging = this.contentsProc.pagingBox(newscateno, now_page, word, "/contents/list_by_cateno_grid", search_count,
+    String paging = this.contentsProc.pagingBox(newscateno, now_page, word, "/th/contents/list_by_cateno_grid", search_count,
         Contents.RECORD_PER_PAGE, Contents.PAGE_PER_BLOCK);
     model.addAttribute("paging", paging);
     model.addAttribute("now_page", now_page);
@@ -289,7 +289,7 @@ public class ContentsCont {
     model.addAttribute("no", no);
 
     // /templates/contents/list_by_cateno_search_paging_grid.html
-    return "/contents/list_by_cateno_search_paging_grid";
+    return "/th/contents/list_by_cateno_search_paging_grid";
   }
 
   /**
@@ -332,7 +332,7 @@ public class ContentsCont {
     model.addAttribute("word", word);
     model.addAttribute("now_page", now_page);
 
-    return "/contents/read";
+    return "/th/contents/read";
   }
 
 
@@ -365,10 +365,10 @@ public class ContentsCont {
       NewsVO newsVO = this.newsProc.read(contentsVO.getNewsno());
       model.addAttribute("newsVO", newsVO);
       
-      return "/contents/update_text";
+      return "/th/contents/update_text";
 
     } else {
-      return "/member/login_cookie_need"; // /templates/member/login_cookie_need.html
+      return "/th/member/login_cookie_need"; // /templates/th/member/login_cookie_need.html
     }
 
   }
@@ -441,7 +441,7 @@ public class ContentsCont {
     NewsVO newsVO = this.newsProc.read(contentsVO.getNewsno());
     model.addAttribute("newsVO", newsVO);
 
-    return "/contents/update_file";
+    return "/th/contents/update_file";
 
   }
 
@@ -560,7 +560,7 @@ public class ContentsCont {
       StockVO stockVO = this.stockProc.read(contentsVO.getStockno());
       model.addAttribute("stockVO", stockVO);
       System.out.println(stockno);
-      return "/contents/delete"; // forward
+      return "/th/contents/delete"; // forward
 
     } else {
       ra.addAttribute("url", "/admin/login_cookie_need");

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
 <div layout:fragment="content">
   <div class="title_line">
     카테고리 <span th:if="${word != null and word != ''}" th:text="|${word} ${search_cnt} 건|"></span>

@@ -34,7 +34,7 @@ public class StockCont {
   
   public int record_per_page = 4;
   public int page_per_block = 10;
-  private String list_file_name = "/stock/list_search";
+  private String list_file_name = "/th/stock/list_search";
 
   public StockCont() {
     System.out.println("-> StockCont created");
@@ -45,7 +45,7 @@ public class StockCont {
   public String createForm(Model model) {
     StockVO stockVO = new StockVO();
     model.addAttribute("stockVO", stockVO);
-    return "stock/create"; // create.html로 이동
+    return "/th/stock/create"; // create.html로 이동
   }
 
 //1. Create - 데이터 추가 처리
@@ -55,7 +55,7 @@ public String create(Model model, @Valid @ModelAttribute("stockVO") StockVO stoc
    
    // 1. 유효성 검사
    if (bindingResult.hasErrors()) {
-       return "stock/create"; // 오류가 있으면 폼으로 돌아가기
+       return "/th/stock/create"; // 오류가 있으면 폼으로 돌아가기
    }
 
    // 2. 파일 업로드 처리
@@ -106,7 +106,7 @@ public String create(Model model, @Valid @ModelAttribute("stockVO") StockVO stoc
    } else {
        model.addAttribute("code", "create_fail");
        model.addAttribute("cnt", cnt);
-       return "stock/msg"; // 처리 실패 시 메시지 출력
+       return "/th/stock/msg"; // 처리 실패 시 메시지 출력
    }
 }
 
@@ -146,7 +146,7 @@ public String create(Model model, @Valid @ModelAttribute("stockVO") StockVO stoc
       model.addAttribute("paging", paging);
       model.addAttribute("now_page", now_page);
 
-      return "stock/list_all";
+      return "/th/stock/list_all";
   }
 
 
@@ -176,7 +176,7 @@ public String create(Model model, @Valid @ModelAttribute("stockVO") StockVO stoc
     int no = search_count - ((now_page - 1) * record_per_page);
     model.addAttribute("no", no);
 
-    return "stock/list_search"; // stock/list_search.html
+    return "/th/stock/list_search"; // stock/list_search.html
   }
 
   // 4. Read - 특정 데이터 읽기
@@ -195,7 +195,7 @@ public String create(Model model, @Valid @ModelAttribute("stockVO") StockVO stoc
 //    int no = search_count - ((now_page - 1) * record_per_page);
 //    model.addAttribute("no", no);
 //
-//    return "stock/read"; // stock/read.html
+//    return "/th/stock/read"; // stock/read.html
 //  }
   
   //2. Read - 특정 데이터 읽기
@@ -203,7 +203,7 @@ public String create(Model model, @Valid @ModelAttribute("stockVO") StockVO stoc
    public String read(@PathVariable("stockno") int stockno, Model model) {
        StockVO stockVO = stockProc.read(stockno);
        model.addAttribute("stockVO", stockVO);
-       return "stock/read"; // read.html로 이동
+       return "/th/stock/read"; // read.html로 이동
    }
 
   // 5. Update - 데이터 수정 폼
@@ -211,7 +211,7 @@ public String create(Model model, @Valid @ModelAttribute("stockVO") StockVO stoc
   public String updateForm(@PathVariable("stockno") int stockno, Model model) {
     StockVO stockVO = stockProc.read(stockno);
     model.addAttribute("stockVO", stockVO);
-    return "stock/update"; // stock/update.html
+    return "/th/stock/update"; // stock/update.html
   }
 
   // 5. Update - 데이터 수정 처리
@@ -226,7 +226,7 @@ public String create(Model model, @Valid @ModelAttribute("stockVO") StockVO stoc
   public String deleteForm(@PathVariable("stockno") int stockno, Model model) {
     StockVO stockVO = stockProc.read(stockno);
     model.addAttribute("stockVO", stockVO);
-    return "stock/delete"; // stock/delete.html
+    return "/th/stock/delete"; // stock/delete.html
   }
 
   // 6. Delete - 데이터 삭제 처리
@@ -247,7 +247,7 @@ public String create(Model model, @Valid @ModelAttribute("stockVO") StockVO stoc
       StockVO stockVO = this.stockProc.read(stockno);
       model.addAttribute("stockVO", stockVO);
 
-      return "stock/update_file"; 
+      return "/th/stock/update_file"; 
   }
 
 

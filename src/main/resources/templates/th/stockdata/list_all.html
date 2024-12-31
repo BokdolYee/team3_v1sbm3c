@@ -1,49 +1,63 @@
 <!DOCTYPE html>
-<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
 <div layout:fragment="content">
 
   <div class='title_line'>전체 종목 데이터 목록</div>
 
+  <!-- 검색 폼 -->
+  <form th:action="@{/stockdata/list_all}" method="get" style="float: right; margin-bottom: 1rem;">
+    <input type="text" name="searchName" placeholder="종목명 검색" 
+           th:value="${searchName}" class="form-control" style="width: 200px; display: inline-block;" />
+    <button type="submit" class="btn btn-primary">검색</button>
+  </form>
+
   <!-- 목록 상단 -->
-  <aside class="aside_right">
+  <aside class="aside_right" style="margin-right: 1rem;">
+  <a href="/stockdata/list_all">전체 목록</a>
+  <span> | </span>
       <a href="javascript:location.reload();">새로고침</a>
       <span> | </span>
       <!-- 수정된 "등록" 링크 -->
       <a th:href="@{|/stockdata/create|}">등록</a>
-
   </aside>
   
   <!-- 목록 테이블 -->
   <table class="table table-striped" style='width: 100%;'>
       <colgroup>
-          <col style='width: 20%;'/>
-          <col style='width: 20%;'/>
-          <col style='width: 20%;'/>
-          <col style='width: 20%;'/>
+          <col style='width: 30%;'/>
+          <col style='width: 10%;'/>
+          <col style='width: 10%;'/>
+          <col style='width: 15%;'/>
+          <col style='width: 15%;'/>
           <col style='width: 20%;'/>
       </colgroup>
       <tr>
-          <th class='th_bs'>기록 날짜</th>
+          <th class='th_bs'>종목명</th>
           <th class='th_bs'>시가</th>
           <th class='th_bs'>종가</th>
           <th class='th_bs'>거래량</th>
           <th class='th_bs'>변동률</th>
+          <th class='th_bs'>기록 날짜</th>
       </tr>
   
       <tr th:each="stockdataVO : ${stockdataList}" 
            th:attr="onclick=|location.href='./read/${stockdataVO.sdatano}'|"
            style="cursor: pointer;">
-          <td class='td_basic' th:text="${stockdataVO.rdate}"></td>
+          <!-- stock_name 값을 stockdataVO에서 가져옴 -->
+          <td class='td_basic' th:text="${stockdataVO.stock_name != null ? stockdataVO.stock_name : 'No Name'}"></td>
           <td class='td_basic' th:text="${stockdataVO.open_price}"></td>
           <td class='td_basic' th:text="${stockdataVO.close_price}"></td>
           <td class='td_basic' th:text="${stockdataVO.volume}"></td>
           <td class='td_basic' th:text="${stockdataVO.change}"></td>
+          <td class='td_basic' th:text="${stockdataVO.rdate}"></td>
       </tr>
   </table>
 
+  <!-- 페이징 처리 -->
+  <div class="Bottom_menu" th:utext="${paging}" style="text-align: center; #paging {text-align: center; margin-top: 5px; font-size: 1em;}  #paging A:link {text-decoration:none; color:black; font-size: 1em;}  #paging A:hover{text-decoration:none; background-color: #FFFFFF; color:black; font-size: 1em;}  #paging A:visited {text-decoration:none;color:black; font-size: 1em;}  .span_box_1{    text-align: center;    font-size: 1em;    border: 1px;    border-style: solid;    border-color: #cccccc;    padding:1px 6px 1px 6px; /*위, 오른쪽, 아래, 왼쪽*/    margin:1px 2px 1px 2px; /*위, 오른쪽, 아래, 왼쪽*/  }  .span_box_2{    text-align: center;    background-color: #668db4;    color: #FFFFFF;    font-size: 1em;    border: 1px;    border-style: solid;    border-color: #cccccc;    padding:1px 6px 1px 6px; /*위, 오른쪽, 아래, 왼쪽*/    margin:1px 2px 1px 2px; /*위, 오른쪽, 아래, 왼쪽*/"></div>
 
-  <div class='bottom_menu'>
-  </div>
 
 </div>
 </html>
+
+<style type="text/css">  #paging {text-align: center; margin-top: 5px; font-size: 1em;}  #paging A:link {text-decoration:none; color:black; font-size: 1em;}  #paging A:hover{text-decoration:none; background-color: #FFFFFF; color:black; font-size: 1em;}  #paging A:visited {text-decoration:none;color:black; font-size: 1em;}  .span_box_1{    text-align: center;    font-size: 1em;    border: 1px;    border-style: solid;    border-color: #cccccc;    padding:1px 6px 1px 6px; /*위, 오른쪽, 아래, 왼쪽*/    margin:1px 2px 1px 2px; /*위, 오른쪽, 아래, 왼쪽*/  }  .span_box_2{    text-align: center;    background-color: #668db4;    color: #FFFFFF;    font-size: 1em;    border: 1px;    border-style: solid;    border-color: #cccccc;    padding:1px 6px 1px 6px; /*위, 오른쪽, 아래, 왼쪽*/    margin:1px 2px 1px 2px; /*위, 오른쪽, 아래, 왼쪽*/  }</style>

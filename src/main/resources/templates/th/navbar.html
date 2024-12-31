@@ -32,7 +32,14 @@
                     </ul>
                     
                 </li>
-                <li class="nav-item"><a class="nav-link" href="/stock/list_all">종목</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" 
+                        role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="종목">                                                            
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">    
+                    <li class="nav-item"><a class="nav-link" href="/stock/list_all">종목</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/stockdata/list_all">종목 데이터</a></li>
+                    </ul>
 
                 <li class="nav-item"><a class="nav-link" th:href="@{|/survey/list_search?word=${word}|}">설문 조사</a></li>
 

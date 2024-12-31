@@ -44,7 +44,7 @@ public class SurveyCont {
   public int page_per_block = 5;
   
   /** 페이징 목록 주소 */
-  private String list_file_name = "/survey/list_search";
+  private String list_file_name = "/th/survey/list_search";
   
   @Autowired
   @Qualifier("dev.mvc.survey.SurveyProc")
@@ -83,7 +83,7 @@ public class SurveyCont {
           String paging = this.surveyProc.pagingBox(now_page, word, this.list_file_name, search_count, recordPerPage, this.page_per_block);
           model.addAttribute("paging", paging);
           
-          return "/survey/create"; // survey/create.html로 리턴
+          return "/th/survey/create"; // survey/create.html로 리턴
       } else {
           return "redirect:/member/login_cookie_need"; // 로그인 안되어 있으면 리다이렉트
       }
@@ -101,7 +101,7 @@ public class SurveyCont {
 
     // 유효성 검사 실패 시 다시 입력 폼으로 이동
     if (bindingResult.hasErrors()) {
-      return "/survey/create"; // templates/survey/create.html
+      return "/th/survey/create"; // templates/survey/create.html
     }
 
     // 파일 업로드 처리
@@ -142,7 +142,7 @@ public class SurveyCont {
 
     model.addAttribute("cnt", cnt); // 결과 추가
     model.addAttribute("surveyVO", surveyVO); // 이미지 경로 포함
-    return "/survey/msg"; // 메시지 페이지로 이동
+    return "/th/survey/msg"; // 메시지 페이지로 이동
   }
 
 
@@ -181,7 +181,7 @@ public class SurveyCont {
       model.addAttribute("no", no);
       // --------------------------------------------------------------------------------------      
      
-      return "/survey/list_all";
+      return "/th/survey/list_all";
       } 
       
     
@@ -203,7 +203,7 @@ public class SurveyCont {
       
       this.surveyProc.increaseCnt(surveyno);
 
-      return "/survey/read";    
+      return "/th/survey/read";    
     }    
 
     /**
@@ -236,7 +236,7 @@ public class SurveyCont {
         model.addAttribute("paging", paging);
         model.addAttribute("now_page", now_page);
 
-        return "/survey/update"; // templaes/cate/update.html
+        return "/th/survey/update"; // templaes/th/cate/update.html
       } else {
         return "redirect:/member/login_cookie_need"; // redirect
       }
@@ -340,7 +340,7 @@ public class SurveyCont {
         int no = search_count - ((now_page - 1) * this.record_per_page);
         model.addAttribute("no", no);
 
-        return "/survey/delete"; // templaes/cate/delete.html
+        return "/th/survey/delete"; // templaes/th/cate/delete.html
 
       } else {
         return "redirect:/member/login_cookie_need";  // redirect
@@ -398,7 +398,7 @@ public class SurveyCont {
       
       model.addAttribute("cnt", cnt);
       
-      return "/survey/msg"; //templates/cate/msg.html
+      return "/th/survey/msg"; //templates/cate/msg.html
     } else {
       return "redirect:/member/login_cookie_need";  // redirect
     }
@@ -443,7 +443,7 @@ public class SurveyCont {
         int no = search_count - ((now_page - 1) * this.record_per_page);
         model.addAttribute("no", no);
 
-        return "/survey/list_search"; 
+        return "/th/survey/list_search"; 
       }
       
       

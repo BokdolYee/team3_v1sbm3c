@@ -2,30 +2,32 @@
 <html layout:decorate="~{th/layout}"> <!-- layout.html 상속 -->
 <div layout:fragment="content" style="width: 80%; margin: 50px auto; text-align: center;">
   <script>
+    let isAuth = false;
+
     function btn_check() {
       let name = document.getElementById('name');
       let tel = document.getElementById('tel');
-      let url = './isExist?name=' + name.value + '&tel=' + tel.value;
+      let url = '/mail/isExist?name=' + name.value + '&tel=' + tel.value;
       let button = document.getElementById('btn_check');
+      let exist_msg = document.getElementById('exist_msg');
       const row = document.getElementById('isExist');
       const inputEmail = document.getElementById('inputEmail')
-      let exist_msg = document.getElementById('exist_msg');
 
       exist_msg.classList.remove('span_info');
 
       fetch(url, {
         method: 'GET',
-
       })
         .then(res => res.json())
         .then(data => {
-          if (data.cnt > 0) {// 입력한 이름, 전화번호에 해당하는 회원이 존재할 경우
+          if (data.id) {// 입력한 이름, 전화번호에 해당하는 회원이 존재할 경우
             row.style.display = 'table-row';
 
             exist_msg.classList.remove('span_warning');
             exist_msg.innerHTML = "가입된 회원입니다."
             exist_msg.classList.add('span_info');
             inputEmail.style.display = 'table-row';
+            isAuth = true;
           }
           else {  // 입력한 이름, 전화번호에 해당하는 회원이 존재하지 않을 경우
             row.style.display = 'table-row';
@@ -40,10 +42,18 @@
     }
 
     function send(form) {
-      let panel = document.getElementById('panel');
-      panel.innerHTML = "메일 전송 중...";
+      let findORcancel = document.getElementById('btn_findORcancel');
+      let loading = document.getElementById('btn_loading');
 
-      form.submit();
+      if(isAuth == false) {
+        alert('가입 유무가 인증돼야 아이디를 찾을 수 있습니다.');
+        return false;
+      }
+      else {
+        form.submit();
+        btn_findORcancel.style.display = 'none';
+        loading.style.display = 'block';
+      }
     }
 
   </script>
@@ -71,13 +81,17 @@
         </tr>
         <tr id='inputEmail' style="display: none;">
           <td style="width: 30%; padding: 15px; text-align: center; background-color: #f1f3f5;">수신할 이메일</td>
-          <td style="padding: 10px; text-align: left;"><input type="email" name="email" placeholder="이메일"
+          <td style="padding: 10px; text-align: left;"><input type="email" id="email" name="email" placeholder="이메일"
               style="width: 200px; padding: 5px;"></td>
         </tr>
       </table>
-      <div class="bottom_menu">
-        <input type="button" value="찾기" onclick="send(this.form)">
-        <input type="button" value="취소" onclick="history.back()">
+      <div class="bottom_menu" id="btn_findORcancel" style="display: block;">
+        <input type="button" value="찾기" onclick="send(this.form)" class="btn btn-secondary btn-sm">
+        <input type="button" value="취소" onclick="history.back()" class="btn btn-secondary btn-sm">
+      </div>
+      <div class="bottom_menu" id="btn_loading" style="display: none;">
+        <span>메일을 보내는 중입니다.</span><br>
+        <img src="/images/progress.gif" style="width: 7%;">
       </div>
     </form>
   </div>

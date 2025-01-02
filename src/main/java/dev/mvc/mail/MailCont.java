@@ -56,7 +56,7 @@ public class MailCont {
    * @param tel
    * @return
    */
-  @GetMapping(value="/isExist") // http://localhost:9093/member/isExist?name=name&tel=tel
+  @GetMapping(value="/isExist") // http://localhost:9093/mail/isExist?name=name&tel=tel
   @ResponseBody
   public String isExist(@RequestParam(name="name", defaultValue = "")String name,
                         @RequestParam(name="tel", defaultValue = "")String tel) {
@@ -64,13 +64,15 @@ public class MailCont {
     map.put("name", name);
     map.put("tel", tel);
     
-    System.out.println("-> id: " + name);
+    System.out.println("-> name: " + name);
     System.out.println("-> tel: " + tel);
     
-    int cnt = this.memberProc.find_id_check(map);
+    String id = this.memberProc.find_id_check(map);
+    
+    System.out.println("-> id: " + id);
     
     JSONObject obj = new JSONObject();
-    obj.put("cnt", cnt);
+    obj.put("id", id);
     
     return obj.toString();
   }
@@ -82,9 +84,19 @@ public class MailCont {
    * @return
    */
   @PostMapping(value = "/send")
-  public String send(String receiver, String from, String title, String content) {
+  public String send(@RequestParam(name="email", defaultValue = "")String email,
+                     @RequestParam(name="name", defaultValue = "")String name, 
+                     @RequestParam(name="tel", defaultValue = "")String tel) {
+    HashMap<String, String> map = new HashMap<String, String>();
+    map.put("name", name);
+    map.put("tel", tel);
+    String id = this.memberProc.find_id_check(map);
+    
+    String from = "zmffpdkq1213@gmail.com";
+    String title = "[Hoak]" + name + " 회원님의 아이디입니다.";
+    String content = "[Hoak]" + name + " 회원님의 아이디는 " + id + "입니다.";
     MailTool mailTool = new MailTool();
-    mailTool.send(receiver, from, title, content); // 메일 전송
+    mailTool.send(email, from, title, content); // 메일 전송
 
     return "/th/mail/sended";
   }

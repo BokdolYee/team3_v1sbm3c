@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.mvc.reply.ReplyDAOInter">
+  <!-- 등록한 레코드 갯수 1 리턴, #{memberno}: public int getAdminno() 호출됨 -->
+  <insert id="create" parameterType="dev.mvc.reply.ReplyVO">
+    INSERT INTO reply (replyno, content, rdate, contentno, memberno, parentreplyno, deleteflag, file1, file1saved, thumb1, size1)
+    VALUES (reply_seq.nextval, #{content}, sysdate, #{contentno}, #{memberno}, #{parentreplyno}, ,#{deleteflag}, #{file1}, #{file1saved}, #{thumb1}, #{size1})
+  </insert>
+  
+  <!-- 일반적인 조회 -->
+  <select id="read" resultType="dev.mvc.reply.ReplyVO" parameterType="int">
+    SELECT replyno, content, rdate, rdate, contentno, memberno, parentreplyno, deleteflag, file1, file1saved, thumb1, size1
+    FROM reply
+    WHERE replyno = #{replyno}
+  </select>
+  
+    <!-- 글 수정 -->
+  <update id="update_content" parameterType="dev.mvc.reply.ReplyVO">
+    UPDATE reply
+    SET content=#{content}
+    WHERE replyno = #{replyno}
+  </update>
+
+  <!-- 파일 수정 -->
+  <update id="update_file" parameterType="dev.mvc.reply.ReplyVO">
+    UPDATE reply
+    SET file1=#{file1}, file1saved=#{file1saved}, thumb1=#{thumb1}, size1=#{size1}
+    WHERE replyno = #{replyno}
+  </update>  
+
+  <!-- 글 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM reply
+    WHERE replyno=#{replyno}
+  </delete>
+  
+</mapper>

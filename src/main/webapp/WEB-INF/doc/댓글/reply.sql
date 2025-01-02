@@ -2,13 +2,17 @@ DROP TABLE reply CASCADE CONSTRAINTS;
 DROP SEQUENCE reply_seq;
 
 CREATE TABLE reply (
-	replyno	        NUMBER(10)	    NOT NULL,
-	rdate	        DATE	        NOT NULL,
-	delete_flag	    CHAR	    NOT NULL,
-	content	        VARCHAR(255)	NOT NULL,
-	parentreplyno	NUMBER(10)	    NULL,
-	memberno	    NUMBER(10)	    NOT NULL,
-	contentno	    NUMBER(10)	    NOT NULL,
+	replyno	        NUMBER(10)	        NOT NULL,
+	rdate	        DATE	            NOT NULL,
+	deleteflag	    CHAR	            NOT NULL,
+	content	        VARCHAR(255)	    NOT NULL,
+	parentreplyno	NUMBER(10)	        NULL,
+	memberno	    NUMBER(10)	        NOT NULL,
+	contentno	    NUMBER(10)	        NOT NULL,
+    file1           VARCHAR2(100 BYTE)  NULL,  -- 메인 이미지
+    file1saved      VARCHAR2(100 BYTE)  NULL,  -- 실제 저장된 메인 이미지
+    thumb1          VARCHAR2(100 BYTE)  NULL,  -- 메인 이미지 Preview
+    size1           NUMBER(10,0)        NULL,  -- 메인 이미지 크기
     PRIMARY KEY (replyno)
 );
 

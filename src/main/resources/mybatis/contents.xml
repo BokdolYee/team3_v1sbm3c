@@ -107,7 +107,6 @@
     WHERE contentno = #{contentno}
   </update>
 
-
   <!-- 파일 수정 -->
   <update id="update_file" parameterType="dev.mvc.contents.ContentsVO">
     UPDATE contents

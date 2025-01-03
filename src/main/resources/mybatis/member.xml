@@ -154,17 +154,17 @@
   </update>
   
   <!-- 아이디 찾기 회원 정보 일치 검증(name, tel) -->
-  <select id="find_id_check" resultType="int" parameterType="HashMap">
-    SELECT COUNT(id) as cnt
+  <select id="find_id_check" resultType="String" parameterType="HashMap">
+    SELECT id
     FROM member
     WHERE name=#{name} AND tel=#{tel}
   </select>
   
-  <!-- 비밀번호 찾기 회원 정보 일치 검증(id, tel) -->
-  <select id="find_passwd_check" resultType="int" parameterType="String">
+  <!-- 비밀번호 찾기 회원 정보 일치 검증(id, rphone) -->
+  <select id="find_passwd_check" resultType="int" parameterType="HashMap">
     SELECT COUNT(id) as cnt
     FROM member
-    WHERE id=#{id} AND tel=#{tel}
+    WHERE id=#{id} AND tel=#{rphone}
   </select>
   
 </mapper>

@@ -112,17 +112,13 @@ public interface MemberProcInter {
   
   /**
    * 이름, 전화번호 입력받아서 일치하는 회원이 있는지 검사
-   * @param name
-   * @param tel
-   * @return 찾은 id 개수
+   * @return 찾은 id
    */
-  public int find_id_check(HashMap<String, String> map);
+  public String find_id_check(HashMap<String, String> map);
   
   /**
    * 아이디, 전화번호 입력받아서 일치하는 회원이 있는지 검사
-   * @param name
-   * @param tel
    * @return 찾은 id 개수
    */
-  public int find_passwd(String id, String tel);
+  public int find_passwd_check(HashMap<String, String> map);
 }

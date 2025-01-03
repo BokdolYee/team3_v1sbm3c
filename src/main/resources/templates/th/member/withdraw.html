@@ -26,6 +26,7 @@
   
   <div style="width: 60%; margin: 0px auto ">
     <form name="frm" id="frm" th:object="${memberVO}" method="post" action="/member/withdraw">
+      <input type="hidden" name="memberno" th:value="${memberVO.memberno}">
       
       <div class="msg_warning">회원 탈퇴 하시겠습까?</div>
       <div style='text-align: center;'>회원 아이디: <span th:text="${memberVO.id}"></span></div>

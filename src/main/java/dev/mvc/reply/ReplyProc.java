@@ -1,5 +1,7 @@
 package dev.mvc.reply;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -44,6 +46,10 @@ public class ReplyProc implements ReplyProcInter {
     int cnt = this.replyDAO.delete(replyno);
     
     return cnt;
+  }
+  @Override
+  public List<ReplyVO> listByContentNoJoin(int contentno) {
+      return replyDAO.listByContentNoJoin(contentno);
   }
   
 }

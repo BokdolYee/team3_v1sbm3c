@@ -22,13 +22,10 @@ public class ReplyVO {
   private int memberno;
   
   /** 부모 댓글 번호 */
-  private int parentreplyno;
+  private int parentreplyno = 0;
 
   /** 내용 */
   private String content = "";
-
-  /** 삭제 여부 */
-  private char deleteflag;
 
   // 파일 업로드 관련 필드
   private MultipartFile file1MF; 

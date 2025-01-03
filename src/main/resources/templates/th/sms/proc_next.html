@@ -19,7 +19,7 @@
       }).then(res => res.json())
         .then(data => {
           if(data.result === 'success') {
-            alert('인증번호가 일치합니다.');
+            alert('인증되었습니다.');
             window.location.href = '/sms/update_passwd_find'; // 페이지 이동
           } else {
             alert('인증번호가 일치하지 않습니다.');

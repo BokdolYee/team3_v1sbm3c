@@ -70,14 +70,17 @@ public class SMSCont {
     HashMap<String, String> map = new HashMap<String, String>();
     map.put("id", id);
     map.put("rphone", rphone);
-    session.setAttribute("id", id); // 사용자가 아이디, 생년월일 검증 성공 시 id를 session에 저장
     
     System.out.println("-> id: " + id);
     System.out.println("-> rphone: " + rphone);
     
     int cnt = this.memberProc.find_passwd_check(map);
-    
     JSONObject obj = new JSONObject();
+    
+    if(cnt == 1) {  // 아이디와 전화번호가 일치하는 회원이 있을 시 세션에 입력받은 ID 저장
+      session.setAttribute("authenticatedID", id);
+    }
+    
     obj.put("cnt", cnt);
     
     return obj.toString();
@@ -128,14 +131,15 @@ public class SMSCont {
    * @return
    */
   @GetMapping(value = "/proc_next")
-  public String proc_next(Model model) {
+  public String proc_next(Model model, HttpSession session) {
     ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
     model.addAttribute("menu", menu);
     
     return "/th/sms/proc_next";
   }
   
-  @PostMapping(value="/isAuth")
+  
+  @GetMapping(value="/isAuth")
   @ResponseBody
   public String isAuth(HttpSession session,
                        @RequestParam(name="inputAuthNo", defaultValue = "")String inputAuthNo) {
@@ -153,36 +157,37 @@ public class SMSCont {
   }
   
   /**
-   * 인증 완료된 후 비밀번호 변경 페이지
-   * @param session 사용자당 할당된 서버의 메모리
-   * @param auth_no 사용자가 입력한 번호
+   * 인증 완료된 후 비밀번호 변경 폼
+   * @param model
    * @return
    */
-  @PostMapping(value = "/update_passwd_find")
-  public String update_passwd_find(Model model, HttpSession session /* @RequestParam(name="auth_no", defaultValue = "")String auth_no */) {
+  @GetMapping(value="/update_passwd_find")
+  public String update_passwd_find_form(Model model) {
     ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
     model.addAttribute("menu", menu);
     
-    //System.out.println("-> auth_no: " + auth_no);
-    //String session_auth_no = (String) session.getAttribute("auth_no"); // 사용자에게 전송된 번호 session에서 꺼냄
-
+    return "/th/sms/update_passwd_find";
+  }
+  
+  /**
+   * 인증 완료된 후 비밀번호 변경 처리
+   * @param session 사용자당 할당된 서버의 메모리
+   * @return
+   */
+  @PostMapping(value = "/update_passwd_find")
+  public String update_passwd_find_proc(Model model, HttpSession session,
+                                        @RequestParam(name="passwd", defaultValue = "")String passwd) {
     
-    String msg="";
+    HashMap<String, String> map = new HashMap<String, String>();
+    map.put("id", (String)session.getAttribute("authenticatedID"));
+    map.put("passwd", passwd);
+    
     JSONObject obj = new JSONObject();
     
-//    if (session_auth_no.equals(auth_no)) {
-//      String id = (String)session.getAttribute("id");
-//      msg = id + " 회원의 패스워드 변경 화면으로 이동합니다.<br><br>";
-//      msg +="패스워드 수정 화면등 출력";
-//    } else {
-//      msg = "입력된 번호가 일치하지않습니다. 다시 인증 번호를 요청해주세요.";
-//      msg += "<br><br><A href='./form.do'>인증번호 재요청</A>"; 
-//    }
+    int cnt = this.memberProc.update_passwd_find(map);
+    obj.put("cnt", cnt);
     
-    msg +="패스워드 수정 화면등 출력";
-    model.addAttribute("msg", msg); // request.setAttribute("msg")
-    
-    return "/th/sms/update_passwd_find";    
+    return obj.toString();  
   }
 
 }

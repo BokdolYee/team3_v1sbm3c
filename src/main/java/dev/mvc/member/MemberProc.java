@@ -185,7 +185,7 @@ public class MemberProc implements MemberProcInter {
    * 비밀번호 찾기에서 sms 인증 성공 후 비밀번호 변경 처리
    */
   @Override
-  public int update_passwd_find(HashMap<String, Object> map) {
+  public int update_passwd_find(HashMap<String, String> map) {
     String passwd = (String)map.get("passwd");
     passwd = this.security.aesEncode(passwd);
     map.put("passwd", passwd);

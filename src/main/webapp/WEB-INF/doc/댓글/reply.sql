@@ -4,7 +4,6 @@ DROP SEQUENCE reply_seq;
 CREATE TABLE reply (
 	replyno	        NUMBER(10)	        NOT NULL,
 	rdate	        DATE	            NOT NULL,
-	deleteflag	    CHAR	            NOT NULL,
 	content	        VARCHAR(255)	    NOT NULL,
 	parentreplyno	NUMBER(10)	        NULL,
 	memberno	    NUMBER(10)	        NOT NULL,

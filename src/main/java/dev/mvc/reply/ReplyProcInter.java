@@ -1,5 +1,7 @@
 package dev.mvc.reply;
 
+import java.util.List;
+
 public interface ReplyProcInter {
 
   /**
@@ -36,5 +38,12 @@ public interface ReplyProcInter {
    * @return 삭제된 레코드 갯수
    */
   public int delete(int replyno);
+  
+  /**
+   * 특정 콘텐츠의 댓글 목록 조회
+   * @param contentno 콘텐츠 번호
+   * @return 댓글 목록
+   */
+    public List<ReplyVO> listByContentNoJoin(int contentno);
 
 }

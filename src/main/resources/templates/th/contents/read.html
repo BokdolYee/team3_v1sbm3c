@@ -173,41 +173,50 @@
           // 5건 미만이면 5회 미만 순환, 5건 이상 5회 순환
           function list_by_contentno_join() { // 목록 출력
             let cnt = 0; // 출력 순환 횟수  
-          
+        
             fetch("http://localhost:9093/reply/listByContentNoJoin?contentno=[[${contentsVO.contentno}]]", {
-              "method": "get" 
+                "method": "get" 
             })
             .then((response) => response.json())
             .then((data) => {
-              reply_data = data['res'];
-
-              if (reply_data.length > 5) {
-                cnt = 5;
-              } else {
-                cnt = reply_data.length;
-              }
-              
-              let msg = '';
-              for (let i=0; i < cnt; i++) {
-                let row = reply_data[i];
-                msg += "<div id='"+row.replyno+"' style='border-bottom: solid 1px #EEEEEE; margin-bottom: 10px;'>";
-                msg += "<span style='font-weight: bold;'>" + row.id + "</span>";
-                msg += "  " + row.rdate;
-          
-                if ('[[${session.memberno}]]' == row.memberno) { // 글쓴이 일치여부 확인, 본인의 글만 삭제 가능함 ★
-                  msg += " <a href='javascript:reply_update("+row.replyno+")'><img src='/reply/images/update.png' style='width: 16px;'></a>";
-                  msg += " <a href='javascript:reply_delete("+row.replyno+")'><img src='/reply/images/delete.png' style='width: 16px;'></a>";
+              console.log(data);
+                reply_data = data['res'];
+        
+                if (reply_data.length > 5) {
+                    cnt = 5;
+                } else {
+                    cnt = reply_data.length;
                 }
-                msg += "  " + "<br>";
-                msg += row.content;
-                msg += "</div>";
-              }
-              
-             document.getElementById("reply_list").innerHTML = msg;               
-              
+                
+                let msg = '';
+                for (let i = 0; i < cnt; i++) {
+                    let row = reply_data[i];
+        
+                    // rdate 형식 변환
+                    let date = new Date(row.rdate);
+                    let formattedDate = date.getFullYear() + '-' + 
+                        String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                        String(date.getDate()).padStart(2, '0') + ' ' + 
+                        String(date.getHours()).padStart(2, '0') + ':' + 
+                        String(date.getMinutes()).padStart(2, '0');
+        
+                    msg += "<div id='" + row.replyno + "' style='border-bottom: solid 1px #EEEEEE; margin-bottom: 10px;'>";
+                    msg += "<span style='font-weight: bold;'>" + row.member_name + "</span>";
+                    msg += "  " + formattedDate; // 변환된 날짜 사용
+        
+                    if ('[[${session.memberno}]]' == row.memberno) { // 글쓴이 일치여부 확인, 본인의 글만 삭제 가능함 ★
+                        msg += " <a href='javascript:reply_update(" + row.replyno + ")'><img src='/reply/images/update.png' style='width: 16px;'></a>";
+                        msg += " <a href='javascript:reply_delete(" + row.replyno + ")'><img src='/reply/images/delete.png' style='width: 16px;'></a>";
+                    }
+                    msg += "  " + "<br>";
+                    msg += row.content;
+                    msg += "</div>";
+                }
+                
+                document.getElementById("reply_list").innerHTML = msg;               
             });
-      
-          }
+        }
+
           
           // 수정 폼 
           function reply_update(replyno) {
@@ -311,9 +320,6 @@
             </div>  
           
         </div>
-        
-        <!-- 댓글 영역 종료 -->
-  
       </li>
 
 </html>

@@ -37,5 +37,7 @@ public class ReplyVO {
   
   /** 등록 날짜 */
   private Date rdate;  // date 타입으로 수정
+  
+  private String member_name;
 
 }

@@ -80,22 +80,31 @@ public class ReplyCont {
 //    }
 
 
-    @GetMapping(value="/listByContentNoJoin")
+    @GetMapping(value = "/listByContentNoJoin")
     @ResponseBody
-    public String listByContentNoJoin(@RequestParam(name = "contentno") int contentno) {
-        List<ReplyVO> list = replyProc.listByContentNoJoin(contentno);
-        
-        // ObjectMapper를 사용하여 List<ReplyVO>를 JSON으로 변환
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.valueToTree(list);
+    public ResponseEntity<?> listByContentNoJoin(@RequestParam(name = "contentno") int contentno) {
+        try {
+            // 댓글 리스트 가져오기
+            List<ReplyVO> list = replyProc.listByContentNoJoin(contentno);
 
-        JSONObject obj = new JSONObject();
-        obj.put("res", jsonNode);
+            // 빈 데이터 처리
+            if (list == null || list.isEmpty()) {
+                return ResponseEntity.ok(Map.of("res", List.of(), "message", "댓글이 없습니다."));
+            }
 
-        System.out.println("-> obj.toString(): " + obj.toString());
-        
-        return obj.toString();
+            // 성공적으로 데이터를 반환
+            return ResponseEntity.ok(Map.of("res", list));
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            // 서버 에러 응답
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                "error", "서버 에러 발생",
+                "details", e.getMessage()
+            ));
+        }
     }
+
 
     
     // 댓글 수정

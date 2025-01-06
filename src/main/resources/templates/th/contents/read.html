@@ -159,7 +159,7 @@
                         String(date.getMinutes()).padStart(2, '0');
                     
                     msg += "<div id='" + row.replyno + "' style='border-bottom: solid 1px #EEEEEE; margin-bottom: 10px;'>";
-                    msg += "<span style='font-weight: bold;'>" + row.member_name + "</span>";
+                    msg += "<span style='font-weight: bold; color: #5EACD1;'>" + row.member_name + "</span>";
                     msg += "  " + formattedDate; // 변환된 날짜 사용
               
                     if ('[[${session.memberno}]]' == row.memberno) { // 글쓴이 일치여부 확인, 본인의 글만 삭제 가능함 ★
@@ -248,7 +248,7 @@
                       String(date.getMinutes()).padStart(2, '0');
       
                   msg += "<div id='" + row.replyno + "' style='border-bottom: solid 1px #EEEEEE; margin-bottom: 10px;'>";
-                  msg += "<span style='font-weight: bold;'>" + row.member_name + "</span>";
+                  msg += "<span style='font-weight: bold; color: #5EACD1;'>" + row.member_name + "</span>";
                   msg += "  " + formattedDate; // 변환된 날짜 사용
       
                   if ('[[${session.memberno}]]' == row.memberno) { // 글쓴이 일치여부 확인, 본인의 글만 삭제 가능함 ★

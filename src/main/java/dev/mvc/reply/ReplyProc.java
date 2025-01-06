@@ -30,8 +30,8 @@ public class ReplyProc implements ReplyProcInter {
   }
   
   @Override
-  public int update_content(ReplyVO replyVO) {
-    int cnt = this.replyDAO.update_content(replyVO);
+  public int update(ReplyVO replyVO) {
+    int cnt = this.replyDAO.update(replyVO);
     return cnt;
   }
 
@@ -49,12 +49,13 @@ public class ReplyProc implements ReplyProcInter {
   }
   @Override
   public List<ReplyVO> listByContentNoJoin(int contentno) {
-      return replyDAO.listByContentNoJoin(contentno);
+      List<ReplyVO> list = replyDAO.listByContentNoJoin(contentno);
+      return list;
   }
 
   @Override
-  public List<ReplyVO> list_by_contentsno_join_500(int contentno) {
-    List<ReplyVO> list = this.replyDAO.list_by_contentsno_join_500(contentno);
+  public List<ReplyVO> list_by_contentno_join_500(int contentno) {
+    List<ReplyVO> list = this.replyDAO.list_by_contentno_join_500(contentno);
     return list;
   }
   

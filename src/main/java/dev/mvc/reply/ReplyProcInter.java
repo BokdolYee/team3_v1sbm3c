@@ -23,7 +23,7 @@ public interface ReplyProcInter {
    * @param replyVO
    * @return 처리된 레코드 갯수
    */
-  public int update_content(ReplyVO replyVO);
+  public int update(ReplyVO replyVO);
   
   /**
    * 파일 정보 수정
@@ -51,6 +51,6 @@ public interface ReplyProcInter {
      * @param contentsno
      * @return
      */
-    public List<ReplyVO> list_by_contentsno_join_500(int contentno);
+    public List<ReplyVO> list_by_contentno_join_500(int contentno);
 
 }

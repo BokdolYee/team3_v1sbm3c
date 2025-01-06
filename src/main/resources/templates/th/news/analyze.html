@@ -1,30 +1,26 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>뉴스 분석 및 요약</title>
-    <link rel="stylesheet" href="/styles.css"> <!-- 스타일 파일 예시 -->
-</head>
-<body>
-    <h1>뉴스 분석 및 요약</h1>
-
+<html lang="ko" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{th/layout}">
+  <div layout:fragment="content">
+    <div class="title_line">뉴스 분석 및 요약</div>
+    
     <div th:if="${news}">
-        <h3>뉴스 제목:</h3>
-        <p th:text="${news.text}">뉴스 본문</p>
+      <h3>뉴스 제목:</h3>
+      <p th:text="${news.text}">뉴스 본문</p>
     </div>
 
     <div th:if="${news}">
-        <h3>요약:</h3>
-        <p th:text="${news.summary}">뉴스 요약을 표시합니다.</p>
+      <h3>요약:</h3>
+      <p th:text="${news.summary}">뉴스 요약을 표시합니다.</p>
     </div>
 
     <div th:if="${news}">
-        <h3>분석 결과:</h3>
-        <p th:text="${news.impact}">뉴스 분석 결과를 표시합니다.</p>
+      <h3>분석 결과:</h3>
+      <p th:text="${news.impact}">뉴스 분석 결과를 표시합니다.</p>
     </div>
+    <div class="navigation text-center mt-3">
+                <a href="/news/list" class="btn btn-secondary">목록으로 돌아가기</a>
+            </div>
+    <div class="menu_line"></div>
 
-    <a href="/news/detail/{newsno}">상세 페이지로 돌아가기</a>
-    <a href="/news/list">목록으로 돌아가기</a>
-</body>
+  </div>
 </html>

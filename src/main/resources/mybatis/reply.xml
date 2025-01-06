@@ -11,7 +11,7 @@
   
   <!-- 일반적인 조회 -->
   <select id="read" resultType="dev.mvc.reply.ReplyVO" parameterType="int">
-    SELECT replyno, content, rdate, rdate, contentno, memberno, parentreplyno, file1, file1saved, thumb1, size1
+    SELECT replyno, content, rdate, contentno, memberno, parentreplyno, file1, file1saved, thumb1, size1
     FROM reply
     WHERE replyno = #{replyno}
   </select>
@@ -36,10 +36,10 @@
 
   
     <!-- 글 수정 -->
-  <update id="update_content" parameterType="dev.mvc.reply.ReplyVO">
-    UPDATE reply
-    SET content=#{content}
-    WHERE replyno = #{replyno}
+  <update id="update" parameterType="dev.mvc.reply.ReplyVO">
+    UPDATE reply 
+    SET content=#{content}, rdate = sysdate
+    WHERE replyno = #{replyno} AND memberno = #{memberno}
   </update>
 
   <!-- 파일 수정 -->

@@ -6,14 +6,19 @@ public interface ReplyDAOInter {
 
   public int create(ReplyVO replyVO);
 
-  public ReplyVO read(int replyno);
+  /**
+   * 읽기 
+   * @param replyno
+   * @return
+   */
+  public ReplyVO read (int replyno);
 
   /**
-   * 글 정보 수정
+   * 댓글  수정
    * @param replyVO
-   * @return 처리된 레코드 갯수
+   * @return
    */
-  public int update_content(ReplyVO replyVO);
+  public int update(ReplyVO replyVO);
 
   /**
    * 파일 정보 수정
@@ -41,5 +46,5 @@ public interface ReplyDAOInter {
      * @param contentsno
      * @return
      */
-    public List<ReplyVO> list_by_contentsno_join_500(int contentno);
+    public List<ReplyVO> list_by_contentno_join_500(int contentno);
 }

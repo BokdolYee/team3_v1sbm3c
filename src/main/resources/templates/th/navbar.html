@@ -47,6 +47,15 @@
 
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" 
+                        role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="게시판">                                                            
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <li class="nav-item"><a class="nav-link" href="/post_earning/list_by_postno_search_paging">수익 인증</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" 
                         role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="회원">                                                            
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
@@ -83,13 +92,16 @@
  
                 <li class="nav-item">
                     <span th:if="${session.memberno == null}"><a class="nav-link" href="/member/login" th:text="@{|로그인|}"></a></span>
-                    <span th:if="${session.memberno != null}"><a class="nav-link" href="/member/logout" th:text="@{|${session.id} 로그아웃|}"></a></span>
+                    <span th:if="${session.memberno != null}"><a class="nav-link" href="/member/logout">로그아웃</a></span>
                 </li>
-                  
             </ul>
+            <div class="ms-auto" th:if="${session.memberno != null}">
+                <span class="navbar-text"> 
+                    <span class="text-primary fs-4" th:text="${session.nickname}"></span>님
+                </span> 환영합니다!
+            </div>
         </div>
         <!-- 메뉴 종료 -->
-          
     </div>  
   </nav>
 </div>

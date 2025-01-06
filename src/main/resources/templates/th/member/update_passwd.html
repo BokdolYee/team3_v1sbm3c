@@ -101,8 +101,8 @@
 
       <div class="form-group">
         <label for="passwd">현재 비밀번호</label> 
-        <input type='password' name='current_passwd' id='current_passwd' th:value='${memberVO.passwd}' required="required" 
-                  placeholder="비밀번호" autofocus="autofocus" 
+        <input type='password' name='current_passwd' id='current_passwd' required="required" 
+                  placeholder="현재 비밀번호" autofocus="autofocus" 
                   class="form-control form-control-sm" style="width: 100%;">
          <div id='current_passwd_msg' style='width: 100%; text-align: cnter;'></div>         
       </div>
@@ -110,13 +110,13 @@
       <div class="form-group">
         <label for="passwd">새 비밀번호</label> 
         <input type='password' name='passwd' id='passwd' value='' required="required" 
-                  placeholder="패스워드" class="form-control form-control-sm" style="width: 100%;">
+                  placeholder="새 비밀번호" class="form-control form-control-sm" style="width: 100%;">
       </div>
 
       <div class="form-group">
-        <label for="passwd2">비밀번호 확인</label>
+        <label for="passwd2">새 비밀번호 확인</label>
         <input type='password' name='passwd2' id='passwd2' value='' required="required" 
-                  placeholder="패스워드 확인" class="form-control form-control-sm" style="width: 100%;">
+                  placeholder="새 비밀번호 확인" class="form-control form-control-sm" style="width: 100%;">
         <span id='passwd2_msg'></span>
       </div>
       

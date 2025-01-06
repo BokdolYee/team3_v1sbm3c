@@ -48,8 +48,8 @@
       <td class='td_left'><a th:href="@{|./read?memberno=${memberVO.memberno}|}" th:text="${memberVO.nickname}"></a></td>
       <td class='td_basic' th:text="${memberVO.tel}"></td>
       <td class='td_left'>
-        <span th:if="${memberVO.address.length() > 15 }" th:text="|${memberVO.address.substring(0, 15) }...|"></span>
-        <span th:unless="${memberVO.address.length() > 15 }" th:text="${memberVO.address}"></span>
+        <span th:if="${memberVO.address.length() > 35 }" th:text="|${memberVO.address.substring(0, 35) }...|"></span>
+        <span th:unless="${memberVO.address.length() > 35 }" th:text="${memberVO.address}"></span>
       </td>
       <td class='td_basic' th:text="${memberVO.rdate.substring(0, 10)}"></td>
     </tr>

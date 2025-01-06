@@ -584,7 +584,6 @@ public class MemberCont {
    */
   @PostMapping(value = "/withdraw")
   public String withdraw_process(HttpSession session, Model model, @ModelAttribute("memberVO") MemberVO memberVO) {
-    
     //회원 및 회원 본인일 경우
     if (this.memberProc.isMember(session) && memberVO.getMemberno() == (int) session.getAttribute("memberno")) {
       int cnt = this.memberProc.withdraw(memberVO);

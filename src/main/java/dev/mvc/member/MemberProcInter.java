@@ -108,7 +108,7 @@ public interface MemberProcInter {
    * @param map
    * @return 변경된 비밀번호 개수
    */
-  public int update_passwd_find(HashMap<String, Object> map);
+  public int update_passwd_find(HashMap<String, String> map);
   
   /**
    * 이름, 전화번호 입력받아서 일치하는 회원이 있는지 검사

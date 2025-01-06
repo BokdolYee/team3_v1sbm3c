@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+
+  <div class='title_line'>수익 인증 게시판</div>
+
+  <aside class="aside_right">
+    <a href="javascript:location.reload();">새로고침</a>
+    <span th:if="${session.memberno != null}" class='menu_divide' >│</span>
+    <a th:if="${session.memberno != null}" href="javascript:location.href='/post_earning/create'">글쓰기</a>
+    <span class='menu_divide' >│</span>
+    <a href="javascript:location.href='/post_earning/list_by_postno'">목록</a>
+    <span th:if="${session.memberno == post_earningVO.memberno}" class='menu_divide' >│</span>
+    <a th:if="${session.memberno == post_earningVO.memberno}" th:href="@{|/post_earning/update_text?postno=${post_earningVO.postno}|}">수정</a>
+    <span class='menu_divide' >│</span>
+    <a th:if="${session.memberno != null}" href='/member/logout'>로그아웃</a>
+  </aside> 
+
+  <div class='menu_line'></div>
+
+  <fieldset class="fieldset_basic">
+    <div class="post_content">
+      <div class="post_header">
+        <div class="post_title">
+          <h1><span th:text="${post_earningVO.title}" class="fs-3"></span></h1>
+        </div>
+        <div class="post_info">
+          <span th:text="'작성자: ' + ${post_earningVO.nickname}"></span>
+          <span th:text="'작성일: ' + ${post_earningVO.rdate}"></span>
+          <span th:text="'조회수: ' + ${post_earningVO.viewcnt}"></span>
+          <span th:text="'추천수: ' + ${post_earningVO.goodcnt}"></span>
+        </div>
+      </div>
+    
+      <div class="post_body">
+        <div class="chat_log">
+          <span th:text="${post_earningVO.content}"></span>
+        </div>
+      </div>
+    
+      <div class="post_footer">
+        <div class="vote_buttons">
+          <button class="vote_up">👍 <span>0</span></button>
+          <button class="vote_down">👎 <span>0</span></button>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+  <fieldset class="fieldset_basic">
+    <table class="table table-striped" style='width: 100%;'>
+      <colgroup>
+        <col style='width: 5%;'/>
+        <col style='width: 10%;'/>
+        <col style='width: 30%;'/>
+        <col style='width: 8%;'/>
+        <col style='width: 7%;'/>
+        <col style='width: 4%;'/>
+        <col style='width: 4%;'/>
+      </colgroup>
+      <tr>
+        <th class='th_bs'>번호</th>
+        <th class='th_bs'>이미지</th>
+        <th class='th_bs'>제목</th>  
+        <th class='th_bs'>작성자</th>
+        <th class='th_bs'>등록일</th>
+        <th class='th_bs'>조회수</th>
+        <th class='th_bs'>추천수</th>
+      </tr>
+     
+      <tr th:each="post_earningVO : ${list}">
+        <td class='td_basic' th:text="${post_earningVO.postno}"></td> <!-- 번호 -->
+        <td class='td_basic'><div>썸네일</div></td>    <!-- 썸네일 이미지 -->
+        <td class='td_left'><a th:href="@{|/post_earning/read?postno=${post_earningVO.postno}|}" th:text="${post_earningVO.title}"></a></td>  <!-- 제목 -->
+        <td class='td_basic' th:text="${post_earningVO.nickname}"></td> <!-- 닉네임 -->
+        <td class='td_basic' th:text="${post_earningVO.rdate.substring(0, 16)}"></td> <!-- 등록일 -->
+        <td class='td_basic' th:text="${post_earningVO.viewcnt}"></td> <!-- 조회수 -->
+        <td class='td_basic' th:text="${post_earningVO.goodcnt}"></td> <!-- 추천수 -->
+      </tr>
+    </table>
+    
+    <!-- 페이징 -->
+    <div class="pagination">
+      <!-- 검색 결과가 있을 때만 페이징 표시-->
+      <th:block th:if="${total > 0}">
+        <!-- 이전 페이지-->
+        <a th:if="${pageDTO.prev}" th:href="@{|/post_earning/list_by_postno?page=${pageDTO.startPage - 1}&searchType=${searchDTO.searchType}&keyword=${searchDTO.keyword}|}"></a>
+        
+        <!-- 페이지 번호-->
+        <th:block th:each="num : ${#numbers.sequence(pageDTO.startPage, pageDTO.endPage)}">
+          <a th:href="@{|/post_earning/list_by_postno?page=${num}&searchType=${searchDTO.searchType}&keyword=${searchDTO.keyword}|}"
+            th:class="${pageDTO.currentPage == num} ? 'active' : ''"
+            class="page-link"
+            th:text="${num}"></a>
+        </th:block>
+  
+        <!-- 다음 페이지-->
+        <a th:if="${pageDTO.next}" th:href="@{|/post_earning/list_by_postno?page=${pageDTO.endPage + 1}&searchType=${searchDTO.searchType}&keyword=${searchDTO.keyword}|}"></a>
+      </th:block>
+    </div>
+  
+    <!-- 검색 결과가 없을 때 메시지 표시-->
+    <div th:if="${total == 0}" class="text-center mt-3">검색 결과가 존재하지 않습니다.</div>
+  
+  
+    <script>
+      function search() {
+        const searchType = document.getElementById('searchType').value;
+        const keyword = document.getElementById('keyword').value;
+          
+        if (keyword.trim() === '') {
+          alert('검색어를 입력해주세요');
+          return;
+        }
+          
+        location.href = `/post_earning/read?page=1&searchType=${searchType}&keyword=${keyword}`;
+      }
+      
+      // 엔터키 검색 기능
+      document.getElementById('keyword').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          search();
+        }
+      });
+    </script>
+  
+    <div class='bottom_menu'>
+      <select id="searchType" th:value="${searchDTO.searchType}">
+        <option value="title">제목</option>
+        <option value="content">내용</option>
+        <option value="nickname">닉네임</option>
+      </select>
+      <input type="text" id="keyword" th:value="${searchDTO.keyword}" placeholder="검색어를 입력하세요">
+      <button onclick="search()">검색</button>
+      <button th:onclick="|location.href='/post_earning/list_by_postno'|">취소</button>
+    </div>
+  </fieldset>
+
+
+</div>
+</html>

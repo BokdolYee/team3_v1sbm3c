@@ -40,3 +40,9 @@ CREATE SEQUENCE post_earning_seq
   CACHE 2                        -- 2번은 메모리에서만 계산
   NOCYCLE;                      -- 다시 1부터 생성되는 것을 방지
   
+SELECT * FROM post_earning ORDER BY postno DESC; -- 모든 행 조회
+
+-- 작성된 글의 회원 닉네임을 조회하기 위한 JOIN(외래키인 memberno 이용)
+SELECT P.*, m.nickname
+FROM post_earning p INNER JOIN member m ON p.memberno = m.memberno
+WHERE p.postno = postno;

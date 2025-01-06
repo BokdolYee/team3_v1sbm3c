@@ -45,7 +45,7 @@
       </td>
       <td class='td_basic' th:text="${memberVO.memberno}"></td>
       <td class='td_left'><a th:href="@{|./read?memberno=${memberVO.memberno}|}" th:text="${memberVO.id}"></a></td>
-      <td class='td_left'><a th:href="@{|./read?memberno=${memberVO.memberno}|}" th:text="${memberVO.nickname}"></a></td>
+      <td class='td_basic'><a th:href="@{|./read?memberno=${memberVO.memberno}|}" th:text="${memberVO.nickname}"></a></td>
       <td class='td_basic' th:text="${memberVO.tel}"></td>
       <td class='td_left'>
         <span th:if="${memberVO.address.length() > 35 }" th:text="|${memberVO.address.substring(0, 35) }...|"></span>

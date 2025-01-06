@@ -16,6 +16,25 @@
     WHERE replyno = #{replyno}
   </select>
   
+  <!-- 최신글 500건 -->
+  <select id="list_by_contentno_join_500" resultType="dev.mvc.reply.ReplyVO" parameterType="int">
+    SELECT id, replyno, contentno, memberno, content, rdate
+    FROM (
+          SELECT m.id, 
+                 p.replyno, 
+                 p.contentno, 
+                 p.memberno, 
+                 p.content, 
+                 p.rdate,
+                 ROW_NUMBER() OVER (ORDER BY p.replyno DESC) AS r
+          FROM member m
+          JOIN reply p ON m.memberno = p.memberno
+          WHERE p.contentno = #{contentno}
+    )
+    WHERE r &lt;= 500
+  </select>
+
+  
     <!-- 글 수정 -->
   <update id="update_content" parameterType="dev.mvc.reply.ReplyVO">
     UPDATE reply

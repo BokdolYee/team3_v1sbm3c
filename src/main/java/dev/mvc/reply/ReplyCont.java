@@ -105,6 +105,18 @@ public class ReplyCont {
         }
     }
 
+    @GetMapping(value="/list_by_contentsno_join")
+    @ResponseBody
+    public String list_by_contentsno_join(int contentno) {
+      List<ReplyVO> list = replyProc.list_by_contentsno_join_500(contentno);
+      
+      JSONObject obj = new JSONObject();
+      obj.put("res", list);
+      
+      System.out.println("-> obj.toString(): " + obj.toString());
+      
+      return obj.toString();     
+    }
 
     
     // 댓글 수정

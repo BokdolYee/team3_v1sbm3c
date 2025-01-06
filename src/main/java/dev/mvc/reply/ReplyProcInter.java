@@ -45,5 +45,12 @@ public interface ReplyProcInter {
    * @return 댓글 목록
    */
     public List<ReplyVO> listByContentNoJoin(int contentno);
+    
+    /**
+     * 최신 글 500 건
+     * @param contentsno
+     * @return
+     */
+    public List<ReplyVO> list_by_contentsno_join_500(int contentno);
 
 }

@@ -31,5 +31,24 @@ CREATE SEQUENCE reply_seq
   CACHE 2                        -- 2번은 메모리에서만 계산
   NOCYCLE;                      -- 다시 1부터 생성되는 것을 방지
 
+SELECT r.replyno, r.content, r.rdate, r.contentno, r.memberno, r.parentreplyno, r.file1, r.file1saved, r.thumb1, r.size1, 
+       m.id AS member_id, m.name AS member_name
+FROM reply r
+JOIN member m ON m.memberno = r.memberno
+WHERE r.contentno = 21  -- 테스트하려는 contentno를 넣으세요
+ORDER BY r.replyno DESC
 
-
+    SELECT id, replyno, contentno, memberno, content, rdate
+    FROM (
+          SELECT m.id, 
+                 p.replyno, 
+                 p.contentno, 
+                 p.memberno, 
+                 p.content, 
+                 p.rdate,
+                 ROW_NUMBER() OVER (ORDER BY p.replyno DESC) AS r
+          FROM member m
+          JOIN reply p ON m.memberno = p.memberno
+          WHERE p.contentno = 21
+    )
+    WHERE r <= 500;

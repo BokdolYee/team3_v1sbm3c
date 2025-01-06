@@ -51,5 +51,11 @@ public class ReplyProc implements ReplyProcInter {
   public List<ReplyVO> listByContentNoJoin(int contentno) {
       return replyDAO.listByContentNoJoin(contentno);
   }
+
+  @Override
+  public List<ReplyVO> list_by_contentsno_join_500(int contentno) {
+    List<ReplyVO> list = this.replyDAO.list_by_contentsno_join_500(contentno);
+    return list;
+  }
   
 }

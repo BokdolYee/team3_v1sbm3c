@@ -179,43 +179,90 @@
             })
             .then((response) => response.json())
             .then((data) => {
-              console.log(data);
-                reply_data = data['res'];
-        
-                if (reply_data.length > 5) {
-                    cnt = 5;
-                } else {
-                    cnt = reply_data.length;
-                }
-                
-                let msg = '';
-                for (let i = 0; i < cnt; i++) {
-                    let row = reply_data[i];
-        
-                    // rdate 형식 변환
-                    let date = new Date(row.rdate);
-                    let formattedDate = date.getFullYear() + '-' + 
-                        String(date.getMonth() + 1).padStart(2, '0') + '-' + 
-                        String(date.getDate()).padStart(2, '0') + ' ' + 
-                        String(date.getHours()).padStart(2, '0') + ':' + 
-                        String(date.getMinutes()).padStart(2, '0');
-        
-                    msg += "<div id='" + row.replyno + "' style='border-bottom: solid 1px #EEEEEE; margin-bottom: 10px;'>";
-                    msg += "<span style='font-weight: bold;'>" + row.member_name + "</span>";
-                    msg += "  " + formattedDate; // 변환된 날짜 사용
-        
-                    if ('[[${session.memberno}]]' == row.memberno) { // 글쓴이 일치여부 확인, 본인의 글만 삭제 가능함 ★
-                        msg += " <a href='javascript:reply_update(" + row.replyno + ")'><img src='/reply/images/update.png' style='width: 16px;'></a>";
-                        msg += " <a href='javascript:reply_delete(" + row.replyno + ")'><img src='/reply/images/delete.png' style='width: 16px;'></a>";
-                    }
-                    msg += "  " + "<br>";
-                    msg += row.content;
-                    msg += "</div>";
+              reply_data = data['res'];
+      
+              if (reply_data.length > 5) {
+                  cnt = 5;
+              } else {
+                  cnt = reply_data.length;
+              }
+              
+              let msg = '';
+              for (let i = 0; i < cnt; i++) {
+                  let row = reply_data[i];
+      
+                  // rdate 형식 변환
+                  let date = new Date(row.rdate);
+                  let formattedDate = date.getFullYear() + '-' + 
+                      String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                      String(date.getDate()).padStart(2, '0') + ' ' + 
+                      String(date.getHours()).padStart(2, '0') + ':' + 
+                      String(date.getMinutes()).padStart(2, '0');
+      
+                  msg += "<div id='" + row.replyno + "' style='border-bottom: solid 1px #EEEEEE; margin-bottom: 10px;'>";
+                  msg += "<span style='font-weight: bold;'>" + row.member_name + "</span>";
+                  msg += "  " + formattedDate; // 변환된 날짜 사용
+      
+                  if ('[[${session.memberno}]]' == row.memberno) { // 글쓴이 일치여부 확인, 본인의 글만 삭제 가능함 ★
+                      msg += " <a href='javascript:reply_update(" + row.replyno + ")'><img src='/reply/images/update.png' style='width: 16px;'></a>";
+                      msg += " <a href='javascript:reply_delete(" + row.replyno + ")'><img src='/reply/images/delete.png' style='width: 16px;'></a>";
+                  }
+                  msg += "  " + "<br>";
+                  msg += row.content;
+                  msg += "</div>";
                 }
                 
                 document.getElementById("reply_list").innerHTML = msg;               
-            });
-        }
+              });
+          }
+          
+            window.onload = () => {
+              let btn_add_tag = document.getElementById('btn_add'); // 더보기 버튼
+          
+              // btn_add_tag가 null이 아닌지 확인
+              if (btn_add_tag) {
+                  btn_add_tag.addEventListener('click', () => {
+                      // 기존 버튼 클릭 이벤트 처리 코드
+                      if (reply_data.length > reply_now_page * 5) {
+                          let start = 0; // 출력 순환 시작 index
+                          let end = 0;  // 출력 순환 종료 index
+                          if (reply_data.length > 5) {
+                              start = reply_now_page * 5;
+                              end = (reply_now_page * 5) + 5;
+          
+                              let msg = '';
+                              let page_div = document.createElement('div');
+                              for (let i = start; i < end; i++) {
+                                  if (i == reply_data.length) {
+                                      break;
+                                  }
+          
+                                  let row = reply_data[i];
+                                  msg += "<div id='"+row.replyno+"' style='border-bottom: solid 1px #EEEEEE; margin-bottom: 10px;'>";
+                                  msg += "<span style='font-weight: bold;'>" + row.id + "</span>";
+                                  msg += "  " + row.rdate;
+          
+                                  if ('[[${session.memberno}]]' == row.memberno) {
+                                      msg += " <a href='javascript:reply_update("+row.replyno+")'><img src='/reply/images/update.png' style='width: 16px;'></a>";
+                                      msg += " <a href='javascript:reply_delete("+row.replyno+")'><img src='/reply/images/delete.png' style='width: 16px;'></a>";
+                                  }
+                                  msg += "  " + "<br>";
+                                  msg += row.content;
+                                  msg += "</div>";
+                              }
+                              page_div.innerHTML = msg;
+                              reply_list.appendChild(page_div);
+          
+                              reply_now_page = reply_now_page + 1;
+                          }
+                      }
+                      
+                  });
+              } else {
+                  console.log('btn_add_tag 요소가 없습니다.');
+              }
+              list_by_contentno_join();
+          };
 
           
           // 수정 폼 

@@ -1,36 +1,42 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>뉴스 상세</title>
-    <link rel="stylesheet" href="/styles.css">
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>뉴스 상세 보기</h1>
-        </header>
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속 -->
+    <div layout:fragment="content">
+        <div class="title_line">뉴스 상세 보기</div>
 
-        <div class="news-details">
-            <h2>뉴스 본문</h2>
-            <p th:text="${news.text}">뉴스 본문</p>
+        <div class="menu_line"></div>
 
-            <div class="analyze-btn">
-                <h3>분석 및 요약</h3>
+        <div class="container mt-3" style="width: 60%; margin: 5px auto;">
+          <!-- 분석 및 요약 -->
+            <div class="analyze-btn text-center mt-3">
+                <h2>분석 및 요약</h2>
                 <form th:action="@{/news/analyze/{newsno}(newsno=${news.newsno})}" method="POST">
                     <button type="submit" class="btn btn-primary">분석 및 요약 요청</button>
                 </form>
             </div>
-        </div>
+            <div th:if="${news}">
+              <h2>요약:</h2>
+              <p th:text="${news.summary}">뉴스 요약을 표시합니다.</p>
+            </div>
+        
+            <div th:if="${news}">
+              <h3>분석 결과:</h3>
+              <p th:text="${news.impact}">뉴스 분석 결과를 표시합니다.</p>
+            </div>
+            <!-- 오류 메시지 -->
+            <div th:if="${error}" class="error-message text-center mt-3">
+                <p th:text="${error}">뉴스를 찾을 수 없습니다.</p>
+            </div>
 
-        <div th:if="${error}" class="error-message">
-            <p th:text="${error}">뉴스를 찾을 수 없습니다.</p>
+            <!-- 목록으로 돌아가기 버튼 -->
+            <div class="navigation text-center mt-3">
+                <a href="/news/list" class="btn btn-secondary">목록으로 돌아가기</a>
+            </div>
         </div>
-
-        <div class="navigation">
-            <a href="/news/list" class="btn btn-secondary">목록으로 돌아가기</a>
-        </div>
+            <!-- 뉴스 본문 -->
+            <div class="news-details">
+                <h2>뉴스 본문</h2>
+                <p th:text="${news.text}">뉴스 본문</p>
+            </div>
+        <div class="menu_line"></div>
     </div>
-</body>
 </html>

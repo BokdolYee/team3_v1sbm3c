@@ -130,11 +130,52 @@
                 });
         
               }
-
             });
-            
+            // 자바 스크립트는 변수명에 '-' 사용 못함.
+            btn_add_tag.addEventListener('click', () => {
+              // 현재 페이지보다 레코드 갯수가 더 많은 경우만 실행
+              if (reply_data.length > reply_now_page * 5 ) { // 5, 10, 15, 20, 25 X 
+                // let data_replypage = reply_list.getAttribute('data-replypage');
+                // console.log('-> data_replypage typeof:' + typeof data_replypage );
+                let start = 0; // 출력 순환 시작 index
+                let end = 0;  // 출력 순환 종료 index
+                if (reply_data.length > 5) {
+                  start = reply_now_page * 5;
+                  end = (reply_now_page * 5) + 5; // 시작 index + 페이지 당 레코드 수
+                  
+                  let msg = '';
+                  let page_div = document.createElement('div'); // 글내용
+                  for (let i = start; i < end; i++) { // 5 ~ 9, 10 탈출
+                    if (i == reply_data.length) { // 모든 태그를 출력한 이후인지 검사
+                      break;
+                    }
 
-            // 수정 처리
+                    let row = reply_data[i];
+                    msg += "<div id='"+row.replyno+"' style='border-bottom: solid 1px #EEEEEE; margin-bottom: 10px;'>";
+                    msg += "<span style='font-weight: bold;'>" + row.id + "</span>";
+                    msg += "  " + row.rdate;
+              
+                    if ('[[${session.memberno}]]' == row.memberno) { // 글쓴이 일치여부 확인, 본인의 글만 삭제 가능함 ★
+                      msg += " <a href='javascript:reply_update("+row.replyno+")'><img src='/reply/images/update.png' style='width: 16px;'></a>";
+                      msg += " <a href='javascript:reply_delete("+row.replyno+")'><img src='/reply/images/delete.png' style='width: 16px;'></a>";
+                    }
+                    msg += "  " + "<br>";
+                    msg += row.content;
+                    msg += "</div>";
+
+                  }
+                  page_div.innerHTML = msg; //  페이지에 속한 레코드들 추가
+                  reply_list.appendChild(page_div);
+                  
+                  reply_now_page = reply_now_page + 1;
+                }             
+                
+              }
+            });            
+            
+          
+
+           // 수정 처리
             btn_save_tag.addEventListener('click', () => {
               let replyno = replyno_tag.value;
               let content = content_tag.value.trim();
@@ -161,14 +202,14 @@
                 });
         
                 // result_animation_tag.innerHTML = '<img src="/static/images/progress.gif" style="width: 15%; margin-top: 0px;">';
-
               }
-
+              
             });             
             
             list_by_contentno_join(); // 목록 출력
           } // window.onload END
           
+         
           // 목록 출력
           // 5건 미만이면 5회 미만 순환, 5건 이상 5회 순환
           function list_by_contentno_join() { // 목록 출력
@@ -216,54 +257,6 @@
               });
           }
           
-            window.onload = () => {
-              let btn_add_tag = document.getElementById('btn_add'); // 더보기 버튼
-          
-              // btn_add_tag가 null이 아닌지 확인
-              if (btn_add_tag) {
-                  btn_add_tag.addEventListener('click', () => {
-                      // 기존 버튼 클릭 이벤트 처리 코드
-                      if (reply_data.length > reply_now_page * 5) {
-                          let start = 0; // 출력 순환 시작 index
-                          let end = 0;  // 출력 순환 종료 index
-                          if (reply_data.length > 5) {
-                              start = reply_now_page * 5;
-                              end = (reply_now_page * 5) + 5;
-          
-                              let msg = '';
-                              let page_div = document.createElement('div');
-                              for (let i = start; i < end; i++) {
-                                  if (i == reply_data.length) {
-                                      break;
-                                  }
-          
-                                  let row = reply_data[i];
-                                  msg += "<div id='"+row.replyno+"' style='border-bottom: solid 1px #EEEEEE; margin-bottom: 10px;'>";
-                                  msg += "<span style='font-weight: bold;'>" + row.id + "</span>";
-                                  msg += "  " + row.rdate;
-          
-                                  if ('[[${session.memberno}]]' == row.memberno) {
-                                      msg += " <a href='javascript:reply_update("+row.replyno+")'><img src='/reply/images/update.png' style='width: 16px;'></a>";
-                                      msg += " <a href='javascript:reply_delete("+row.replyno+")'><img src='/reply/images/delete.png' style='width: 16px;'></a>";
-                                  }
-                                  msg += "  " + "<br>";
-                                  msg += row.content;
-                                  msg += "</div>";
-                              }
-                              page_div.innerHTML = msg;
-                              reply_list.appendChild(page_div);
-          
-                              reply_now_page = reply_now_page + 1;
-                          }
-                      }
-                      
-                  });
-              } else {
-                  console.log('btn_add_tag 요소가 없습니다.');
-              }
-              list_by_contentno_join();
-          };
-
           
           // 수정 폼 
           function reply_update(replyno) {
@@ -304,7 +297,7 @@
               let sw = confirm("「" + data['res']['content'] + "」 삭제하시려면 확인 버튼을 누르세요. 삭제후 복구 할 수 없습니다." );
               if (sw == true) {
                 // alert('삭제를 진행합니다.');
-                fetch("http://127.0.0.1:9093/reply/delete", {
+                fetch("http://localhost:9093/reply/delete", {
                     "method": "post", 
                     "headers": {"Content-Type": "application/json"},
                     body: JSON.stringify({"replyno": replyno, "memberno": data['res']['memberno']})
@@ -367,6 +360,12 @@
             </div>  
           
         </div>
+        
+        <!-- 댓글 영역 종료 -->
       </li>
+     </ul>
+  </fieldset>
+
+</div>
 
 </html>

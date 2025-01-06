@@ -105,10 +105,10 @@ public class ReplyCont {
         }
     }
 
-    @GetMapping(value="/list_by_contentsno_join")
+    @GetMapping(value="/list_by_contentno_join")
     @ResponseBody
-    public String list_by_contentsno_join(int contentno) {
-      List<ReplyVO> list = replyProc.list_by_contentsno_join_500(contentno);
+    public String list_by_contentno_join(@RequestParam(name = "contentno") int contentno) {
+      List<ReplyVO> list = replyProc.list_by_contentno_join_500(contentno);
       
       JSONObject obj = new JSONObject();
       obj.put("res", list);
@@ -118,25 +118,75 @@ public class ReplyCont {
       return obj.toString();     
     }
 
+    /**
+     * 조회
+     * 
+     * @param contentsno
+     * @return
+     */
+    @GetMapping(value = "/read", produces = "application/json")
+    @ResponseBody
+    public String read(@RequestParam(name = "replyno") int replyno) {
+      ReplyVO replyVO = this.replyProc.read(replyno);
+      JSONObject row = new JSONObject();
+      
+      row.put("replyno", replyVO.getReplyno());
+      row.put("contentsno", replyVO.getContentno());
+      row.put("memberno", replyVO.getMemberno());
+      row.put("content", replyVO.getContent());
+      row.put("rdate", replyVO.getRdate());    
+      
+      JSONObject obj = new JSONObject();
+      obj.put("res", row);
+
+      // System.out.println("-> obj.toString(): " + obj.toString());
+      return obj.toString();
+    }
     
-    // 댓글 수정
-    @PutMapping("/update/{replyno}")
-    public ResponseEntity<String> update(@PathVariable int replyno, @RequestBody ReplyVO replyVO) {
-        replyVO.setReplyno(replyno);
-        int result = replyProc.update_content(replyVO);
-        if (result > 0) {
-            return new ResponseEntity<>("댓글이 수정되었습니다.", HttpStatus.OK);
-        }
-        return new ResponseEntity<>("댓글 수정에 실패했습니다.", HttpStatus.BAD_REQUEST);
+    /**
+     * 수정 처리 
+     * @param replyVO
+     * @return
+     */
+    @PostMapping(value = "/update")
+    @ResponseBody
+    public String update(HttpSession session, @RequestBody ReplyVO replyVO) {
+      System.out.println("-> 수정할 수신 데이터:" + replyVO.toString());
+
+      int memberno = (int) session.getAttribute("memberno"); // 보안성 향상
+      
+      int cnt = 0;
+      if (memberno == replyVO.getMemberno()) { // 회원 자신이 쓴글만 수정 가능
+        cnt = this.replyProc.update(replyVO);
+        System.out.println("업데이트된 레코드 수: " + cnt);
+      }
+      
+      JSONObject json = new JSONObject();
+      json.put("res", cnt);  // 1: 성공, 0: 실패
+
+      return json.toString();
     }
 
-    // 댓글 삭제
-    @DeleteMapping("/delete/{replyno}")
-    public ResponseEntity<String> delete(@PathVariable int replyno) {
-        int result = replyProc.delete(replyno);
-        if (result > 0) {
-            return new ResponseEntity<>("댓글이 삭제되었습니다.", HttpStatus.OK);
-        }
-        return new ResponseEntity<>("댓글 삭제에 실패했습니다.", HttpStatus.BAD_REQUEST);
+    /**
+     * 삭제 처리 
+     * @param replyVO
+     * @return
+     */
+    @PostMapping(value = "/delete")
+    @ResponseBody
+    public String delete(HttpSession session, @RequestBody ReplyVO replyVO) {
+      // System.out.println("-> 삭제할 수신 데이터:" + replyVO.toString());
+
+      int memberno = (int) session.getAttribute("memberno"); // 보안성 향상
+      
+      int cnt = 0;
+      if (memberno == replyVO.getMemberno()) { // 회원 자신이 쓴글만 수정 가능
+        cnt = this.replyProc.delete(replyVO.getReplyno());
+      }
+      
+      JSONObject json = new JSONObject();
+      json.put("res", cnt);  // 1: 성공, 0: 실패
+
+      return json.toString();
     }
 }

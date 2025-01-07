@@ -637,18 +637,35 @@
   .vote_buttons {
       display: flex;
       justify-content: center;
-      gap: 10px;
+      gap: 30px;
   }
   
   .vote_buttons button {
-      padding: 8px 20px;
+      /*padding: 8px 20px;
       border: 1px solid #ddd;
       border-radius: 4px;
       background: white;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 5px;*/
+      position: relative; /* 자식 요소 배치를 위한 기준점 설정 */
+      width: 80px;  /* 버튼 너비 축소 */
+      height: 80px; /* 버튼 높이 축소 */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: none;
+      cursor: pointer;
+  }
+
+  .vote_img {
+    width: 65px;
+    height: 65px;
+    object-fit: contain;  /* 이미지 비율 유지 */
   }
   
   .vote_buttons button:hover {
@@ -657,5 +674,8 @@
   
   /* 추천/비추천 숫자 스타일 */
   .vote_buttons span {
-      font-weight: bold;
+      /*font-weight: bold;*/
+      position: absolute;
+      bottom: 5px; /* 하단 여백 */
+      font-size: 12px; /* 텍스트 크기 */
   }

@@ -96,7 +96,6 @@ public class LoginlogCont {
   
   /**
    * 회원 Delete process
-   * @param model
    * @param memberno 삭제할 레코드 번호
    * @return
    */

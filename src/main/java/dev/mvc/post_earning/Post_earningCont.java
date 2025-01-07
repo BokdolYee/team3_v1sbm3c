@@ -135,8 +135,12 @@ public class Post_earningCont {
     ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
     model.addAttribute("menu", menu);
     
+    // 게시물 정보 읽고 뷰에 전송
     Post_earningVO post_earningVO = this.post_earningProc.read_join_nickname(postno);
     model.addAttribute("post_earningVO", post_earningVO);
+    
+    // 조회수 증가
+    int cnt = this.post_earningProc.increase_viewcnt(postno);
     
     // 게시물 최하단 댓글 밑에 검색 조건 유지한 채 리스트 뜨도록 list 코드 갖고 옴
     // ----------------------------------------------------------------

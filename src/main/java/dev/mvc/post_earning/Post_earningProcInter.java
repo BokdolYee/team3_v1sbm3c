@@ -21,6 +21,13 @@ public interface Post_earningProcInter {
   public Post_earningVO read_join_nickname(int postno);
   
   /**
+   * 조회수 증가
+   * @param postno
+   * @return
+   */
+  public int increase_viewcnt(int postno);
+  
+  /**
    * 게시물 검색 + 페이징 목록
    * @param searchDTO 검색 조건 및 페이징 정보
    * @return

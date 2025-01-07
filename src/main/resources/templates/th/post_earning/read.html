@@ -13,7 +13,7 @@
     <a href="javascript:location.href='/post_earning/list_by_postno'">목록</a>
     <span th:if="${session.memberno == post_earningVO.memberno}" class='menu_divide' >│</span>
     <a th:if="${session.memberno == post_earningVO.memberno}" th:href="@{|/post_earning/update_text?postno=${post_earningVO.postno}|}">수정</a>
-    <span class='menu_divide' >│</span>
+    <span th:if="${session.memberno != null}" class='menu_divide' >│</span>
     <a th:if="${session.memberno != null}" href='/member/logout'>로그아웃</a>
   </aside> 
 
@@ -28,7 +28,7 @@
         <div class="post_info">
           <span th:text="'작성자: ' + ${post_earningVO.nickname}"></span>
           <span th:text="'작성일: ' + ${post_earningVO.rdate}"></span>
-          <span th:text="'조회수: ' + ${post_earningVO.viewcnt}"></span>
+          <span th:text="'조회수: ' + ${post_earningVO.viewcnt + 1}"></span>
           <span th:text="'추천수: ' + ${post_earningVO.goodcnt}"></span>
         </div>
       </div>

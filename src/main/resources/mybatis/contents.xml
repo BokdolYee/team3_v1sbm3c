@@ -5,21 +5,21 @@
 <mapper namespace="dev.mvc.contents.ContentsDAOInter">
   <!-- 등록한 레코드 갯수 1 리턴, #{memberno}: public int getAdminno() 호출됨 -->
   <insert id="create" parameterType="dev.mvc.contents.ContentsVO">
-    INSERT INTO contents (contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, newscateno, file1, file1saved, thumb1, size1)
-    VALUES (contents_seq.nextval, #{title}, #{passwd}, sysdate, #{cnt}, #{all_cnt}, #{visible}, #{stockno}, #{newsno}, #{newscateno}, #{file1}, #{file1saved}, #{thumb1}, #{size1})
+    INSERT INTO contents (contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, newscateno, recom, file1, file1saved, thumb1, size1)
+    VALUES (contents_seq.nextval, #{title}, #{passwd}, sysdate, #{cnt}, #{all_cnt}, #{visible}, #{stockno}, #{newsno}, #{recom}, #{newscateno}, #{file1}, #{file1saved}, #{thumb1}, #{size1})
   </insert>
 
 
   <!-- 모든 카테고리의 등록된 글목록 -->
   <select id="list_all" resultType="dev.mvc.contents.ContentsVO">
-    SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, newscateno, file1, file1saved, thumb1, size1
+    SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, newscateno, recom, file1, file1saved, thumb1, size1
     FROM contents
     ORDER BY contentno DESC
   </select>
   
   <!-- 특정 카테고리의 등록된 글목록 -->
   <select id="list_by_cateno" resultType="dev.mvc.contents.ContentsVO" parameterType="int">
-    SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, newscateno, file1, file1saved, thumb1, size1
+    SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, newscateno, recom, file1, file1saved, thumb1, size1
     FROM contents 
     WHERE newscateno = #{newscateno}
     ORDER BY contentno DESC
@@ -27,14 +27,14 @@
   
   <!-- 일반적인 조회 -->
   <select id="read" resultType="dev.mvc.contents.ContentsVO" parameterType="int">
-    SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, newscateno, file1, file1saved, thumb1, size1
+    SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, newscateno, recom, file1, file1saved, thumb1, size1
     FROM contents
     WHERE contentno = #{contentno}
   </select>
 
   <!-- 카테고리별 검색 목록 -->
   <select id="list_by_cateno_search" resultType="dev.mvc.contents.ContentsVO" parameterType="HashMap">
-    SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, newscateno, file1, file1saved, thumb1, size1
+    SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, newscateno, recom, file1, file1saved, thumb1, size1
     FROM contents
     <choose>
       <when test="word == null or word == ''"> <!-- 검색하지 않는 경우 -->
@@ -67,11 +67,11 @@
 
   <!-- 카테고리별 검색 + 페이징 목록 -->
   <select id="list_by_cateno_search_paging" resultType="dev.mvc.contents.ContentsVO" parameterType="HashMap">
-   SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, file1, file1saved, thumb1, size1, r
+   SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, recom, file1, file1saved, thumb1, size1, r
    FROM (
-              SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, file1, file1saved, thumb1, size1, rownum as r
+              SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, recom, file1, file1saved, thumb1, size1, rownum as r
               FROM (
-                        SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, file1, file1saved, thumb1, size1
+                        SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, recom, file1, file1saved, thumb1, size1
                         FROM contents
                         <choose>
                           <when test="word == null or word == ''"> <!-- 검색하지 않는 경우 -->

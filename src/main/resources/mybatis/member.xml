@@ -71,27 +71,6 @@
         )
         WHERE rnum &gt; #{offset}
   </select>
-            
-  
-  <!-- 회원 검색 목록 + 페이징
-  <select id="list_search_paging" parameterType="dev.mvc.dto.SearchDTO" resultType="dev.mvc.member.MemberVO">
-    SELECT *
-    FROM member
-    <where>
-      <if test="searchType != null and keyword != null">
-        <choose>
-          <when test = "searchType == 'id'">
-            AND id LIKE '%' || #{keyword} || '%'
-          </when>
-          <when test = "searchType == 'nickname'">
-            AND nickname LIKE '%' || #{keyword} || '%'
-          </when>
-        </choose>
-      </if>
-    </where>
-    ORDER BY memberno DESC
-    OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
-  </select>-->
   
   <!-- 회원 검색된 수 -->
   <select id="list_search_count" parameterType="dev.mvc.dto.SearchDTO" resultType="int">

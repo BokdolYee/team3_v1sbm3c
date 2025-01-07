@@ -175,6 +175,8 @@
 
   <div style="width: 60%; margin: 0px auto ">
     <form name="frm" id="frm" th:object="${memberVO}" method="post" action="/member/update">
+      <input type="hidden" name="memberno" th:value="${memberVO.memberno}">
+
       <div>
         <label for="id">아이디(이메일)</label>
         <input type="text" name="id" id="id" th:value="${memberVO.id}" class="form-control form-control-sm" style="width: 50%;" readonly>

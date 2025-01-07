@@ -140,6 +140,15 @@ public class MemberCont {
     return "/th/index"; //   /templates/th/index.html
   }
 
+  /**
+   * 회원 리스트(검색 + 페이징)
+   * @param model
+   * @param session
+   * @param page
+   * @param searchType
+   * @param keyword
+   * @return
+   */
   @GetMapping(value = "/list")
   public String list_search_paging(Model model, HttpSession session,
       @RequestParam(value = "page", defaultValue = "1") int page,
@@ -270,7 +279,7 @@ public class MemberCont {
       @Validated(UpdateValidationGroup.class) @ModelAttribute("memberVO") MemberVO memberVO) {
     
     String nicknameSession = (String) session.getAttribute("nickname");
-
+    
     // 회원 본인일 때
     if (this.memberProc.isMember(session) && memberVO.getMemberno() == (int) session.getAttribute("memberno")) {
       int checkNICKNAME_cnt = this.memberProc.checkNICKNAME(memberVO.getNickname());

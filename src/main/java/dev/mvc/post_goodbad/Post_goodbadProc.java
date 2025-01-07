@@ -24,13 +24,23 @@ public class Post_goodbadProc implements Post_goodbadProcInter{
     
     return cnt;
   }
-
+  
   /**
-   * 추천 비추천 여부 검사
+   * 회원이 해당 게시물에 추천 or 비추천 했는지 조회
    */
   @Override
-  public String check(HashMap<Integer, Integer> map) {
-    String goodbad = this.post_goodbadDAO.check(map);
+  public int check_cnt(HashMap<String, Object>map) {
+    int cnt = this.post_goodbadDAO.check_cnt(map);
+    
+    return cnt;
+  }
+
+  /**
+   * 추천 혹은 비추천을 했으면 추천인지 비추천인지 조회
+   */
+  @Override
+  public String check_goodbad(HashMap<String, Object> map) {
+    String goodbad = this.post_goodbadDAO.check_goodbad(map);
     
     return goodbad;
   }

@@ -15,9 +15,10 @@
       if(session == null) {
         alert("호재, 악재를 간주하려면 로그인이 필요합니다.");
         location.href = "/member/login_cookie";
+        return;
       }
 
-      else if(confirm('이 게시물을 호재로 간주하시겠습니까?')) {
+      if(confirm('이 게시물을 호재로 간주하시겠습니까?')) {
 
         fetch(url, {
           method:'POST',
@@ -32,20 +33,33 @@
         .then(res => res.json())
         .then(data => {
           if(data.cnt == 1) {
+            // 추천수 DOM 요소 찾기
+            const goodcntElement = document.querySelector('.vote_up span');
+
+            //화면 상단 추천수 DOM 요소 찾기
+            const goodcntElement2 = document.querySelector
+
+            //현재 추천수 추출 및 증가
+            const currentCount = parseInt(goodcntElement.textContent.match(/\d+/)[0]);
+
+            //화면 업데이트
+            goodcntElement.textContent = `호재(${currentCount + 1})`;
             return;
           }
           else if(data.cnt == "g") {
             alert("이미 호재로 간주한 게시물입니다.");
+            return false;
           }
           else if(data.cnt == "b") {
             alert("이미 악재로 간주한 게시물입니다.");
+            return false;
           }
           else if(data.cnt == "login_fail");
             location.href = "/member/login_cookie_need";
         })
         .catch(error => {
           console.error('Error:', error);
-          alert('삭제 중 오류가 발생하였습니다.');
+          alert('오류가 발생하였습니다.');
         });
       }
 
@@ -62,9 +76,10 @@
       if(session == null) {
         alert("호재, 악재를 간주하려면 로그인이 필요합니다.");
         location.href = "/member/login_cookie";
+        return;
       }
 
-      else if(confirm('이 게시물을 호재로 간주하시겠습니까?')) {
+      if(confirm('이 게시물을 악재로 간주하시겠습니까?')) {
 
         fetch(url, {
           method:'POST',
@@ -79,20 +94,30 @@
         .then(res => res.json())
         .then(data => {
           if(data.cnt == 1) {
+            // 비추천수 DOM 요소 찾기
+            const badcntElement = document.querySelector('.vote_down span');
+
+            //현재 추천수 추출 및 증가
+            const currentCount = parseInt(badcntElement.textContent.match(/\d+/)[0]);
+
+            //화면 업데이트
+            goodcntElement.textContent = `악재(${currentCount + 1})`;
             return;
           }
           else if(data.cnt == "g") {
             alert("이미 호재로 간주한 게시물입니다.");
+            return false;
           }
           else if(data.cnt == "b") {
             alert("이미 악재로 간주한 게시물입니다.");
+            return false;
           }
           else if(data.cnt == "login_fail");
             location.href = "/member/login_cookie_need";
         })
         .catch(error => {
           console.error('Error:', error);
-          alert('삭제 중 오류가 발생하였습니다.');
+          alert('오류가 발생하였습니다.');
         });
       }
     }

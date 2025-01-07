@@ -63,6 +63,9 @@ SELECT * FROM post_goodbad;
 SELECT COUNT(g.memberno), g.goodbad
 FROM post_goodbad g INNER JOIN post_earning p
                     ON g.postno = p.postno AND g.memberno = p.memberno group by g.goodbad;
---WHERE postno = 5 AND memberno = 22; 
+
+SELECT COUNT(goodbad)
+FROM post_goodbad
+WHERE postno = 5 AND memberno = 22;
 
 DELETE FROM post_goodbad;

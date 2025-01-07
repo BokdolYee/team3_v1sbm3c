@@ -35,45 +35,47 @@ public class Post_goodbadCont {
   @PostMapping(value = "/create")
   @ResponseBody
   public String create(HttpSession session, @RequestBody Map<String, Object> payload) {
-    
+
     JSONObject obj = new JSONObject();
-    
+
     if (this.memberProc.isMember(session) || this.memberProc.isAdmin(session)) {
-      int memberno = (int)session.getAttribute("memberno");
+      int memberno = (int) session.getAttribute("memberno");
       int postno = Integer.parseInt(payload.get("postno").toString());
       String goodbad = payload.get("goodbad").toString();
+
+      HashMap<String, Object> map = new HashMap<>();
+      map.put("postno", postno);
+      map.put("memberno", memberno);
       
-      HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
-      map.put(postno, memberno);
-      String result = this.post_goodbadProc.check(map);
-      
-      if(result.equals("g")) {  // cnt -> "g"
-        obj.put("cnt", result);
-      }
-      else if(result.equals("b")) { // cnt -> "b"
-        obj.put("cnt", result);
-      }
-      else {
+      int check_cnt = this.post_goodbadProc.check_cnt(map); // 추천 혹은 비추천을 해서 테이블에 존재하는지 검사
+
+      if (check_cnt == 1) { // 추천 혹은 비추천을 한 레코드가 존재할 경우
+        String result = this.post_goodbadProc.check_goodbad(map); // 추천(g), 비추천(b) 값을 조회
+        if (result.equals("g")) {
+          obj.put("cnt", result); // cnt -> "g"
+        } else if (result.equals("b")) {
+          obj.put("cnt", result); // cnt -> "b"
+        }
+      } else {  // 추천 혹은 비추천 레코드가 존재하지 않을 경우
         Post_goodbadVO post_goodbadVO = new Post_goodbadVO();
         post_goodbadVO.setMemberno(memberno);
         post_goodbadVO.setPostno(postno);
         post_goodbadVO.setGoodbad(goodbad);
-        
-        int cnt = this.post_goodbadProc.create(post_goodbadVO);
-        obj.put("cnt", cnt);  // cnt -> 1
-        
-        if(goodbad.equals("g")) {
+
+        int cnt_create = this.post_goodbadProc.create(post_goodbadVO);
+        obj.put("cnt", cnt_create); // cnt -> 1
+
+        if (goodbad.equals("g")) { // 추천일 경우 추천수 증가
           this.post_goodbadProc.increase_goodcnt(postno);
-        }
-        else if(goodbad.equals("b")) {
+        } else if (goodbad.equals("b")) { // 비추천일 경우 비추천수 증가
           this.post_goodbadProc.increase_badcnt(postno);
         }
       }
     } else {
       obj.put("cnt", "login_fail"); // cnt -> "login_fail"
     }
-    
+
     return obj.toString();
   }
-  
+
 }

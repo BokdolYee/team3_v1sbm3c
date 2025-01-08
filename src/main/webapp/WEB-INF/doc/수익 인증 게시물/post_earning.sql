@@ -42,6 +42,13 @@ CREATE SEQUENCE post_earning_seq
   
 SELECT * FROM post_earning ORDER BY postno DESC; -- 모든 행 조회
 
+SELECT * FROM USER_CONSTRAINTS  -- post_earning 이랑 얽혀 있는 테이블 조회
+WHERE R_CONSTRAINT_NAME IN (
+    SELECT CONSTRAINT_NAME 
+    FROM USER_CONSTRAINTS 
+    WHERE TABLE_NAME = 'POST_EARNING'
+);
+
 -- 작성된 글의 회원 닉네임을 조회하기 위한 JOIN(외래키인 memberno 이용)
 SELECT P.*, m.nickname
 FROM post_earning p INNER JOIN member m ON p.memberno = m.memberno

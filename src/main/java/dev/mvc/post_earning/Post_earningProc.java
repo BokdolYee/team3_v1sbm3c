@@ -28,11 +28,24 @@ public class Post_earningProc implements Post_earningProcInter{
     return cnt;
   }
   
+  /**
+   * 게시물 조회
+   */
   @Override
   public Post_earningVO read_join_nickname(int postno) {
     Post_earningVO post_earningVO = this.post_earningDAO.read_join_nickname(postno);
     
     return post_earningVO;
+  }
+  
+  /**
+   * 조회수 증가
+   */
+  @Override
+  public int increase_viewcnt(int postno) {
+    int cnt = this.post_earningDAO.increase_viewcnt(postno);
+    
+    return cnt;
   }
 
   /**

@@ -7,11 +7,11 @@
 
   <aside class="aside_right">
     <a href="javascript:location.reload();">새로고침</a>
-    <span class='menu_divide' >│</span>
+    <span th:if="${session.memberno != null}" class='menu_divide' >│</span>
     <a th:if="${session.memberno != null}" href="javascript:location.href='/post_earning/create'">글쓰기</a>
     <span class='menu_divide' >│</span>
     <a href="javascript:location.href='/post_earning/list_by_postno'">목록</a>
-    <span class='menu_divide' >│</span>
+    <span th:if="${session.memberno != null}" class='menu_divide' >│</span>
     <a th:if="${session.memberno != null}" href='/member/logout'>로그아웃</a>
   </aside> 
    

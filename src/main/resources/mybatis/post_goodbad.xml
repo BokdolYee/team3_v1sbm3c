@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.mvc.post_goodbad.Post_goodbadDAOInter">
+
+  <!-- 추천비추천 등록 -->
+  <insert id="create" parameterType="dev.mvc.post_goodbad.Post_goodbadVO">
+    INSERT INTO post_goodbad(goodbadno, goodbad, rdate, postno, memberno)
+    VALUES(post_goodbad_seq.nextval, #{goodbad}, sysdate , #{postno}, #{memberno})
+  </insert>
+  
+  <!-- 회원이 해당 게시물에 추천 or 비추천 했는지 조회 -->
+  <select id="check_cnt" resultType="int" parameterType="HashMap">
+    SELECT COUNT(goodbad)
+    FROM post_goodbad
+    WHERE postno = #{postno} AND memberno = #{memberno}
+  </select>
+  
+  <!-- 추천 혹은 비추천을 했으면 추천인지 비추천인지 조회 --> 
+  <select id="check_goodbad" resultType="String" parameterType="HashMap">
+    SELECT goodbad
+    FROM post_goodbad
+    WHERE postno = #{postno} AND memberno = #{memberno}
+  </select>
+
+  <!-- 추천 비추천 목록(검색 + 페이징, 테이블 3개 JOIN)(관리자만 확인)-->
+  <select id = "list_search_paging" parameterType="dev.mvc.dto.SearchDTO" resultType="dev.mvc.post_goodbad.Post_goodbadVO">
+    SELECT *
+    FROM(
+        SELECT a.*, ROWNUM rnum
+        FROM(
+            SELECT g.*, p.title, p.content, m.nickname
+            FROM post_goodbad g INNER JOIN post_earning p
+                                ON g.postno = p.postno
+                                INNER JOIN member m
+                                ON g.memberno = m.memberno
+            <where>
+              <if test="searchType != null and keyword != null">
+                <choose>
+                  <when test = "searchType == 'title'">
+                    AND p.title LIKE '%' || #{keyword} || '%'
+                  </when>
+                  <when test = "searchType == 'content'">
+                    AND p.content LIKE '%' || #{keyword} || '%'
+                  </when>
+                  <when test = "searchType == 'nickname'">
+                    AND m.nickname LIKE '%' || #{keyword} || '%'
+                  </when>
+                  <when test = "searchType == 'goodbad'">
+                    AND g.goodbad LIKE '%' || #{keyword} || '%'
+                  </when>
+                </choose>
+              </if>
+            </where>
+            ORDER BY g.goodbadno DESC
+          ) a
+          WHERE ROWNUM &lt;= #{size}
+        )
+        WHERE rnum &gt; #{offset}   
+  </select>
+  
+  <!-- 추천 비추천 검색된 수 -->
+  <select id="list_search_count" parameterType="dev.mvc.dto.SearchDTO" resultType="int">
+    SELECT COUNT(*)
+    FROM post_goodbad g INNER JOIN post_earning p
+                        ON g.postno = p.postno
+                        INNER JOIN  member m
+                        ON g.memberno = m.memberno
+      <where>
+        <if test="searchType != null and keyword != null">
+          <choose>
+            <when test = "searchType == 'title'">
+              AND p.title LIKE '%' || #{keyword} || '%'
+            </when>
+            <when test = "searchType == 'content'">
+              AND p.content LIKE '%' || #{keyword} || '%'
+            </when>
+            <when test = "searchType == 'nickname'">
+              AND m.nickname LIKE '%' || #{keyword} || '%'
+            </when>
+            <when test = "searchType == 'goodbad'">
+              AND LOWER(g.goodbad) LIKE '%' || LOWER(#{keyword}) || '%'
+            </when>
+          </choose>
+        </if>
+      </where>
+  </select>
+  
+  <!-- 추천수 증가 -->
+  <update id="increase_goodcnt" parameterType="int">
+    UPDATE post_earning
+    SET goodcnt = goodcnt + 1
+    WHERE postno = #{postno}
+  </update>
+  
+  <!-- 비추천수 증가 -->
+  <update id="increase_badcnt" parameterType="int">
+    UPDATE post_earning
+    SET badcnt = badcnt + 1
+    WHERE postno = #{postno}
+  </update>
+  
+</mapper>

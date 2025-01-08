@@ -17,6 +17,13 @@
     WHERE p.postno = #{postno}
   </select>
   
+  <!-- 조회수 증가 -->
+  <update id = "increase_viewcnt" parameterType="int">
+    UPDATE post_earning
+    SET viewcnt = viewcnt + 1
+    WHERE postno = #{postno}
+  </update>
+  
   <!-- 게시물 검색 목록 + 페이징 + memberno 이용 member 테이블과 JOIN 해서 닉네임 조회-->
   <select id="list_by_postno_search_paging" parameterType="dev.mvc.dto.SearchDTO" resultType="dev.mvc.post_earning.Post_earningVO">
     SELECT *

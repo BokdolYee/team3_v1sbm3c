@@ -8,19 +8,14 @@ import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.context.properties.bind.DefaultValue;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import dev.mvc.newscate.NewsCateProcInter;
@@ -30,6 +25,7 @@ import dev.mvc.stock.StockProcInter;
 import dev.mvc.stock.StockVO;
 import dev.mvc.member.MemberProcInter;
 import dev.mvc.news.NewsProcInter;
+import dev.mvc.contentsgood.ContentsGoodProcInter;
 import dev.mvc.news.NewsVO;
 import dev.mvc.tool.Tool;
 import dev.mvc.tool.Upload;
@@ -56,6 +52,10 @@ public class ContentsCont {
   @Autowired
   @Qualifier("dev.mvc.stock.StockProc") // @Component("dev.mvc.contents.ContentsProc")
   private StockProcInter stockProc;
+
+  @Autowired
+  @Qualifier("dev.mvc.contentsgood.ContentsGoodProc") // @Component("dev.mvc.contents.ContentsProc")
+  private ContentsGoodProcInter contentsgoodProc;
 
   public ContentsCont() {
     System.out.println("-> ContentsCont created.");

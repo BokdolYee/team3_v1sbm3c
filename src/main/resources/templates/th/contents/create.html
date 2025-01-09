@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속 -->
+<div layout:fragment="content">
+  <div class='title_line'>
+    <span th:text="${newscateVO.genre}" class="title_line_text"></span>
+    > <span th:text="${newscateVO.name}" class="title_line_text"></span>
+    > 글 등록
+  </div>
+  
+  <aside class="aside_right">
+    <a th:href="@{|./create?newscateno=${newscateVO.newscateno}|}">등록</a>
+    <span class='menu_divide'>│</span>
+    <a href="javascript:location.reload();">새로고침</a>
+    <span class='menu_divide'>│</span>
+    <a th:href="@{|./list_by_cateno?newscateno=${newscateVO.newscateno }&word=${word }&now_page=${now_page}|}">목록형</a>
+    <span class='menu_divide'>│</span>
+    <a th:href="@{|./list_by_cateno_grid?newscateno=${newscateVO.newscateno }&word=${word }&now_page=${now_page}|}">갤러리형</a>
+  </aside>
+  
+  <div class='menu_line'></div>
+  
+  <form name='frm' method='post' th:object="${contentsVO}" action='./create' enctype="multipart/form-data">
+    <input type="hidden" name="newscateno" th:value="${param.newscateno}">
+    
+    <div>
+      <label>제목</label>
+      <input type='text' name='title' required="required" autofocus="autofocus" class="form-control" style='width: 100%;'>
+    </div>
+    
+    <div>
+      <label>뉴스 선택</label>
+      <select name="newsno" id="newsSelect" class="form-control" required="required" style="width: 100%;">
+        <option value="">- 뉴스 선택 -</option>
+        <option th:each="news : ${newsList}" 
+                th:value="${news.newsno}" 
+                th:text="${news.newsno + ' : ' + (#strings.substring(news.impact, 0, 70))}">
+        </option>
+      </select>
+    </div>
+    
+    <div>
+      <label>종목 선택</label>
+      <select name="stockno" id="stockSelect" class="form-control" required="required" style="width: 100%;">
+        <option value="">- 종목 선택 -</option>
+        <option th:each="stock : ${stockList}" 
+                th:value="${stock.stockno}" 
+                th:text="${stock.symbol + ' : ' + stock.name}">
+        </option>
+      </select>
+    </div>
+    
+    <div>
+      <label>패스워드</label>
+      <input type='password' name='passwd' value='1234' required="required" class="form-control" style='width: 50%;'>
+    </div>
+    <div>
+       <label>이미지</label>
+       <input type='file' class="form-control" name='file1MF' id='file1MF' value='' placeholder="파일 선택">
+    </div> 
+    <div>
+      <label>게시 여부</label>
+      <select name="visible" class="form-control" style="width: 100%;">
+        <option value="Y">Y</option>
+        <option value="N">N</option>
+      </select>
+    </div>
+    
+    <div class="content_body_bottom">
+      <button type="submit" class="btn btn-secondary btn-sm">등록</button>
+      <button type="button" th:attr="onclick=|location.href='./list_by_cateno?newscateno=${newscateVO.newscateno }&word=${word }&now_page=${now_page}'|" class="btn btn-secondary btn-sm">목록</button>
+    </div>
+  </form>
+</div>
+</html>

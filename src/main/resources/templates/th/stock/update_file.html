@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  <div class='title_line'>
+    <span th:text="${stockVO.symbol }" class="title_line_text"></span > 
+    > <span th:text="${stockVO.name}" class="title_line_text"></span > 
+    > 파일 수정
+  </div>
+  
+  <aside class="aside_right">
+    <a th:href="@{|./create?stockno=${stockVO.stockno }|}">등록</a>
+    <span class='menu_divide' >│</span>
+    <a href="javascript:location.reload();">새로고침</a>
+    <span class='menu_divide' >│</span>
+    <a th:href="@{|/stock/list_all|}">목록</a>   
+  </aside>
+  
+  <div class='menu_line'></div>
+  
+  <fieldset class="fieldset_basic">
+    <ul>
+      <li class="li_none">
+        <div th:if="${stockVO.file1.endsWith('jpg') or stockVO.file1.endsWith('png')  or stockVO.file1.endsWith('gif')}"
+               style="text-align: center; width: 50%; float: left;">
+          <img th:src="@{|/contents/storage/${stockVO.file1saved}|}" style="width: 90%;">
+        </div>
+
+        <div th:if="${((stockVO.file1.endsWith('jpg') or stockVO.file1.endsWith('png')  or stockVO.file1.endsWith('gif')) == false) and (stockVO.size1 > 0)}"
+               class="display_table" style="float: left; width: 50%;">
+            <div class="display_table_cell">
+              <span th:text="${stockVO.file1}"></span>
+            </div>
+        </div>
+
+        <div th:if="${stockVO.size1 == 0}" style="text-align: center; width: 50%; float: left;">
+          <img src="/contents/images/none1.png" style="width: 90%;">
+        </div>
+  
+        <div style='text-align: left; width: 47%; float: left;'>
+          <span style='font-size: 1.5em;' th:text="${stockVO.name}"></span>
+          <br>
+          <form name='frm' method='POST' action='./update_file' enctype="multipart/form-data">
+            <input type="hidden" name="stockno" th:value="${stockVO.stockno }">
+            <input type="hidden" name="now_page" th:value="${now_page}">
+            <input type="hidden" name="search_word" th:value="${word}">
+                
+            <br><br> 
+            변경 이미지 선택<br>  
+            <input type='file' name='file1MF' id='file1MF' value='' placeholder="파일 선택"><br>
+            <br>
+            <div style='margin-top: 20px; clear: both;'>  
+              <button type="submit" class="btn btn-secondary btn-sm">파일 변경 처리</button>
+              <button type="submit" class="btn btn-secondary btn-sm">파일 삭제</button>
+              <button type="button" onclick="history.back();" class="btn btn-secondary btn-sm">취소</button>
+            </div>  
+          </form>
+        </div>
+      </li>
+    </ul>
+  </fieldset>  
+
+</div>
+
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속 -->
+<div layout:fragment="content">
+  <div class="title_line">설문조사 개별 문제 수정</div>
+  <aside class="aside_right">
+    <a th:href="@{|/surveytopic/create|}" style="color: black">등록</a>
+    <span class="menu_divide" style="color: black">|</span>
+    <a href="javascript: location.reload();" style="color: black">새로 고침</a>
+  </aside>
+
+  <div class="menu_line"></div>
+
+  <div style="width: 50%; margin: 0px auto;">  
+    <form name="frm" method="post" action="/surveytopic/update" th:object="${surveytopicVO}">
+      <input type="hidden" name="surveytopicno" th:value="${surveytopicVO.surveytopicno}"> <!-- /* 값 유지 */-->
+      <input type="hidden" name="surveyno" th:value="${surveytopicVO.surveyno}"> <!-- /* 값 유지 */-->
+      <div>
+        <label>설문조사 개별 문제 제목</label>
+        <input type="text" class="form-control" style="width: 50%;" th:field="*{title}" autofocus="autofocus">
+        <div th:if="${#fields.hasErrors('title')}" class="alert alert-danger" role="alert" style="margin-top: 5px;">
+          <div th:each="err: ${#lists.sort(#fields.errors('title'))}" th:text="${err}"></div>
+        </div>  
+      </div>
+      <div>
+        <label>출력 순서</label>
+        <input type="number" name="seqno" value="" autofocus="autofocus"
+               class="form-control" style="width: 100%;" th:field="*{seqno}">
+        <div th:if="${#fields.hasErrors('seqno')}" class="alert alert-danger" role="alert" style="margin-top: 5px;">
+          <div th:each="err: ${#lists.sort(#fields.errors('seqno'))}" th:text="${err}"></div>
+        </div>  
+      </div>      
+      <div class="content_body_bottom">
+        <!-- 저장 버튼 -->
+        <button type="submit" class="btn btn-secondary btn-sm">저장</button>
+        
+        <!-- 취소 버튼 -->
+        <button type="button" 
+                th:onclick="|location.href='/surveytopic/read?surveyno=' + ${surveytopicVO.surveyno}|" 
+                class="btn btn-secondary btn-sm">
+            취소
+        </button>
+    </div>
+    
+    </form>
+  </div>
+</div>
+</html>

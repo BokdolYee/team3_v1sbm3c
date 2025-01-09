@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  <div class="title_line">공지사항 조회</div>
+  <aside class="aside_right">
+    <span th:if="${isAdmin}" class="menu_divide">|</span>
+    <a th:if="${isAdmin}" th:href="@{|/issue/update/${issueVO.issueno}|}">수정</a>
+    <span th:if="${isAdmin}" class="menu_divide">|</span>
+    <a th:if="${isAdmin}" th:href="@{|/issue/delete/${issueVO.issueno}|}">삭제</a>
+    <span class="menu_divide">|</span>
+    <a th:href="@{/issue/list_search}">목록</a>
+    <span th:if="${isAdmin}" class="menu_divide">|</span>
+    <a th:if="${isAdmin}" th:href="@{|/issue/create|}">등록</a>
+    <span class="menu_divide">|</span>
+    <a href="javascript: location.reload();">새로 고침</a>
+  </aside>
+  
+  <div class="menu_line"></div>
+  
+  <div class="container mt-3" style="width: 60%; margin: 5px auto;"> <!--/* mt-3: margin top 16px */-->
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">제목: <span th:text="${issueVO.title}"></span></li>
+      <li class="list-group-item">내용: <span th:text="${issueVO.content}"></span></li>
+      <li class="list-group-item">긴급공지사항 설정: <span th:text="${issueVO.is_urgent}"></span></li>
+      <li class="list-group-item">등록일: <span th:text="${issueVO.rdate}"></span></li>
+      <li class="list-group-item">조회수: <span th:text="${issueVO.cnt}"></span></li>
+    </ul>  
+  </div>
+
+  <!-- list_search_com 부분 제거됨 -->
+</div>
+</html>

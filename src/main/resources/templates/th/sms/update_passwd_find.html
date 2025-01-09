@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속 -->
+<div layout:fragment="content" style="width: 80%; margin: 50px auto; text-align: center;">
+
+<script>
+
+  function send(event) {
+    event.preventDefault(); // 폼의 기본 제출 동작 방지
+
+    const passwd = document.getElementById('passwd');
+    const passwd_confirm = document.getElementById('passwd_confirm');
+    const url = '/sms/update_passwd_find?passwd=' + passwd.value;
+
+    if(!passwd.value || !passwd_confirm.value) {
+      alert('변경할 비밀번호 및 비밀번호 확인 모두 입력해 주세요.');
+    }
+
+    else {
+      if(passwd.value == passwd_confirm.value){
+        fetch(url, {
+          method: 'POST',
+        }).then(res => res.json())
+          .then(data => {
+            if(data.cnt = 1) {
+              alert('입력하신 비밀번호로 변경되었습니다.');
+              window.location.href='/member/login';
+            }
+            else {
+              alert('비밀번호 변경에 실패하였습니다.');
+            }
+          }).catch(error => { // 서버 다운 등 통신 에러
+            console.error('Error', error);
+          })
+      }
+      else if(passwd.value == null || passwd_confirm.value == null) {
+        alert('변경할 비밀번호 및 비밀번호 확인 모두 입력해 주세요.');
+        return false;
+      }
+      else {
+        alert('비밀번호가 다릅니다. 다시 확인해 주세요.')
+        return false;
+      }
+    }
+  }
+
+</script>
+  <div style='width: 50%; margin: 0px auto;'>
+    <div class='title_line' style="text-align: center;">비밀번호 변경</div>
+    <form name='frm' method='post' action="/sms/update_passwd_find">
+      <table style="width: 100%; background-color: #f8f9fa;">
+        <tr>
+          <td style="width: 30%; padding: 15px; text-align: center; background-color: #f1f3f5;">변경할 비밀번호</td>
+          <td style="padding: 10px; text-align: left;"><input type="password" id="passwd" name="passwd" required="required"
+              style="width: 200px; padding: 5px;"></td>
+        </tr>
+        <tr>
+          <td style="width: 30%; padding: 15px; text-align: center; background-color: #f1f3f5;">비밀번호 확인</td>
+          <td style="padding: 10px; text-align: left;"><input type="password" id="passwd_confirm" name="passwd_confirm"
+              required="required" style="width: 200px; padding: 5px;"></td>
+        </tr>
+      </table>
+      <div class="bottom_menu" id="btn_findORcancel" style="display: block;">
+        <input type="button" value="변경" onclick="send(event)" class="btn btn-secondary btn-sm">
+        <input type="button" value="취소" onclick="location.href='/member/login'" class="btn btn-secondary btn-sm">
+      </div>
+    </form>
+  </div>
+</div>
+
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  <div class="title_line">설문조사 개별 조회</div>
+  <aside class="aside_right">
+  
+    <a href="javascript: location.reload();" style ="color: black">새로 고침</a>
+  </aside>
+  
+
+  
+  <div class="menu_line"></div>
+  
+  <div class="container mt-3" style="width: 60%; margin: 5px auto;"> <!--/* mt-3: margin top 16px */-->
+  <form name="frm" method="post" value="" action="/surveytopic/delete" th:object="${surveytopicVO}">
+    <input type="hidden" name="surveytopicno" th:value="${surveytopicVO.surveytopicno}"> <!-- /* 값 유지 */-->
+    <input type="hidden" name="surveyno" th:value="${surveytopicVO.surveyno}"> <!-- /* 값 유지 */-->
+    <div class="msg_warning" >
+      설문조사 항목을 삭제하시겠습니까? 삭제하면 복구할 수 없습니다.<br>      
+    </div>
+    <div class="content_body_bottom" >
+      제목: <span th:text="${surveytopicVO.title}"></span>
+      <button type="submit" class="btn btn-secondary btn-sm">확인</button>
+    
+    <!-- 취소 버튼 -->
+    <button type="button" 
+            th:onclick="|location.href='/surveytopic/read?surveyno=' + ${surveytopicVO.surveyno}|" 
+            class="btn btn-secondary btn-sm">
+        취소
+    </button>
+
+    </div>
+    
+      
+    </form>  
+
+  
+    
+</div>
+</html>
+
+

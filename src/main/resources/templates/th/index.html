@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속 -->
+  <head>
+    <script>
+      // 긴급 공지사항 팝업을 여는 함수
+      function openUrgentNotice(url) {
+        let width = 500;
+        let height = 600;
+        let left = (window.screen.width - width) / 2+ 450;
+        let top = (window.screen.height - height) / 2;
+    
+        window.open(
+          url, 
+          "UrgentNotice", 
+          `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,resizable=no`
+        );
+      }
+    
+      // 페이지가 로드되면 긴급 공지사항이 있으면 자동으로 팝업을 띄운다.
+      window.onload = function() {
+        var urgentIssueUrl = "/issue/urgent";  // 수정된 부분: Thymeleaf 구문으로 수정
+        if (urgentIssueUrl && urgentIssueUrl !== '') {
+          openUrgentNotice(urgentIssueUrl);
+        } else {
+          console.log("urgentIssueUrl is empty or not passed correctly.");
+        }
+      };
+    </script>
+  </head>
+  <div layout:fragment="content" style="width: 80%; margin: 50px auto; text-align: center;">
+    <h1>시작 화면</h1><br>
+    <img src="/images/1main.jpg" style="width: 40%;"> <!-- /static/images/main.jpg -->
+  </div>
+</html>

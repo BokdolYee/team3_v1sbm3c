@@ -8,26 +8,25 @@ import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.context.properties.bind.DefaultValue;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import dev.mvc.newscate.NewsCateProcInter;
 import dev.mvc.newscate.NewsCateVO;
 import dev.mvc.newscate.NewsCateVOMenu;
+import dev.mvc.stock.StockProcInter;
+import dev.mvc.stock.StockVO;
 import dev.mvc.member.MemberProcInter;
-import dev.mvc.newscate.NewsCateProcInter;
+import dev.mvc.news.NewsProcInter;
+import dev.mvc.contentsgood.ContentsGoodProcInter;
+import dev.mvc.news.NewsVO;
 import dev.mvc.tool.Tool;
 import dev.mvc.tool.Upload;
 
@@ -43,8 +42,20 @@ public class ContentsCont {
   private NewsCateProcInter newscateProc;
 
   @Autowired
+  @Qualifier("dev.mvc.news.NewsProc")
+  private NewsProcInter newsProc;
+  
+  @Autowired
   @Qualifier("dev.mvc.contents.ContentsProc") // @Component("dev.mvc.contents.ContentsProc")
   private ContentsProcInter contentsProc;
+  
+  @Autowired
+  @Qualifier("dev.mvc.stock.StockProc") // @Component("dev.mvc.contents.ContentsProc")
+  private StockProcInter stockProc;
+
+  @Autowired
+  @Qualifier("dev.mvc.contentsgood.ContentsGoodProc") // @Component("dev.mvc.contents.ContentsProc")
+  private ContentsGoodProcInter contentsgoodProc;
 
   public ContentsCont() {
     System.out.println("-> ContentsCont created.");
@@ -65,109 +76,101 @@ public class ContentsCont {
     return url; // forward, /templates/...
   }
 
-  // 등록 폼, contents 테이블은 FK로 cateno를 사용함.
-  // http://localhost:9091/contents/create X
-  // http://localhost:9091/contents/create?cateno=1 // cateno 변수값을 보내는 목적
-  // http://localhost:9091/contents/create?cateno=2
-  // http://localhost:9091/contents/create?cateno=5
   @GetMapping(value = "/create")
   public String create(Model model, 
       @ModelAttribute("contentsVO") ContentsVO contentsVO, 
-      @RequestParam(name="newscateno", defaultValue="0") int newscateno) {
-    ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
-    model.addAttribute("menu", menu);
+      @ModelAttribute("newsVO") NewsVO newsVO,
+      @RequestParam(name = "newscateno", defaultValue = "1") int newscateno,
+      @RequestParam(name = "word", defaultValue = "") String word,
+      @RequestParam(name = "now_page", defaultValue = "1") int now_page,
+      @RequestParam(name = "newsno", defaultValue = "0") int newsno,
+      @RequestParam(name = "stockno", defaultValue = "0") int stockno) {
+      
+      // 뉴스 카테고리 메뉴
+      ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
+      model.addAttribute("menu", menu);
 
-    NewsCateVO newscateVO = this.newscateProc.read(newscateno); // 카테고리 정보를 출력하기위한 목적
-    model.addAttribute("newscateVO", newscateVO);
+      // 카테고리 정보 조회
+      NewsCateVO newscateVO = this.newscateProc.read(newscateno);
+      model.addAttribute("newscateVO", newscateVO);
 
-    return "/contents/create"; // /templates/contents/create.html
+      // 모든 뉴스 리스트 조회
+      ArrayList<NewsVO> newsList = this.newsProc.list();
+      model.addAttribute("newsList", newsList);
+
+      ArrayList<StockVO> stockList = this.stockProc.list();
+      model.addAttribute("stockList", stockList);
+      
+      model.addAttribute("word", word);
+      model.addAttribute("now_page", now_page);
+
+      return "/th/contents/create"; // /templates/th/contents/create.html
   }
 
+
   /**
-   * 등록 처리 http://localhost:9091/contents/create
+   * 등록 처리 
    * 
    * @return
    */
   @PostMapping(value = "/create")
   public String create(HttpServletRequest request, 
       HttpSession session, 
-      Model model, 
       @ModelAttribute("contentsVO") ContentsVO contentsVO,
+      @RequestParam(name="newscateno", defaultValue="0") int newscateno,
       RedirectAttributes ra) {
+    
+      contentsVO.setNewscateno(newscateno);
+    
+      if (memberProc.isAdmin(session)) { // 관리자로 로그인한 경우
+     // 파일 업로드 처리
+        String file1 = ""; // 원본 파일명 image
+        String file1saved = ""; // 저장된 파일명, image
+        String thumb1 = ""; // preview image
 
-    if (memberProc.isAdmin(session)) { // 관리자로 로그인한경우
-      // ------------------------------------------------------------------------------
-      // 파일 전송 코드 시작
-      // ------------------------------------------------------------------------------
-      String file1 = ""; // 원본 파일명 image
-      String file1saved = ""; // 저장된 파일명, image
-      String thumb1 = ""; // preview image
+        String upDir = Contents.getUploadDir(); // 파일을 업로드할 폴더 준비
+        MultipartFile mf = contentsVO.getFile1MF(); // 파일 처리
 
-      String upDir = Contents.getUploadDir(); // 파일을 업로드할 폴더 준비
-      // upDir = upDir + "/" + 한글을 제외한 카테고리 이름
-      System.out.println("-> upDir: " + upDir);
+        if (!mf.isEmpty()) { // 파일이 있는 경우
+          file1 = mf.getOriginalFilename(); // 원본 파일명
+          long size1 = mf.getSize(); // 파일 크기
 
-      // 전송 파일이 없어도 file1MF 객체가 생성됨.
-      // <input type='file' class="form-control" name='file1MF' id='file1MF'
-      // value='' placeholder="파일 선택">
-      MultipartFile mf = contentsVO.getFile1MF();
+          if (Tool.checkUploadFile(file1)) { // 업로드 가능한 파일인지 검사
+            file1saved = Upload.saveFileSpring(mf, upDir); // 파일 저장
+            if (Tool.isImage(file1saved)) { // 이미지인지 검사
+              thumb1 = Tool.preview(upDir, file1saved, 200, 150); // 썸네일 생성
+            }
 
-      file1 = mf.getOriginalFilename(); // 원본 파일명 산출, 01.jpg
-      System.out.println("-> 원본 파일명 산출 file1: " + file1);
-
-      long size1 = mf.getSize(); // 파일 크기
-      if (size1 > 0) { // 파일 크기 체크, 파일을 올리는 경우
-        if (Tool.checkUploadFile(file1) == true) { // 업로드 가능한 파일인지 검사
-          // 파일 저장 후 업로드된 파일명이 리턴됨, spring.jsp, spring_1.jpg, spring_2.jpg...
-          file1saved = Upload.saveFileSpring(mf, upDir);
-
-          if (Tool.isImage(file1saved)) { // 이미지인지 검사
-            // thumb 이미지 생성후 파일명 리턴됨, width: 200, height: 150
-            thumb1 = Tool.preview(upDir, file1saved, 200, 150);
+            // 파일 정보 설정
+            contentsVO.setFile1(file1);
+            contentsVO.setFile1saved(file1saved);
+            contentsVO.setThumb1(thumb1);
+            contentsVO.setSize1(size1);
+          } else {
+            ra.addFlashAttribute("code", "check_upload_file_fail"); // 업로드 실패
+            ra.addFlashAttribute("cnt", 0);
+            ra.addFlashAttribute("url", "/Contents/msg");
+            return "redirect:/Contents/msg";
           }
-
-          contentsVO.setFile1(file1); // 순수 원본 파일명
-          contentsVO.setFile1saved(file1saved); // 저장된 파일명(파일명 중복 처리)
-          contentsVO.setThumb1(thumb1); // 원본이미지 축소판
-          contentsVO.setSize1(size1); // 파일 크기
-
-        } else { // 전송 못하는 파일 형식
-          ra.addFlashAttribute("code", "check_upload_file_fail"); // 업로드 할 수 없는 파일
-          ra.addFlashAttribute("cnt", 0); // 업로드 실패
-          ra.addFlashAttribute("url", "/contents/msg"); // msg.html, redirect parameter 적용
-          return "redirect:/contents/msg"; // Post -> Get - param...
         }
-      } else { // 글만 등록하는 경우
-        System.out.println("-> 글만 등록");
+          // contents 테이블에 데이터 등록
+          int cnt = this.contentsProc.create(contentsVO);
+
+          if (cnt == 1) {
+              ra.addAttribute("newscateno", contentsVO.getNewscateno()); // controller -> controller
+              return "redirect:/contents/list_by_cateno";
+          } else {
+              ra.addFlashAttribute("code", "create_fail"); // DBMS 등록 실패
+              return "redirect:/contents/msg";
+          }
+      } else { // 관리자가 아닌 경우
+          return "redirect:/member/login_cookie_need";
       }
-
-      // ------------------------------------------------------------------------------
-      // 파일 전송 코드 종료
-      // ------------------------------------------------------------------------------
-
-      // Call By Reference: 메모리 공유, Hashcode 전달
-      int memberno = (int) session.getAttribute("memberno"); // memberno FK
-      contentsVO.setMemberno(memberno);
-      int cnt = this.contentsProc.create(contentsVO);
-
-      if (cnt == 1) {
-
-        ra.addAttribute("newscateno", contentsVO.getNewscateno()); // controller -> controller: O
-        return "redirect:/contents/list_by_cateno";
-
-      } else {
-        ra.addFlashAttribute("code", "create_fail"); // DBMS 등록 실패
-        ra.addFlashAttribute("cnt", 0); // 업로드 실패
-        ra.addFlashAttribute("url", "/contents/msg"); // msg.html, redirect parameter 적용
-        return "redirect:/contents/msg"; // Post -> Get - param...
-      }
-    } else { // 로그인 실패 한 경우
-      return "redirect:/member/login_cookie_need"; // /member/login_cookie_need.html
-    }
   }
 
+
   /**
-   * 전체 목록, 관리자만 사용 가능 http://localhost:9091/contents/list_all
+   * 전체 목록, 관리자만 사용 가능
    * 
    * @return
    */
@@ -181,7 +184,7 @@ public class ContentsCont {
       ArrayList<ContentsVO> list = this.contentsProc.list_all(); // 모든 목록
 
       model.addAttribute("list", list);
-      return "/contents/list_all";
+      return "/th/contents/list_all";
 
     } else {
       return "redirect:/member/login_cookie_need";
@@ -192,8 +195,7 @@ public class ContentsCont {
 
   /**
    * 유형 3
-   * 카테고리별 목록 + 검색 + 페이징 http://localhost:9091/contents/list_by_cateno?cateno=5
-   * http://localhost:9091/contents/list_by_cateno?cateno=6
+   * 카테고리별 목록 + 검색 + 페이징 
    * 
    * @return
    */
@@ -227,7 +229,7 @@ public class ContentsCont {
     model.addAttribute("word", word);
 
     int search_count = this.contentsProc.list_by_cateno_search_count(map);
-    String paging = this.contentsProc.pagingBox(newscateno, now_page, word, "/contents/list_by_cateno", search_count,
+    String paging = this.contentsProc.pagingBox(newscateno, now_page, word, "/th/contents/list_by_cateno", search_count,
         Contents.RECORD_PER_PAGE, Contents.PAGE_PER_BLOCK);
     model.addAttribute("paging", paging);
     model.addAttribute("now_page", now_page);
@@ -238,20 +240,18 @@ public class ContentsCont {
     int no = search_count - ((now_page - 1) * Contents.RECORD_PER_PAGE);
     model.addAttribute("no", no);
 
-    return "/contents/list_by_cateno_search_paging"; // /templates/contents/list_by_cateno_search_paging.html
+    return "/th/contents/list_by_cateno_search_paging"; // /templates/contents/list_by_cateno_search_paging.html
   }
 
   /**
    * 카테고리별 목록 + 검색 + 페이징 + Grid
-   * http://localhost:9091/contents/list_by_cateno?cateno=5
-   * http://localhost:9091/contents/list_by_cateno?cateno=6
    * 
    * @return
    */
   @GetMapping(value = "/list_by_cateno_grid")
   public String list_by_cateno_search_paging_grid(HttpSession session, 
       Model model, 
-      @RequestParam(name = "newscateno", defaultValue = "0") int newscateno,
+      @RequestParam(name = "newscateno", defaultValue = "1") int newscateno,
       @RequestParam(name = "word", defaultValue = "") String word,
       @RequestParam(name = "now_page", defaultValue = "1") int now_page) {
 
@@ -262,7 +262,7 @@ public class ContentsCont {
 
     NewsCateVO newscateVO = this.newscateProc.read(newscateno);
     model.addAttribute("newscateVO", newscateVO);
-
+    
     word = Tool.checkNull(word).trim();
 
     HashMap<String, Object> map = new HashMap<>();
@@ -277,7 +277,7 @@ public class ContentsCont {
     model.addAttribute("word", word);
 
     int search_count = this.contentsProc.list_by_cateno_search_count(map);
-    String paging = this.contentsProc.pagingBox(newscateno, now_page, word, "/contents/list_by_cateno_grid", search_count,
+    String paging = this.contentsProc.pagingBox(newscateno, now_page, word, "/th/contents/list_by_cateno_grid", search_count,
         Contents.RECORD_PER_PAGE, Contents.PAGE_PER_BLOCK);
     model.addAttribute("paging", paging);
     model.addAttribute("now_page", now_page);
@@ -289,92 +289,92 @@ public class ContentsCont {
     model.addAttribute("no", no);
 
     // /templates/contents/list_by_cateno_search_paging_grid.html
-    return "/contents/list_by_cateno_search_paging_grid";
+    return "/th/contents/list_by_cateno_search_paging_grid";
   }
 
   /**
-   * 조회 http://localhost:9091/contents/read?contentsno=17
+   * 조회 
    * 
    * @return
    */
   @GetMapping(value = "/read")
   public String read(Model model, 
-      @RequestParam(name="contentsno", defaultValue = "0") int contentsno, 
+      @RequestParam(name="contentno", defaultValue = "1") int contentno, 
       @RequestParam(name="word", defaultValue = "") String word, 
-      @RequestParam(name="now_page", defaultValue = "1") int now_page) {
+      @RequestParam(name="now_page", defaultValue = "1") int now_page,
+      @RequestParam(name = "newsno", defaultValue = "0") int newsno,
+      @RequestParam(name = "stockno", defaultValue = "1") int stockno) {
     
     ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
     model.addAttribute("menu", menu);
-
-    ContentsVO contentsVO = this.contentsProc.read(contentsno);
-
-//    String title = contentsVO.getTitle();
-//    String content = contentsVO.getContent();
-//    
-//    title = Tool.convertChar(title);  // 특수 문자 처리
-//    content = Tool.convertChar(content); 
-//    
-//    contentsVO.setTitle(title);
-//    contentsVO.setContent(content);  
-
-    long size1 = contentsVO.getSize1();
-    String size1_label = Tool.unit(size1);
-    contentsVO.setSize1_label(size1_label);
-
+    ArrayList<NewsVO> newsList = this.newsProc.list();
+    model.addAttribute("newsList", newsList);
+    ArrayList<StockVO> stockList = this.stockProc.list();
+    model.addAttribute("stockList", stockList);
+    
+    ContentsVO contentsVO = this.contentsProc.read(contentno);
+    
     model.addAttribute("contentsVO", contentsVO);
 
     NewsCateVO newscateVO = this.newscateProc.read(contentsVO.getNewscateno());
     model.addAttribute("newscateVO", newscateVO);
 
-    // 조회에서 화면 하단에 출력
-    // ArrayList<ReplyVO> reply_list = this.replyProc.list_contents(contentsno);
-    // mav.addObject("reply_list", reply_list);
-
+    NewsVO newsVO = this.newsProc.read(contentsVO.getNewsno());
+    model.addAttribute("newsVO", newsVO);
+    
+    StockVO stockVO = this.stockProc.read(contentsVO.getStockno());
+    model.addAttribute("stockVO", stockVO);
+    
+    long size1 = contentsVO.getSize1();
+    String size1_label = Tool.unit(size1);
+    contentsVO.setSize1_label(size1_label);
+    
     model.addAttribute("word", word);
     model.addAttribute("now_page", now_page);
 
-    return "/contents/read";
+    return "/th/contents/read";
   }
 
+
   /**
-   * 수정 폼 http:// localhost:9091/contents/update_text?contentsno=1
+   * 수정 폼 http:// localhost:9091/contents/update_text?contentno=1
    *
    */
   @GetMapping(value = "/update_text")
   public String update_text(HttpSession session, 
       Model model, 
-      @RequestParam(name="contentsno", defaultValue = "0") int contentsno, 
+      @RequestParam(name="contentno", defaultValue = "1") int contentno,
       RedirectAttributes ra, 
       @RequestParam(name="word", defaultValue = "") String word,
-      @RequestParam(name="now_page", defaultValue = "0") int now_page) {
+      @RequestParam(name="now_page", defaultValue = "0") int now_page,
+      @RequestParam(name = "newsno", defaultValue = "0") int newsno) {
     
     ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
     model.addAttribute("menu", menu);
-
+    
     model.addAttribute("word", word);
     model.addAttribute("now_page", now_page);
 
     if (this.memberProc.isAdmin(session)) { // 관리자로 로그인한경우
-      ContentsVO contentsVO = this.contentsProc.read(contentsno);
+      ContentsVO contentsVO = this.contentsProc.read(contentno);
       model.addAttribute("contentsVO", contentsVO);
 
       NewsCateVO newscateVO = this.newscateProc.read(contentsVO.getNewscateno());
       model.addAttribute("newscateVO", newscateVO);
 
-      return "/contents/update_text"; // /templates/contents/update_text.html
-      // String content = "장소:\n인원:\n준비물:\n비용:\n기타:\n";
-      // model.addAttribute("content", content);
+      NewsVO newsVO = this.newsProc.read(contentsVO.getNewsno());
+      model.addAttribute("newsVO", newsVO);
+      
+      return "/th/contents/update_text";
 
     } else {
-      // ra.addAttribute("url", "/member/login_cookie_need"); // /templates/member/login_cookie_need.html
-      // return "redirect:/contents/msg"; // @GetMapping(value = "/msg")
-      return "/member/login_cookie_need"; // /templates/member/login_cookie_need.html
+      return "/th/member/login_cookie_need"; // /templates/th/member/login_cookie_need.html
     }
 
   }
 
   /**
-   * 수정 처리 http://localhost:9091/contents/update_text?contentsno=1
+   * 수정 처리 http://localhost:9091/contents/update_text?contentno=1
    * 
    * @return
    */
@@ -391,14 +391,14 @@ public class ContentsCont {
 
     if (this.memberProc.isAdmin(session)) { // 관리자 로그인 확인
       HashMap<String, Object> map = new HashMap<String, Object>();
-      map.put("contentsno", contentsVO.getContentsno());
+      map.put("contentno", contentsVO.getContentno());
       map.put("passwd", contentsVO.getPasswd());
 
       if (this.contentsProc.password_check(map) == 1) { // 패스워드 일치
         this.contentsProc.update_text(contentsVO); // 글수정
 
         // mav 객체 이용
-        ra.addAttribute("contentsno", contentsVO.getContentsno());
+        ra.addAttribute("contentno", contentsVO.getContentno());
         ra.addAttribute("newscateno", contentsVO.getNewscateno());
         return "redirect:/contents/read"; // @GetMapping(value = "/read")
 
@@ -417,13 +417,13 @@ public class ContentsCont {
   }
 
   /**
-   * 파일 수정 폼 http://localhost:9091/contents/update_file?contentsno=1
+   * 파일 수정 폼 http://localhost:9091/contents/update_file?contentno=1
    * 
    * @return
    */
   @GetMapping(value = "/update_file")
   public String update_file(HttpSession session, Model model, 
-                                     @RequestParam(name="contentsno", defaultValue = "0") int contentsno,
+                                     @RequestParam(name="contentno", defaultValue = "0") int contentno,
                                      @RequestParam(name="word", defaultValue = "") String word, 
                                      @RequestParam(name="now_page", defaultValue = "1") int now_page) {
     ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
@@ -432,13 +432,16 @@ public class ContentsCont {
     model.addAttribute("word", word);
     model.addAttribute("now_page", now_page);
     
-    ContentsVO contentsVO = this.contentsProc.read(contentsno);
+    ContentsVO contentsVO = this.contentsProc.read(contentno);
     model.addAttribute("contentsVO", contentsVO);
 
     NewsCateVO newscateVO = this.newscateProc.read(contentsVO.getNewscateno());
     model.addAttribute("newscateVO", newscateVO);
+    
+    NewsVO newsVO = this.newsProc.read(contentsVO.getNewsno());
+    model.addAttribute("newsVO", newsVO);
 
-    return "/contents/update_file";
+    return "/th/contents/update_file";
 
   }
 
@@ -454,7 +457,7 @@ public class ContentsCont {
                                      @RequestParam(name="now_page", defaultValue = "1") int now_page) {
     if (this.memberProc.isAdmin(session)) {
       // 삭제할 파일 정보를 읽어옴, 기존에 등록된 레코드 저장용
-      ContentsVO contentsVO_old = contentsProc.read(contentsVO.getContentsno());
+      ContentsVO contentsVO_old = contentsProc.read(contentsVO.getContentno());
 
       // -------------------------------------------------------------------
       // 파일 삭제 시작
@@ -509,7 +512,7 @@ public class ContentsCont {
       // -------------------------------------------------------------------
 
       this.contentsProc.update_file(contentsVO); // Oracle 처리
-      ra.addAttribute ("contentsno", contentsVO.getContentsno());
+      ra.addAttribute ("contentno", contentsVO.getContentno());
       ra.addAttribute("newscateno", contentsVO.getNewscateno());
       ra.addAttribute("word", word);
       ra.addAttribute("now_page", now_page);
@@ -523,39 +526,48 @@ public class ContentsCont {
 
   /**
    * 파일 삭제 폼
-   * http://localhost:9091/contents/delete?contentsno=1
+   * http://localhost:9091/contents/delete?contentno=1
    * 
    * @return
    */
   @GetMapping(value = "/delete")
   public String delete(HttpSession session, Model model, RedirectAttributes ra,
       @RequestParam(name="newscateno", defaultValue = "0") int newscateno,
-      @RequestParam(name="contentsno", defaultValue = "0") int contentsno,
+      @RequestParam(name="contentno", defaultValue = "0") int contentno,
       @RequestParam(name="word", defaultValue = "") String word, 
-      @RequestParam(name="now_page", defaultValue = "1") int now_page) {
-    
-    if (this.memberProc.isAdmin(session)) { // 관리자로 로그인한경우
+      @RequestParam(name="now_page", defaultValue = "1") int now_page,
+      @RequestParam(name = "stockno", defaultValue = "0") int stockno) {
+
+    if (this.memberProc.isAdmin(session)) { // 관리자로 로그인한 경우
       model.addAttribute("newscateno", newscateno);
       model.addAttribute("word", word);
       model.addAttribute("now_page", now_page);
-      
+
       ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
       model.addAttribute("menu", menu);
-      
-      ContentsVO contentsVO = this.contentsProc.read(contentsno);
+      ArrayList<StockVO> stockList = this.stockProc.list();
+      model.addAttribute("stockList", stockList);
+
+      // 콘텐츠 정보 가져오기
+      ContentsVO contentsVO = this.contentsProc.read(contentno);
       model.addAttribute("contentsVO", contentsVO);
-      
+
+      // 뉴스 카테고리 정보 가져오기
       NewsCateVO newscateVO = this.newscateProc.read(contentsVO.getNewscateno());
       model.addAttribute("newscateVO", newscateVO);
-      
-      return "/contents/delete"; // forward
-      
+
+      // stockno로 StockVO 객체를 가져와서 초기화
+      StockVO stockVO = this.stockProc.read(contentsVO.getStockno());
+      model.addAttribute("stockVO", stockVO);
+      System.out.println(stockno);
+      return "/th/contents/delete"; // forward
+
     } else {
       ra.addAttribute("url", "/admin/login_cookie_need");
       return "redirect:/contents/msg"; 
     }
-
   }
+
   
   /**
    * 삭제 처리 http://localhost:9091/contents/delete
@@ -563,20 +575,23 @@ public class ContentsCont {
    * @return
    */
   @PostMapping(value = "/delete")
-  public String delete(RedirectAttributes ra,
+  public String delete(RedirectAttributes ra, Model model,
       @RequestParam(name="newscateno", defaultValue = "0") int newscateno,
-      @RequestParam(name="contentsno", defaultValue = "0") int contentsno,
+      @RequestParam(name="contentno", defaultValue = "0") int contentno,
       @RequestParam(name="word", defaultValue = "") String word, 
-      @RequestParam(name="now_page", defaultValue = "1") int now_page) {
+      @RequestParam(name="now_page", defaultValue = "1") int now_page,
+      @RequestParam(name="stockno", defaultValue = "0") int stockno) {
     
+    StockVO stockVO = this.stockProc.read(stockno);
+    model.addAttribute("stockVO", stockVO);
     // -------------------------------------------------------------------
     // 파일 삭제 시작
     // -------------------------------------------------------------------
     // 삭제할 파일 정보를 읽어옴.
-    ContentsVO contentsVO_read = contentsProc.read(contentsno);
+    ContentsVO ContentsVO_read = contentsProc.read(contentno);
         
-    String file1saved = contentsVO_read.getFile1saved();
-    String thumb1 = contentsVO_read.getThumb1();
+    String file1saved = ContentsVO_read.getFile1saved();
+    String thumb1 = ContentsVO_read.getThumb1();
     
     String uploadDir = Contents.getUploadDir();
     Tool.deleteFile(uploadDir, file1saved);  // 실제 저장된 파일삭제
@@ -584,15 +599,12 @@ public class ContentsCont {
     // -------------------------------------------------------------------
     // 파일 삭제 종료
     // -------------------------------------------------------------------
-        
-    this.contentsProc.delete(contentsno); // DBMS 글 삭제
-        
-    // -------------------------------------------------------------------------------------
-    // 마지막 페이지의 마지막 레코드 삭제시의 페이지 번호 -1 처리
-    // -------------------------------------------------------------------------------------    
-    // 마지막 페이지의 마지막 10번째 레코드를 삭제후
-    // 하나의 페이지가 3개의 레코드로 구성되는 경우 현재 9개의 레코드가 남아 있으면
-    // 페이지수를 4 -> 3으로 감소 시켜야함, 마지막 페이지의 마지막 레코드 삭제시 나머지는 0 발생
+    
+    this.contentsProc.delete(contentno); // DBMS 삭제
+    this.contentsProc.updateCntCount(contentno);
+    this.contentsProc.resetCnt(contentno);
+    this.contentsProc.updateCnt(contentno);
+    this.contentsProc.delete(contentno); // DBMS 글 삭제
     
     HashMap<String, Object> map = new HashMap<String, Object>();
     map.put("newscateno", newscateno);

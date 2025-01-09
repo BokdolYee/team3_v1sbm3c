@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속 -->
+<div layout:fragment="content" style="width: 80%; margin: 50px auto; text-align: center;">
+
+  <script>
+    function send(event) {
+      event.preventDefault(); // 폼의 기본 제출 동작 방지
+
+      const authNo = document.getElementById('inputAuthNo');
+      const url = '/sms/isAuth?inputAuthNo=' + authNo.value;
+
+      if(!authNo) {
+        alert("인증번호를 입력해주세요.");
+        return false;
+      }
+
+      fetch(url, {
+        method: 'GET',
+      }).then(res => res.json())
+        .then(data => {
+          if(data.result === 'success') {
+            alert('인증되었습니다.');
+            window.location.href = '/sms/update_passwd_find'; // 페이지 이동
+          } else {
+            alert('인증번호가 일치하지 않습니다.');
+            window.location.reload(); // 페이지 새로고침
+          }
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          alert('오류가 발생했습니다. 다시 시도해주세요.');
+        });
+
+    }
+  </script>
+
+  <form action="/sms/update_passwd_find" method="post">
+    입력하신 번호로 발송된 인증번호를 입력해주세요<br><br>
+    <input type='text' id="inputAuthNo" name='auth_no' size='15' autofocus="autofocus">
+    <input type='button' onclick="send(event)" class="btn btn-secondary btn-sm" value="인증 확인">
+  </form>
+
+</div>
+
+</html>

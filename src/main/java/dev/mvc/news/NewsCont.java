@@ -34,7 +34,7 @@ public class NewsCont {
 
         ArrayList<NewsVO> list = this.newsProc.list();
         model.addAttribute("list", list);
-        return "/news/list";
+        return "/th/news/list";
     }
     
     /**
@@ -49,10 +49,10 @@ public class NewsCont {
         NewsVO newsVO = newsProc.read(newsno);
         if (newsVO == null) {
             model.addAttribute("error", "뉴스를 찾을 수 없습니다.");
-            return "errorPage";  // errorPage.html로 이동
+            return "/th/errorPage";  // /th/errorPage.html로 이동
         }
         model.addAttribute("news", newsVO);
-        return "/news/detail";  // news/detail.html로 이동
+        return "/th/news/detail";  // /th/news/detail.html로 이동
     }
 
     @PostMapping("/analyze/{newsno}")
@@ -61,7 +61,7 @@ public class NewsCont {
         NewsVO newsVO = newsProc.read(newsno);
         if (newsVO == null) {
             model.addAttribute("error", "뉴스를 찾을 수 없습니다.");
-            return "error";  // error.html 페이지로 이동
+            return "/th/error";  // error.html 페이지로 이동
         }
 
         String text = newsVO.getText(); // 뉴스 본문
@@ -103,7 +103,7 @@ public class NewsCont {
             model.addAttribute("error", "API 호출 중 오류가 발생했습니다: " + e.getMessage());
         }
 
-        return "/news/analyze"; // 분석 결과 페이지로 이동
+        return "/th/news/analyze"; // 분석 결과 페이지로 이동
     }
 
     // JSON 디코딩 함수

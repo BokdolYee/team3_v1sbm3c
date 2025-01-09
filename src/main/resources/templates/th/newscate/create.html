@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  <div class="title_line">카테고리 등록</div>
+  
+  <aside class="aside_right">
+    <a href="javascript: location.reload();">새로 고침</a>
+  </aside>
+  
+  <!--/* '/cate/list_search_com.html' 파일의 list_search_fragment를 가져다 사용 */--> 
+  <div th:replace="~{th/newscate/list_search_com::list_search_fragment}"></div> 
+
+  <div class="menu_line"></div>
+    
+  <div style="width: 50%; margin: 0px auto;">  
+    <form name="frm" method="post" action="/newscate/create" th:object="${newscateVO}">
+      <div>
+        <label>카테고리 그룹/장르/분류</label>
+        <input type="text" name="genre" value="" autofocus="autofocus"
+               class="form-control" style="width: 50%;" th:field="*{genre}">
+        <div th:if="${#fields.hasErrors('genre')}" class="alert alert-danger" role="alert" style="margin-top: 5px;">
+          <div th:each="err: ${#lists.sort(#fields.errors('genre'))}" th:text="${err}"></div>
+        </div>  
+      </div>
+      <div>
+        <label>카테고리</label>
+        <input type="text" name="name" value="" autofocus="autofocus"
+               class="form-control" style="width: 100%;" th:field="*{name}">
+        <div th:if="${#fields.hasErrors('name')}" class="alert alert-danger" role="alert" style="margin-top: 5px;">
+          <div th:each="err: ${#lists.sort(#fields.errors('name'))}" th:text="${err}"></div>
+        </div>  
+      </div>
+      <div>
+        <label>출력 순서</label>
+        <input type="number" name="seqno" value="1" min="1" max="1000000" step="1"
+               class="form-control" style="width: 50%;" th:field="*{seqno}">        <div th:if="${#fields.hasErrors('seqno')}" class="alert alert-danger" role="alert" style="margin-top: 5px;">
+          <div th:each="err: ${#lists.sort(#fields.errors('seqno'))}" th:text="${err}"></div>
+        </div>  
+      </div>
+      <div>
+        <label>출력 모드(Y/N)</label>
+        <select id="visible" name="visible" class="form-control">
+          <option value="출력 모드" selected="selected">출력 모드</option>
+          <option value="Y">Y</option>
+          <option value="N">N</option>
+        </select>
+        <div th:if="${#fields.hasErrors('visible')}" class="alert alert-danger" role="alert" style="margin-top: 5px;">
+          <div th:each="err: ${#lists.sort(#fields.errors('visible'))}" th:text="${err}"></div>
+        </div>  
+      </div>
+      <div class="content_body_bottom">
+        <button type="submit" class="btn btn-secondary btn-sm">등록</button>
+        <button type="button" onclick="location.href='/newscate/list_search'" class="btn btn-secondary btn-sm">목록</button>
+      </div>
+      
+    </form>
+  <div>  
+</div>
+</html>
+

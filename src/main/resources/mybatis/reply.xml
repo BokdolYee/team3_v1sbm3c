@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dev.mvc.reply.ReplyDAOInter">
+  <!-- 등록한 레코드 갯수 1 리턴, #{memberno}: public int getAdminno() 호출됨 -->
+  <insert id="create" parameterType="dev.mvc.reply.ReplyVO">
+    INSERT INTO reply (replyno, content, rdate, contentno, memberno, parentreplyno, file1, file1saved, thumb1, size1)
+    VALUES (reply_seq.nextval, #{content}, sysdate, #{contentno}, #{memberno}, #{parentreplyno}, #{file1}, #{file1saved}, #{thumb1}, #{size1})
+  </insert>
+  
+  <!-- 일반적인 조회 -->
+  <select id="read" resultType="dev.mvc.reply.ReplyVO" parameterType="int">
+    SELECT replyno, content, rdate, contentno, memberno, parentreplyno, file1, file1saved, thumb1, size1
+    FROM reply
+    WHERE replyno = #{replyno}
+  </select>
+  
+  <!-- 최신글 500건 -->
+  <select id="list_by_contentno_join_500" resultType="dev.mvc.reply.ReplyVO" parameterType="int">
+    SELECT id, replyno, contentno, memberno, content, rdate
+    FROM (
+          SELECT m.id, 
+                 p.replyno, 
+                 p.contentno, 
+                 p.memberno, 
+                 p.content, 
+                 p.rdate,
+                 ROW_NUMBER() OVER (ORDER BY p.replyno DESC) AS r
+          FROM member m
+          JOIN reply p ON m.memberno = p.memberno
+          WHERE p.contentno = #{contentno}
+    )
+    WHERE r &lt;= 500
+  </select>
+
+  
+    <!-- 글 수정 -->
+  <update id="update" parameterType="dev.mvc.reply.ReplyVO">
+    UPDATE reply 
+    SET content=#{content}, rdate = sysdate
+    WHERE replyno = #{replyno} AND memberno = #{memberno}
+  </update>
+
+  <!-- 파일 수정 -->
+  <update id="update_file" parameterType="dev.mvc.reply.ReplyVO">
+    UPDATE reply
+    SET file1=#{file1}, file1saved=#{file1saved}, thumb1=#{thumb1}, size1=#{size1}
+    WHERE replyno = #{replyno}
+  </update>  
+
+  <!-- 글 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM reply
+    WHERE replyno=#{replyno}
+  </delete>
+  
+  <!-- 특정 콘텐츠의 댓글 목록 조회 (Member 정보 포함) -->
+  <select id="listByContentNoJoin" resultType="dev.mvc.reply.ReplyVO" parameterType="int">
+      SELECT r.replyno, r.content, r.rdate, r.contentno, r.memberno, r.parentreplyno, r.file1, r.file1saved, r.thumb1, r.size1, 
+             m.id AS member_id, m.name AS member_name
+      FROM reply r
+      JOIN member m ON m.memberno = r.memberno
+      WHERE r.contentno = #{contentno}
+      ORDER BY r.replyno DESC
+  </select>
+
+  
+</mapper>

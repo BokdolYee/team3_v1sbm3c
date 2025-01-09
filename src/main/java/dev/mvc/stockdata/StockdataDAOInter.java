@@ -1,6 +1,8 @@
 package dev.mvc.stockdata;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import dev.mvc.stock.StockVO;
 
@@ -18,4 +20,12 @@ public interface StockdataDAOInter {
     
     // stockno에 해당하는 StockVO를 조회하는 메서드 추가
     public StockVO readStock(int stockno); // 특정 종목 조회
+    
+    public Integer list_search_count(Map<String, Object> map);
+
+    public ArrayList<StockdataVO> listSearchPaging(Map<String, Object> map);
+    
+    public String getStockNameByStockno(Integer stockno);
+
+
 }

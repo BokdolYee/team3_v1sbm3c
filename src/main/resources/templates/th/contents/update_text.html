@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  <div class='title_line'>
+    <span th:text="${newscateVO.genre }" class="title_line_text"></span > 
+    > <span th:text="${newscateVO.name}" class="title_line_text"></span > 
+    > 제목 수정
+  </div>
+  
+  <aside class="aside_right">
+    <a th:href="@{|./create?newscateno=${newscateVO.newscateno }|}">등록</a>
+    <span class='menu_divide' >│</span>
+    <a href="javascript:location.reload();">새로고침</a>
+    <span class='menu_divide' >│</span>
+    <a th:href="@{|./list_by_cateno?newscateno=${newscateVO.newscateno}&word=${word }&now_page=${now_page}|}">기본 목록형</a>    
+    <span class='menu_divide' >│</span>
+    <a th:href="@{|./list_by_cateno_grid?cateno=${newscateVO.newscateno }|}">갤러리형</a>
+  </aside>
+  
+  <div class='menu_line'></div>
+  
+  <form name='frm' method='post' th:object="${contentsVO}" action='./update_text'>
+    <input type="hidden" name="newscateno" th:value="${newscateVO.newscateno }">
+    <input type="hidden" name="contentno" th:value="${contentsVO.contentno }">
+    <input type="hidden" name="now_page" th:value="${now_page}">
+    <input type="hidden" name="search_word" th:value="${word}">
+    
+    <div>
+       <label>제목</label>
+       <input type='text' name='title' th:value='${contentsVO.title}' required="required" 
+                 autofocus="autofocus" class="form-control" style='width: 100%;'>
+    </div>
+    <div>
+       <label>패스워드</label>
+       <input type='password' name='passwd' th:value='1234' required="required" 
+                 class="form-control" style='width: 50%;'>
+    </div>
+
+    <!-- 분석 및 요약 출력 추가 부분 -->
+    <ul>
+      <li class="li_none">
+        <div style="margin-top: 20px;">
+          <strong>분석:</strong><br>
+          <span th:text="${newsVO.impact}"></span>
+        </div>
+      </li>
+      
+      <li class="li_none">
+        <div style="margin-top: 20px;">
+          <strong>요약:</strong><br>
+          <span th:text="${newsVO.summary}"></span>
+        </div>
+      </li>
+    </ul>
+
+    <div class="content_body_bottom">
+      <button type="submit" class="btn btn-secondary btn-sm">저장</button>
+      <button type="button" th:attr="onclick=|location.href='./list_by_cateno_search_paging?newscateno=${newscateno}'|" class="btn btn-secondary btn-sm">목록</button>
+    </div>
+  
+  </form>
+
+</div>

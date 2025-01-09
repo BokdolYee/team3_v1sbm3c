@@ -1,6 +1,6 @@
 =\=\=\=\=\=\=
 <<<<<<<=HEAD
->>>>>>>=ca0d62dcf2fc66146f13c9d4ec56d25e1dbf266d
+>>>>>>>=2e113f09c2d96cce0fd0f9bf01ab5c7250b139e1
 arguments=
 auto.sync=false
 build.scans.enabled=false
@@ -12,10 +12,5 @@ java.home=
 jvm.arguments=
 offline.mode=false
 override.workspace.settings=false
-<<<<<<< HEAD
-show.console.view=true
-show.executions.view=true
-=======
 show.console.view=false
 show.executions.view=false
->>>>>>> 2e113f09c2d96cce0fd0f9bf01ab5c7250b139e1

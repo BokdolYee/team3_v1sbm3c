@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.mvc.post_earning.Post_earningDAOInter">
+
+  <!-- 게시물 등록 -->
+  <insert id="create" parameterType="dev.mvc.post_earning.Post_earningVO">
+    INSERT INTO post_earning(postno, memberno, viewcnt, replycnt, goodcnt, badcnt, title, content, rdate)
+    VALUES(post_earning_seq.nextval, #{memberno}, 0, 0, 0, 0, #{title}, #{content}, sysdate)
+  </insert>
+  
+  <!-- 게시물 조회 + memberno 이용 member 테이블과 JOIN 해서 닉네임 조회-->
+  <select id="read_join_nickname" parameterType="int" resultType="dev.mvc.post_earning.Post_earningVO">
+    SELECT p.*, m.nickname
+    FROM post_earning p INNER JOIN member m 
+    ON p.memberno = m.memberno
+    WHERE p.postno = #{postno}
+  </select>
+  
+  <!-- 조회수 증가 -->
+  <update id = "increase_viewcnt" parameterType="int">
+    UPDATE post_earning
+    SET viewcnt = viewcnt + 1
+    WHERE postno = #{postno}
+  </update>
+  
+  <!-- 게시물 검색 목록 + 페이징 + memberno 이용 member 테이블과 JOIN 해서 닉네임 조회-->
+  <select id="list_by_postno_search_paging" parameterType="dev.mvc.dto.SearchDTO" resultType="dev.mvc.post_earning.Post_earningVO">
+    SELECT *
+    FROM(
+        SELECT a.*, ROWNUM rnum
+        FROM(
+            SELECT p.*, m.nickname
+            FROM post_earning p
+            INNER JOIN member m
+            ON p.memberno = m.memberno
+            <where>
+              <if test="searchType != null and keyword != null">
+                <choose>
+                  <when test = "searchType == 'title'">
+                    AND p.title LIKE '%' || #{keyword} || '%'
+                  </when>
+                  <when test = "searchType == 'content'">
+                    AND p.content LIKE '%' || #{keyword} || '%'
+                  </when>
+                  <when test = "searchType == 'nickname'">
+                    AND m.nickname LIKE '%' || #{keyword} || '%'
+                  </when>
+                </choose>
+              </if>
+            </where>
+            ORDER BY p.postno DESC
+          ) a
+          WHERE ROWNUM &lt;= #{size}
+        )
+        WHERE rnum &gt; #{offset}
+  </select>
+  
+  <!-- 게시물 검색된 수 -->
+  <select id="list_by_postno_search_count" parameterType="dev.mvc.dto.SearchDTO" resultType="int">
+    SELECT COUNT(*)
+    FROM post_earning p
+    INNER JOIN member m
+    ON p.memberno = m.memberno
+      <where>
+        <if test="searchType != null and keyword != null">
+          <choose>
+            <when test = "searchType == 'title'">
+              AND p.title LIKE '%' || #{keyword} || '%'
+            </when>
+            <when test = "searchType == 'content'">
+              AND p.content LIKE '%' || #{keyword} || '%'
+            </when>
+            <when test = "searchType == 'nickname'">
+              AND m.nickname LIKE '%' || #{keyword} || '%'
+            </when>
+          </choose>
+        </if>
+      </where>
+  </select>
+  
+  <!-- 게시물 수정(제목, 글내용) -->
+  <update id="update_text" parameterType="dev.mvc.post_earning.Post_earningVO">
+    UPDATE post_earning
+    SET title=#{title}, content=#{content}
+    WHERE postno = #{postno}
+  </update>
+  
+  <!-- 게시물 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM post_earning
+    WHERE postno=#{postno}
+  </delete>
+  
+</mapper>

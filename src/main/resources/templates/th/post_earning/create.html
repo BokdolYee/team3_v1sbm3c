@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  <script>
+
+    function send(event) {
+      event.preventDefault();
+
+      const url = '/post_earning/create';
+      const formData = new FormData(document.getElementById('frm'));  // 폼 데이터 가져오기
+
+      fetch(url, {
+        method: 'POST',
+        body: formData, // 서버에 formData 전송
+      }).then(res => res.json())
+        .then(data => {
+          if (data.cnt === 1) {
+            alert('게시물이 등록되었습니다.');
+            window.location.href = "/post_earning/list_by_postno"; //"/post_earning/list_by_postno_search_paging"
+          }
+          else {
+            alert("게시물 등록에 실패하였습니다.");
+            return false;
+          }
+
+        }).catch(error => { // 서버 다운 등 통신 에러
+          console.error('Error', error);
+        })
+    }
+
+  </script>
+  <div class='title_line'>수익 인증글 등록</div>
+
+  <aside class="aside_right">
+    <a href="javascript:location.reload();">새로고침</a>
+    <span class='menu_divide'>│</span>
+    <a>기본 목록형</a>
+    <span class='menu_divide'>│</span>
+    <a>갤러리형</a>
+  </aside>
+
+  <div class='menu_line'></div>
+
+  <form name='frm' id="frm" method='post' th:object="${post_earningVO}" action='/post_earning/create'>
+    <!--enctype="multipart/form-data" -->
+    <div>
+      <label>제목</label>
+      <input type='text' name='title' value="엔비디아 숏 결과 떴냐??" required="required" autofocus="autofocus"
+        class="form-control" style='width: 100%;'>
+    </div>
+    <div>
+      <label>내용</label>
+      <textarea name='content' required="required" class="form-control" rows="12" style='width: 100%;'></textarea>
+    </div>
+    <div class="content_body_bottom">
+      <input type="button" value="등록" onclick="send(event)" class="btn btn-secondary btn-sm">
+      <button type="button" onclick="history.back();" class="btn btn-secondary btn-sm">취소</button>
+    </div>
+
+  </form>
+</div>
+
+</html>

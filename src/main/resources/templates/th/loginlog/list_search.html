@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+
+  <script>
+    function delete_log(loginlogno) {
+      if(confirm('해당 로그인 기록을 삭제하시겠습니까?')) {
+        // AJAX로 서버에 삭제 요청
+        fetch(`/loginlog/delete/${loginlogno}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+
+          }
+        })
+        .then(res => res.json())
+        .then(data => {
+          if(data.result === 'success') {
+            alert('해당 로그인 기록이 삭제되었습니다.');
+            location.reload(); // 페이지 새로고침
+          } else {
+            alert('삭제에 실패하였습니다.');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('삭제 중 오류가 발생하였습니다.');
+        });
+      }
+    }
+  </script>
+
+  <div class='title_line'>로그인 기록(관리자 전용)</div>
+
+  <aside class="aside_right">
+    <a href="javascript:location.reload();">새로고침</a>
+    <span class='menu_divide' >│</span> 
+    <a href='/member/logout'>로그아웃</a>
+  </aside> 
+   
+  <div class='menu_line'></div>
+       
+  <table class="table table-striped" style='width: 100%;'>
+    <colgroup>
+      <col style='width: 10%;'/>
+      <col style='width: 20%;'/>
+      <col style='width: 30%;'/>
+      <col style='width: 5%;'/>
+      <col style='width: 30%;'/>
+      <col style='width: 10%;'/>
+    </colgroup>
+    <tr>
+      <th class='th_bs'>로그인 번호</th>
+      <th class='th_bs'>아이디</th>
+      <th class='th_bs'>아이피 주소</th>
+      <th class='th_bs'>성공 여부</th>
+      <th class='th_bs'>로그인 날짜</th>
+      <th class='th_bs'>삭제</th>
+    </tr>
+   
+    <tr th:each="loginlogVO : ${list}">
+      <td class='td_basic' th:text="${loginlogVO.loginlogno}"></td>
+      <td class='td_basic' th:text="${loginlogVO.id}"></td>
+      <td class='td_basic' th:text="${loginlogVO.ip}"></td>
+      <td class='td_basic' th:text="${loginlogVO.result}"></td>
+      <td class='td_basic' th:text="${loginlogVO.ldate}"></td>
+      <td class='td_basic'><button type="button" th:onclick="delete_log([[${loginlogVO.loginlogno}]])"><img src='/member/images/x.png' title='삭제' class="icon" style="border: none; background-color: white;"></button></td>
+    </tr>
+  </table>
+  
+  <!-- 페이징 -->
+  <div class="pagination">
+    <!-- 검색 결과가 있을 때만 페이징 표시-->
+    <th:block th:if="${total > 0}">
+      <!-- 이전 페이지-->
+      <a th:if="${pageDTO.prev}" th:href="@{|/loginlog/list?page=${pageDTO.startPage - 1}&searchType=${searchDTO.searchType}&keyword=${searchDTO.keyword}|}">이전</a>
+      
+      <!-- 페이지 번호-->
+      <th:block th:each="num : ${#numbers.sequence(pageDTO.startPage, pageDTO.endPage)}">
+        <a th:href="@{|/loginlog/list?page=${num}&searchType=${searchDTO.searchType}&keyword=${searchDTO.keyword}|}"
+           th:class="${pageDTO.currentPage == num} ? 'active' : ''"
+           class="page-link"
+           th:text="${num}"></a>
+      </th:block>
+
+      <!-- 다음 페이지-->
+      <a th:if="${pageDTO.next}" th:href="@{|/loginlog/list?page=${pageDTO.endPage + 1}&searchType=${searchDTO.searchType}&keyword=${searchDTO.keyword}|}" class="page-link">다음</a>
+    </th:block>
+  </div>
+
+  <!-- 검색 결과가 없을 때 메시지 표시-->
+  <div th:if="${total == 0}" class="text-center mt-3">검색 결과가 존재하지 않습니다.</div>
+
+  <script>
+    function search() {
+      const searchType = document.getElementById('searchType').value;
+      const keyword = document.getElementById('keyword').value;
+        
+      if (keyword.trim() === '') {
+        alert('검색어를 입력해주세요');
+        return;
+      }
+        
+      location.href = `/loginlog/list?page=1&searchType=${searchType}&keyword=${keyword}`;
+    }
+    
+    // 엔터키 검색 기능
+    document.getElementById('keyword').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        search();
+      }
+    });
+  </script>
+
+  <div class='bottom_menu'>
+    <select id="searchType" th:value="${searchDTO.searchType}">
+      <option value="id">id</option>
+      <option value="ip">ip</option>
+      <option value="result">성공 여부</option>
+    </select>
+    <input type="text" id="keyword" th:value="${searchDTO.keyword}" placeholder="검색어를 입력하세요">
+    <button onclick="search()">검색</button>
+    <button th:onclick="|location.href='/loginlog/list'|">취소</button>
+  </div>
+
+</div>
+</html>

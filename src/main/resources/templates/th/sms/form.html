@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속 -->
+<div layout:fragment="content" style="width: 80%; margin: 50px auto; text-align: center;">
+  
+  <script>
+    let isAuth = false;
+
+    function btn_check() {
+      console.log('adsa');
+      let id = document.getElementById('id');
+      let rphone = document.getElementById('rphone');
+      let rphone_str = rphone.value.replace(/-/g, '');
+      let url = '/sms/isExist?id=' + id.value + '&rphone=' + rphone_str;
+      let button = document.getElementById('btn_check');
+      let exist_msg = document.getElementById('exist_msg');
+      const row = document.getElementById('isExist');
+
+      exist_msg.classList.remove('span_info');
+
+      fetch(url, {
+        method: 'GET',
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.cnt == 1) {// 입력한 아이디, 전화번호에 해당하는 회원이 존재할 경우
+            row.style.display = 'table-row';
+
+            document.getElementById('id').readOnly = true;
+            document.getElementById('rphone').readOnly = true;
+
+            exist_msg.classList.remove('span_warning');
+            exist_msg.innerHTML = "가입된 회원입니다."
+            exist_msg.classList.add('span_info');
+            isAuth = true;
+          }
+          else {  // 입력한 이름, 전화번호에 해당하는 회원이 존재하지 않을 경우
+            row.style.display = 'table-row';
+            exist_msg.innerHTML = "존재하지 않는 회원입니다."
+            exist_msg.classList.add('span_warning');
+          }
+        })
+        .catch(error => { // 서버 다운 등 통신 에러
+          console.error('Error: ', error);
+        });
+
+    }
+
+    function send(form) {
+      if(isAuth == false) {
+        alert('가입 유무가 인증돼야 다음 단계로 넘어갈 수 있습니다.');
+        return false;
+      }
+      else {
+        form.submit();
+      }
+    }
+
+  </script>
+  
+  <div style='width: 50%; margin: 0px auto;'>
+    <div class='title_line' style="text-align: center;">비밀번호 찾기</div>
+    <form name="smsForm" action="./proc" method="post">
+      <input type="hidden" name="action" value="go">
+      <input type="hidden" name="smsType" value="S"> <!-- 발송 타입 -->
+      <input type="hidden" name="subject" value=""> <!-- 장문(LMS)인 경우(한글30자이내) -->
+
+      <table style="width: 100%; background-color: #f8f9fa;">
+        <tr>
+          <td style="width: 30%; padding: 15px; text-align: center; background-color: #f1f3f5;">아이디</td>
+          <td style="padding: 10px; text-align: left;"><input type="text" id="id" name="id" placeholder="아이디(이메일)"
+              style="width: 200px; padding: 5px;"></td>
+        </tr>
+        <tr>
+          <td style="width: 30%; padding: 15px; text-align: center; background-color: #f1f3f5;">전화번호</td>
+          <td style="padding: 10px; text-align: left;">
+            <input type="text" id="rphone" name="rphone" placeholder="'-' 포함해서 입력해 주세요." style="width: 200px; padding: 5px;">
+            <button type="button" id='check' onclick="btn_check()"
+              style="padding: 5px 10px; background-color: #0066cc; color: white; border: none; margin-left: 10px;">가입 유무
+              확인</button>
+          </td>
+        </tr>
+        <tr id='isExist' style="display: none;">
+          <td style="width: 30%; padding: 15px; text-align: center; background-color: #f1f3f5;">가입 유무</td>
+          <td style="padding: 10px; text-align: left;"><span id="exist_msg" style="width: 200px; padding: 5px;"></span>
+        </tr>
+      </table>
+
+      <!-- 정상적으로 문자가 전송되고 나서 이동할 주소 -->
+      <input type="hidden" name="returnurl" maxlength="64" value="./proc_next" size="80">
+
+      <!-- 보내는 번호, SMS 서비스를 가입한 기업의 관리자 전화번호 -->
+      <input type="hidden" name="sphone1" value="010"> <!-- 전화번호 첫째자리 -->
+      <input type="hidden" name="sphone2" value="2722"> <!-- 전화번호 둘째자리 -->
+      <input type="hidden" name="sphone3" value="9751"> <!-- 전화번호 셋째자리 -->
+      <br>
+      <div class="bottom_menu" id="btn_findORcancel" style="display: block;">
+        <input type="button" value="전송" onclick="send(this.form)" class="btn btn-secondary btn-sm">
+        <input type="button" value="취소" onclick="history.back()" class="btn btn-secondary btn-sm">
+        <p style="margin-top: 10px;">이동 통신사 정책에 따라 발신번호와 수신번호가 같은 경우 발송되지 않습니다.</p>
+      </div>
+    </form>
+  </div>
+
+</html>

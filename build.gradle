@@ -40,6 +40,16 @@ dependencies {
    implementation group: 'org.json', name: 'json', version: '20240303'
    // https://mvnrepository.com/artifact/commons-codec/commons-codec
    implementation 'commons-codec:commons-codec:1.16.0'
+   //implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
+   implementation 'org.apache.tomcat.embed:tomcat-embed-jasper:10.1.14'
+   implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl:2.0.0'
+   // https://mvnrepository.com/artifact/com.sun.mail/javax.mail
+   implementation 'com.sun.mail:javax.mail:1.6.2'
+   // https://mvnrepository.com/artifact/javax.activation/activation
+   implementation 'javax.activation:activation:1.1.1'
+   
+   implementation 'jakarta.servlet:jakarta.servlet-api'
+   implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api' 
    
    // https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api
    implementation 'javax.servlet:javax.servlet-api:4.0.1'

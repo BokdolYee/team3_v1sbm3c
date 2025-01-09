@@ -104,7 +104,7 @@ public class MemberCont {
     ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
     model.addAttribute("menu", menu);
 
-    return "/member/create"; // /template/member/create.html
+    return "/th/member/create"; // /template/th/member/create.html
   }
 
   /**
@@ -137,32 +137,18 @@ public class MemberCont {
       model.addAttribute("cnt", 0);
     }
 
-    return "/index";
+    return "/th/index"; //   /templates/th/index.html
   }
 
-//  /**
-//   * 회원 목록(관리자만 접근 가능)
-//   * 
-//   * @param model
-//   * @param session
-//   * @return
-//   */
-//  @GetMapping(value = "/list")
-//  public String list(Model model, HttpSession session) {
-//    if (this.memberProc.isAdmin(session)) {
-//      ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
-//      model.addAttribute("menu", menu);
-//
-//      ArrayList<MemberVO> list = this.memberProc.list();
-//
-//      model.addAttribute("list", list);
-//
-//      return "/member/list"; // templates/member/list.html
-//    } else {
-//      return "redirect:/member/login_cookie_need"; // redirect
-//    }
-//  }
-
+  /**
+   * 회원 리스트(검색 + 페이징)
+   * @param model
+   * @param session
+   * @param page
+   * @param searchType
+   * @param keyword
+   * @return
+   */
   @GetMapping(value = "/list")
   public String list_search_paging(Model model, HttpSession session,
       @RequestParam(value = "page", defaultValue = "1") int page,
@@ -199,7 +185,7 @@ public class MemberCont {
       model.addAttribute("pageDTO", pageDTO);
       model.addAttribute("total", total);
 
-      return "/member/list_search";
+      return "/th/member/list_search";    // /templates/th/member/list_search.html
     } else {
       return "redirect:/member/login_cookie_need";
     }
@@ -234,7 +220,7 @@ public class MemberCont {
       MemberVO memberVO = this.memberProc.read(memberno);
       model.addAttribute("memberVO", memberVO);
 
-      return "/member/read"; // /templates/member/read
+      return "/th/member/read"; // /templates/th/member/read
     } else {
       return "redirect:/member/login_cookie_need";
     }
@@ -264,7 +250,7 @@ public class MemberCont {
       MemberVO memberVO = this.memberProc.read(memberno);
       model.addAttribute("memberVO", memberVO);
 
-      return "/member/update"; // templates/member/read.html
+      return "/th/member/update"; // templates/th/member/read.html
 
     } else if (this.memberProc.isAdmin(session) && memberno == (int) session.getAttribute("memberno")) { // 관리자 1~10
       System.out.println("-> admin memberno: " + memberno);
@@ -272,7 +258,7 @@ public class MemberCont {
 
       model.addAttribute("memberVO", memberVO);
 
-      return "/member/update"; // templates/member/update.html
+      return "/th/member/update"; // templates/member/update.html
     } else {
       return "redirect:/member/login_cookie_need"; // redirect
     }
@@ -293,7 +279,7 @@ public class MemberCont {
       @Validated(UpdateValidationGroup.class) @ModelAttribute("memberVO") MemberVO memberVO) {
     
     String nicknameSession = (String) session.getAttribute("nickname");
-
+    
     // 회원 본인일 때
     if (this.memberProc.isMember(session) && memberVO.getMemberno() == (int) session.getAttribute("memberno")) {
       int checkNICKNAME_cnt = this.memberProc.checkNICKNAME(memberVO.getNickname());
@@ -357,7 +343,7 @@ public class MemberCont {
         model.addAttribute("cnt", cnt);
         System.out.println("update_success_cnt: " + cnt);
       }
-      return "redirect:/member/read"; // templates/member/read.html
+      return "redirect:/member/read"; // templates/th/member/read.html
     } // 관리자 본인일 때
     else if (this.memberProc.isAdmin(session) && memberVO.getMemberno() == (int) session.getAttribute("memberno")) {
       int checkNICKNAME_cnt = this.memberProc.checkNICKNAME(memberVO.getNickname());
@@ -445,7 +431,7 @@ public class MemberCont {
 
       model.addAttribute("memberVO", memberVO);
 
-      return "member/update_passwd"; // /tamplates/member/pass_update.html
+      return "/th/member/update_passwd"; // /tamplates/th/member/pass_update.html
     } else if (this.memberProc.isAdmin(session)) {
       int memberno = (int) session.getAttribute("memberno"); // session에서 가져오기
 
@@ -453,7 +439,7 @@ public class MemberCont {
 
       model.addAttribute("memberVO", memberVO);
 
-      return "member/update_passwd"; // /tamplates/member/update_passwd.html
+      return "/th/member/update_passwd"; // /tamplates/th/member/update_passwd.html
     } else {
       return "redirect:/member/login_cookie_need";
     }
@@ -586,13 +572,13 @@ public class MemberCont {
       MemberVO memberVO = this.memberProc.read(memberno);
       model.addAttribute("memberVO", memberVO);
 
-      return "/member/withdraw";
+      return "/th/member/withdraw";
     } else if (this.memberProc.isAdmin(session)) {
       memberno = (int) session.getAttribute("memberno");
       MemberVO memberVO = this.memberProc.read(memberno);
       model.addAttribute("memberVO", memberVO);
 
-      return "/member/withdraw";
+      return "/th/member/withdraw";   // /templates/th/member/withdraw.html
     } else {
       return "redirect:/member/login_cookie_need"; // redirect
     }
@@ -607,7 +593,6 @@ public class MemberCont {
    */
   @PostMapping(value = "/withdraw")
   public String withdraw_process(HttpSession session, Model model, @ModelAttribute("memberVO") MemberVO memberVO) {
-    
     //회원 및 회원 본인일 경우
     if (this.memberProc.isMember(session) && memberVO.getMemberno() == (int) session.getAttribute("memberno")) {
       int cnt = this.memberProc.withdraw(memberVO);
@@ -623,7 +608,7 @@ public class MemberCont {
         return "redirect:/";
       } else {
         model.addAttribute("code", "withdraw_fail");
-        return "/member/error";
+        return "/th/member/error";      // /templates/th/member/error.html
       }
     }
     // 관리자 및 관리자 본인일 경우
@@ -641,7 +626,7 @@ public class MemberCont {
         return "redirect:/";
       } else {
         model.addAttribute("code", "withdraw_fail");
-        return "/member/error";
+        return "/th/member/error";      // /templates/th/member/error.html
       }
     } else {
       return "redirect:/member/login_cookie_need"; // redirect
@@ -677,25 +662,24 @@ public class MemberCont {
       for (int i = 0; i < cookies.length; i++) {
         cookie = cookies[i]; // 쿠키 객체 추출
 
-        if (cookie.getName().equals("ck_id")) { // 아이디
+        if (cookie.getName().equals("check_id")) { // 아이디
           check_id = cookie.getValue(); // email
-        } else if (cookie.getName().equals("ck_id_save")) { // 아이디 저장 여부
+        } else if (cookie.getName().equals("check_id_save")) { // 아이디 저장 여부
           check_id_save = cookie.getValue(); // Y, N
-        } else if (cookie.getName().equals("ck_passwd")) { // 비밀번호
+        } else if (cookie.getName().equals("check_passwd")) { // 비밀번호
           check_passwd = cookie.getValue(); // 1234
-        } else if (cookie.getName().equals("ck_passwd_save")) { // 비밀번호 저장 여부
+        } else if (cookie.getName().equals("check_passwd_save")) { // 비밀번호 저장 여부
           check_passwd_save = cookie.getValue(); // Y, N
         }
       }
     }
     // ----------------------------------------------------------------------------
-    model.addAttribute("ck_id", check_id);
-    model.addAttribute("ck_id_save", check_id_save);
+    model.addAttribute("check_id", check_id);
+    model.addAttribute("check_id_save", check_id_save);
+    model.addAttribute("check_passwd", check_passwd);
+    model.addAttribute("check_passwd_save", check_passwd_save);
 
-    model.addAttribute("ck_passwd", check_passwd);
-    model.addAttribute("ck_passwd_save", check_passwd_save);
-
-    return "/member/login_cookie"; // templates/member/login_cookie.html
+    return "/th/member/login_cookie"; // templates/th/member/login_cookie.html
   }
 
   /**
@@ -809,12 +793,12 @@ public class MemberCont {
       // -------------------------------------------------------------------
       // ----------------------------------------------------------------------------
 
-      return "/index";
+      return "/th/index";
     } else {  // 로그인 실패
       ra.addFlashAttribute("cnt", cnt); // 새로고침 시에도 cnt 값이 살아서 전달될 수 있도록 RedirectAttributes 클래스의 addFlashAttribute 함수 사용
       model.addAttribute("code", "login_fail");
       System.out.println("login_fail");
-      return "redirect:/member/login";
+      return "redirect:/member/login";    // redirect
     }
   }
 
@@ -859,14 +843,14 @@ public class MemberCont {
           check_id = cookie.getValue(); // email
         } else if (cookie.getName().equals("check_id_save")) {
           check_id_save = cookie.getValue(); // Y, N
-        } else if (cookie.getName().equals("ck_passwd")) {
+        } else if (cookie.getName().equals("check_passwd")) {
           check_passwd = cookie.getValue(); // 1234
         } else if (cookie.getName().equals("check_passwd_save")) {
           check_passwd_save = cookie.getValue(); // Y, N
         }
       }
     }
-
+    
     model.addAttribute("check_id", check_id);
 
     model.addAttribute("check_id_save", check_id_save);
@@ -874,6 +858,8 @@ public class MemberCont {
     model.addAttribute("check_passwd", check_passwd);
     model.addAttribute("check_passwd_save", check_passwd_save);
 
-    return "member/login_cookie_need"; // templates/member/login_cookie_need.html
+    return "/th/member/login_cookie_need"; // templates/th/member/login_cookie_need.html
   }
+  
+  
 }

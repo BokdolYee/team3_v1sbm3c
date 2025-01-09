@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
+
+<div layout:fragment="content">
+  <script>
+    window.onload = () => {
+      
+    }
+    
+    function send() { // 회원 탈퇴 처리
+      document.getElementById('frm').submit(); // required="required" 작동 안됨.
+    }    
+  </script>
+
+  <div class="title_line">회원 탈퇴> <span th:text="@{|${memberVO.nickname} (${memberVO.id})|}"></span></div>
+  <aside class="aside_right">
+    <a href="javascript:location.reload();">새로고침</a>
+    <span class='menu_divide' >│</span>
+    <a href='/member/read'>내 정보 보기</a>
+    <span class='menu_divide'>│</span>
+    <a href='/member/update_passwd'>비밀번호 변경</a>
+  </aside> 
+
+  <div class='menu_line'></div>
+  
+  <div style="width: 60%; margin: 0px auto ">
+    <form name="frm" id="frm" th:object="${memberVO}" method="post" action="/member/withdraw">
+      <input type="hidden" name="memberno" th:value="${memberVO.memberno}">
+      
+      <div class="msg_warning">회원 탈퇴 하시겠습까?</div>
+      <div style='text-align: center;'>회원 아이디: <span th:text="${memberVO.id}"></span></div>
+      <div style='text-align: center;'>회원 닉네임: <span th:text="${memberVO.nickname}"></span></div>
+      
+      <div class="content_body_bottom">
+        <button type="button" onclick="send();" class="btn btn-secondary btn-sm">삭제</button>
+        <button type="button" onclick="history.back();" class="btn btn-secondary btn-sm">취소</button>
+      </div>
+
+    </form>
+  </div>
+    
+</div>
+</html>
+

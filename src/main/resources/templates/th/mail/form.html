@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속 -->
+<div layout:fragment="content" style="width: 80%; margin: 50px auto; text-align: center;">
+  <script>
+    let isAuth = false;
+
+    function btn_check() {
+      let name = document.getElementById('name');
+      let tel = document.getElementById('tel');
+      let url = '/mail/isExist?name=' + name.value + '&tel=' + tel.value;
+      let button = document.getElementById('btn_check');
+      let exist_msg = document.getElementById('exist_msg');
+      const row = document.getElementById('isExist');
+      const inputEmail = document.getElementById('inputEmail')
+
+      exist_msg.classList.remove('span_info');
+
+      fetch(url, {
+        method: 'GET',
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.id) {// 입력한 이름, 전화번호에 해당하는 회원이 존재할 경우
+            row.style.display = 'table-row';
+
+            exist_msg.classList.remove('span_warning');
+            exist_msg.innerHTML = "가입된 회원입니다."
+            exist_msg.classList.add('span_info');
+            inputEmail.style.display = 'table-row';
+            isAuth = true;
+          }
+          else {  // 입력한 이름, 전화번호에 해당하는 회원이 존재하지 않을 경우
+            row.style.display = 'table-row';
+            exist_msg.innerHTML = "존재하지 않는 회원입니다."
+            exist_msg.classList.add('span_warning');
+          }
+        })
+        .catch(error => { // 서버 다운 등 통신 에러
+          console.error('Error: ', error);
+        });
+
+    }
+
+    function send(form) {
+      let findORcancel = document.getElementById('btn_findORcancel');
+      let loading = document.getElementById('btn_loading');
+
+      if(isAuth == false) {
+        alert('가입 유무가 인증돼야 아이디를 찾을 수 있습니다.');
+        return false;
+      }
+      else {
+        form.submit();
+        btn_findORcancel.style.display = 'none';
+        loading.style.display = 'block';
+      }
+    }
+
+  </script>
+  <div style='width: 50%; margin: 0px auto;'>
+    <div class='title_line' style="text-align: center;">아이디 찾기</div>
+    <form name='frm' method='post' action="/mail/send">
+      <table style="width: 100%; background-color: #f8f9fa;">
+        <tr>
+          <td style="width: 30%; padding: 15px; text-align: center; background-color: #f1f3f5;">이름</td>
+          <td style="padding: 10px; text-align: left;"><input type="text" id="name" name="name" placeholder="이름"
+              style="width: 200px; padding: 5px;"></td>
+        </tr>
+        <tr>
+          <td style="width: 30%; padding: 15px; text-align: center; background-color: #f1f3f5;">전화번호</td>
+          <td style="padding: 10px; text-align: left;">
+            <input type="text" id="tel" name="tel" placeholder="'-' 빼고 입력해 주세요." style="width: 200px; padding: 5px;">
+            <button type="button" id='check' onclick="btn_check()"
+              style="padding: 5px 10px; background-color: #0066cc; color: white; border: none; margin-left: 10px;">가입 유무
+              확인</button>
+          </td>
+        </tr>
+        <tr id='isExist' style="display: none;">
+          <td style="width: 30%; padding: 15px; text-align: center; background-color: #f1f3f5;">가입 유무</td>
+          <td style="padding: 10px; text-align: left;"><span id="exist_msg" style="width: 200px; padding: 5px;"></span>
+        </tr>
+        <tr id='inputEmail' style="display: none;">
+          <td style="width: 30%; padding: 15px; text-align: center; background-color: #f1f3f5;">수신할 이메일</td>
+          <td style="padding: 10px; text-align: left;"><input type="email" id="email" name="email" placeholder="이메일"
+              style="width: 200px; padding: 5px;"></td>
+        </tr>
+      </table>
+      <div class="bottom_menu" id="btn_findORcancel" style="display: block;">
+        <input type="button" value="찾기" onclick="send(this.form)" class="btn btn-secondary btn-sm">
+        <input type="button" value="취소" onclick="history.back()" class="btn btn-secondary btn-sm">
+      </div>
+      <div class="bottom_menu" id="btn_loading" style="display: none;">
+        <span>메일을 보내는 중입니다.</span><br>
+        <img src="/images/progress.gif" style="width: 7%;">
+      </div>
+    </form>
+  </div>
+</div>
+
+</html>

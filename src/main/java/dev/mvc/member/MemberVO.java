@@ -1,5 +1,6 @@
 package dev.mvc.member;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -31,7 +32,7 @@ public class MemberVO {
   private int memberno = 0;
   
   /** 아이디(이메일) */
-  @NotEmpty(message="아이디 입력은 필수입니다.")
+  @NotEmpty(message="아이디(이메일) 입력은 필수입니다.")
   private String id = "";
   
   /** 비밀번호 */

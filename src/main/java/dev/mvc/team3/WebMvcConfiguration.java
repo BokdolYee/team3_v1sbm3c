@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+
 import dev.mvc.contents.Contents;
 import dev.mvc.survey.Survey;
 import dev.mvc.tool.Tool;
@@ -22,7 +23,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer{
         registry.addResourceHandler("/survey/storage/**").addResourceLocations("file:///" +  Survey.getUploadDir());
         
         // C:/kd/deploy/resort/food/storage -> /food/storage -> http://localhost:9091/food/storage";
-        // registry.addResourceHandler("/food/storage/**").addResourceLocations("file:///" +  Food.getUploadDir());
+        registry.addResourceHandler("/contents/storage/**").addResourceLocations("file:///" +  Contents.getUploadDir());
         
         // C:/kd/deploy/resort/trip/storage -> /trip/storage -> http://localhost:9091/trip/storage";
         // registry.addResourceHandler("/trip/storage/**").addResourceLocations("file:///" +  Trip.getUploadDir());

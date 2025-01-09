@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
+
+<div layout:fragment="content">
+  
+  <div class="title_line">회원 정보> <span th:text="@{|${memberVO.name} (${memberVO.id})|}"></span></div>
+  <aside class="aside_right">
+    <a href="javascript:location.reload();">새로고침</a>
+    <span class='menu_divide' >│</span> 
+    <a href='/member/logout'>로그아웃</a>
+    <span class='menu_divide' th:if="${session.id == memberVO.id}">│</span> 
+    <a href='/member/update_passwd' th:if="${session.id == memberVO.id}">비밀번호 변경</a>
+    <span class='menu_divide' th:if="${session.id == memberVO.id}">│</span>
+    <a href="/member/withdraw" th:if="${session.id == memberVO.id}">회원 탈퇴</a>
+  </aside> 
+
+  <div class='menu_line'></div>
+  
+  <div style="width: 60%; margin: 0px auto ">
+    <form name="frm" id="frm" th:object="${memberVO}" method="get" action="/member/read">
+      <div class="form-group">
+        <label for="id">아이디(이메일)</label>
+        <input type="text" name="id" id="id" th:value="${memberVO.id}"
+               class="form-control form-control-sm" style="width: 30%;" readonly>  
+      </div>
+
+      <div class="form-group">
+        <label for="name">이름</label>
+        <input type='text' name='name' id='name' th:value="${memberVO.name}"
+               class="form-control form-control-sm" style="width: 30%;" readonly>
+      </div>
+      
+      <div class="form-group">
+        <label for="name">생년월일</label>
+        <input type='text' name='birth' id='birth' th:value="${#strings.substring(memberVO.birth,0,4)} + '-' + ${#strings.substring(memberVO.birth,4,6)} + '-' + ${#strings.substring(memberVO.birth,6,8)}"
+               class="form-control form-control-sm" style="width: 30%;" readonly>
+      </div>
+      
+      <div class="form-group">
+        <label for="tel">닉네임</label>
+        <input type='text' name='nickname' id='nickname' th:value="${memberVO.nickname}" 
+               class="form-control form-control-sm" style="width: 30%;" readonly>
+      </div>
+  
+      <div class="form-group">
+        <label for="tel">전화 번호</label>
+        <input type='text' name='tel' id='tel' th:value="${#strings.substring(memberVO.tel,0,3)} + '-' + ${#strings.substring(memberVO.tel,3,7)} + '-' + ${#strings.substring(memberVO.tel,7,11)}" 
+               class="form-control form-control-sm" style="width: 30%;" readonly>
+      </div>
+      
+      <div class="form-group">
+        <label for="tel">성별</label><br>
+        <input type='text' name='gender' id='gender' th:value="${memberVO.gender}" 
+               class="form-control form-control-sm" style="width: 30%;" readonly>
+      </div>
+      
+      <div class="form-group"> 
+        <label for="zipcode">우편 번호</label>
+        <input type='text' name='zipcode' id='zipcode' th:value="${memberVO.zipcode}"
+               class="form-control form-control-sm" style="width: 30%;" readonly>
+      </div>  
+  
+      <div class="form-group">
+        <label for="address" style="width: 100%;">상세 주소</label>
+        <input type='text' name='address' id='address' th:value="${memberVO.zipcode}"
+               class="form-control form-control-sm" raedonly>
+      </div>
+      
+      <div class="form-group">
+        <label for="replycnt">작성 댓글 수</label>
+        <input type='text' name='replycnt' id='replycnt' th:value="${memberVO.replycnt} + '개'"
+               class="form-control form-control-sm" raedonly>
+      </div>
+      
+      <div class="form-group">
+        <label for="replycnt">가입일</label>
+        <input type='text' name='rdate' id='rdate' th:value="${memberVO.rdate}"
+               class="form-control form-control-sm" raedonly>
+      </div>
+
+      <div class="content_body_bottom" th:if="${session.id == memberVO.id}">
+        <button type="button" onclick="location.href='/member/update';" class="btn btn-secondary btn-sm">회원정보 수정</button>
+        <button type="button" onclick="location.href='/member/update_passwd';" class="btn btn-secondary btn-sm">비밀번호 변경</button>
+      </div>
+
+      <div class="content_body_bottom" th:if="${session.grade == 'admin'}">
+        <button type="button" onclick="location.href='/member/list';" class="btn btn-secondary btn-sm">회원 목록</button>
+      </div>
+    </form>
+  </div>
+</div>
+</html>

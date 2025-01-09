@@ -71,27 +71,6 @@
         )
         WHERE rnum &gt; #{offset}
   </select>
-            
-  
-  <!-- 회원 검색 목록 + 페이징
-  <select id="list_search_paging" parameterType="dev.mvc.dto.SearchDTO" resultType="dev.mvc.member.MemberVO">
-    SELECT *
-    FROM member
-    <where>
-      <if test="searchType != null and keyword != null">
-        <choose>
-          <when test = "searchType == 'id'">
-            AND id LIKE '%' || #{keyword} || '%'
-          </when>
-          <when test = "searchType == 'nickname'">
-            AND nickname LIKE '%' || #{keyword} || '%'
-          </when>
-        </choose>
-      </if>
-    </where>
-    ORDER BY memberno DESC
-    OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
-  </select>-->
   
   <!-- 회원 검색된 수 -->
   <select id="list_search_count" parameterType="dev.mvc.dto.SearchDTO" resultType="int">
@@ -139,11 +118,32 @@
     WHERE memberno=#{memberno} AND passwd=#{passwd}
   </select>
   
-  <!-- 회원 정보 수정(passwd) -->
+  <!-- 회원 정보 수정(passwd) - 로그인 상태일 때-->
   <update id="update_passwd" parameterType="HashMap">
     UPDATE member
     SET passwd=#{passwd}
     WHERE memberno=#{memberno}
   </update>
+  
+  <!-- 비밀번호 변경 - 비밀번호 찾기에서 문자 인증을 성공했을 때-->
+  <update id="update_passwd_find" parameterType="HashMap">
+    UPDATE member
+    SET passwd=#{passwd}
+    WHERE id=#{id}
+  </update>
+  
+  <!-- 아이디 찾기 회원 정보 일치 검증(name, tel) -->
+  <select id="find_id_check" resultType="String" parameterType="HashMap">
+    SELECT id
+    FROM member
+    WHERE name=#{name} AND tel=#{tel}
+  </select>
+  
+  <!-- 비밀번호 찾기 회원 정보 일치 검증(id, rphone) -->
+  <select id="find_passwd_check" resultType="int" parameterType="HashMap">
+    SELECT COUNT(id) as cnt
+    FROM member
+    WHERE id=#{id} AND tel=#{rphone}
+  </select>
   
 </mapper>

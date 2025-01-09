@@ -570,3 +570,112 @@
     .pagination a:hover:not(.active) {
         background-color: #ddd;
     }
+
+
+    /* 수익 인증 게시물 내용 부분 css */
+    .post_content {
+      background: white;
+      /*border: 1px solid #e0e0e0; */
+      border-radius: 4px;
+      padding: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+  }
+  
+  .post_header {
+      margin-bottom: 20px;
+  }
+  
+  .post_title {
+      margin-bottom: 10px;
+  }
+  
+  .post_type {
+      color: #666;
+      margin-right: 10px;
+  }
+  
+  .post_title h1 {
+      display: inline;
+      font-size: 1.5em;
+      color: #333;
+  }
+  
+  .post_info {
+      color: #666;
+      font-size: 0.9em;
+  }
+  
+  .post_info span {
+      margin-right: 15px;
+  }
+  
+  .post_body {
+      min-height: 200px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+  }
+  
+  .chat_log {
+      /*background: #f8f8f8; */
+      /* border: 1px solid #ddd; */
+      padding: 15px;
+      border-radius: 4px;
+      margin: 10px 0;
+  }
+  
+  .chat_log p {
+      margin: 5px 0;
+  }
+  
+  .post_footer {
+      border-top: 1px solid #eee;
+      padding-top: 20px;
+      text-align: center;
+  }
+  
+  .vote_buttons {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+  }
+  
+  .vote_buttons button {
+      /*padding: 8px 20px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;*/
+      position: relative; /* 자식 요소 배치를 위한 기준점 설정 */
+      width: 80px;  /* 버튼 너비 축소 */
+      height: 80px; /* 버튼 높이 축소 */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: none;
+      cursor: pointer;
+  }
+
+  .vote_img {
+    width: 65px;
+    height: 65px;
+    object-fit: contain;  /* 이미지 비율 유지 */
+  }
+  
+  .vote_buttons button:hover {
+      background: #f5f5f5;
+  }
+  
+  /* 추천/비추천 숫자 스타일 */
+  .vote_buttons span {
+      /*font-weight: bold;*/
+      position: absolute;
+      bottom: 5px; /* 하단 여백 */
+      font-size: 12px; /* 텍스트 크기 */
+  }

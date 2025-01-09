@@ -1,0 +1,116 @@
+<div th:fragment="navbarFragment">
+  <div class="top_menu_img">
+    <div class="top_menu_label">HoaK</div>
+<<<<<<< HEAD:src/main/resources/templates/navbar.html
+=======
+    <div class="top_menu_label">NEWS HOAK</div>
+>>>>>>> 6a9a98d7b9108e0af0b2f4564001cee5458f399c:src/main/resources/templates/th/navbar.html
+  </div>
+  
+  <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">HOME</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+          
+        <!-- 메뉴 시작 -->
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item dropdown" th:each="newscateVOMenu:${menu}"> <!--/* 대분류 */-->
+                
+                    <!--/* 대분류명(카테고리 그룹) 출력, private String genre; */-->
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" 
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="${newscateVOMenu.genre}">                                                            
+                    </a>
+                    
+                    <!--/* 중분류명(카테고리) 출력, private ArrayList<CateVO> list_name; */-->
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <li th:each="newscateVO:${newscateVOMenu.list_name}">
+                            <a class="dropdown-item" th:href="@{|/contents/list_by_cateno?newscateno=${newscateVO.newscateno}|}" th:text="${newscateVO.name}">
+                            </a>
+                        </li>
+                        
+                    </ul>
+                    
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" 
+                        role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="종목">                                                            
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">    
+                    <li class="nav-item"><a class="nav-link" href="/stock/list_all">종목</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/stockdata/list_all">종목 데이터</a></li>
+                    </ul>
+
+                <li class="nav-item dropdown down-text" >
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="설문조사">                                                            
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <li class="nav-item"><a class="nav-link" th:href="@{|/survey/list_search|}">설문조사 목록</a></li>
+                        <li class="nav-item"><a class="nav-link"th:if="${session.grade=='admin' or session.grade=='member'}" th:href="@{|/survey/create|}">설문조사 등록</a></li>
+                        <li class="nav-item"><a class="nav-link"th:if="${session.grade=='admin' or session.grade=='member'}" th:href="@{|/surveytopic/list_search|}">설문조사 개별 문제 목록</a></li>
+                        <li class="nav-item"><a class="nav-link"th:if="${session.grade=='admin' or session.grade=='member'}" th:href="@{|/surveyitem/list_search|}">설문조사 항목 문제 목록</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{|/surveygood/list_all|}">설문조사 추천 목록</a></li>
+
+                    </ul>
+                </li>
+
+                <li class="nav-item"><a class="nav-link" th:href="@{|/issue/list|}">공지사항</a></li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" 
+                        role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="게시판">                                                            
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <li class="nav-item"><a class="nav-link" th:href="@{|/post_earning/list_by_postno|}">수익 인증</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" 
+                        role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="회원">                                                            
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <li class="nav-item" th:if="${session.memberno == null}">
+                          <a class="nav-link" th:href="@{|/member/create|}">회원 가입</a>
+                        </li>
+                        <li class="nav-item" th:if="${session.memberno != null}">
+                          <a class="nav-link" th:href="@{|/member/passwd_update|}">비밀번호 변경</a>
+                        </li>
+                        <li class="nav-item" th:if="${session.memberno != null}">
+                          <a class="nav-link" th:href="@{|/member/read|}">내 정보 보기</a>
+                        </li>
+                    </ul>
+                </li>
+                
+                <li class="nav-item dropdown" th:if="${session.grade=='admin'}">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="관리자">                                                            
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <li class="nav-item"><a class="nav-link" th:href="@{|/member/list|}">회원 목록</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{|/newscate/list_search?word=${word}|}">카테고리 목록</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/contents/list_all">전체 글 목록</a></li>
+                    </ul>
+                </li>
+ 
+                <li class="nav-item">
+                    <span th:if="${session.memberno == null}"><a class="nav-link" href="/member/login" th:text="@{|로그인|}"></a></span>
+                    <span th:if="${session.memberno != null}"><a class="nav-link" href="/member/logout">로그아웃</a></span>
+                </li>
+            </ul>
+            <div class="ms-auto" th:if="${session.memberno != null}">
+                <span class="navbar-text"> 
+                    <span class="text-primary fs-4" th:text="${session.nickname}"></span>님
+                </span> 환영합니다!
+            </div>
+        </div>
+        <!-- 메뉴 종료 -->
+    </div>  
+  </nav>
+</div>
+
+

@@ -180,5 +180,38 @@ public class MemberProc implements MemberProcInter {
     int cnt = this.memberDAO.update_passwd(map);
     return cnt;
   }
+
+  /**
+   * 비밀번호 찾기에서 sms 인증 성공 후 비밀번호 변경 처리
+   */
+  @Override
+  public int update_passwd_find(HashMap<String, String> map) {
+    String passwd = (String)map.get("passwd");
+    passwd = this.security.aesEncode(passwd);
+    map.put("passwd", passwd);
+    
+    int cnt = this.memberDAO.update_passwd_find(map);
+    return cnt;
+  }
+  
+  /**
+   * 아이디 찾기에서 입력받은 이름, 전화번호와 일치하는 회원이 존재하는지 검사
+   */
+  @Override
+  public String find_id_check(HashMap<String, String> map) {
+    String id = this.memberDAO.find_id_check(map);
+    
+    return id;
+  }
+
+  /**
+   * 비밀번호 찾기에서 입력받은 아이디, 전화번호와 일치하는 회원이 존재하는지 검사
+   */
+  @Override
+  public int find_passwd_check(HashMap<String, String> map) {
+    int cnt = this.memberDAO.find_passwd_check(map);
+    
+    return cnt;
+  }
  
 }

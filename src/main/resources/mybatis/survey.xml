@@ -3,13 +3,13 @@
 <mapper namespace="dev.mvc.survey.SurveyDAOInter"> 
   <!-- 등록 -->
   <insert id="create" parameterType="dev.mvc.survey.SurveyVO">
-    INSERT INTO survey(surveyno, topic, startdate, enddate, cnt, visible, file1, file1saved, thumb1, size1) 
-    VALUES(survey_seq.nextval, #{topic}, #{startdate}, #{enddate}, #{cnt}, #{visible},  #{file1}, #{file1saved}, #{thumb1}, #{size1})
+    INSERT INTO survey(surveyno, topic, startdate, enddate, cnt, visible, file1, file1saved, thumb1, size1,recom) 
+    VALUES(survey_seq.nextval, #{topic}, #{startdate}, #{enddate}, #{cnt}, #{visible},  #{file1}, #{file1saved}, #{thumb1}, #{size1} ,#{recom})
   </insert>
 
   <!-- 조회 -->
   <select id="read" resultType="dev.mvc.survey.SurveyVO" parameterType="Integer">
-    SELECT surveyno, topic, startdate, enddate, cnt, visible, file1, file1saved, thumb1, size1
+    SELECT surveyno, topic, startdate, enddate, cnt, visible, file1, file1saved, thumb1, size1,recom
     FROM survey
     WHERE surveyno=#{surveyno}
   </select>  
@@ -26,9 +26,13 @@
     DELETE FROM survey WHERE surveyno=#{surveyno}
   </delete>
 
+<delete id="deleteSurveygood" parameterType="int">
+    DELETE FROM surveygood WHERE surveyno=#{surveyno}
+  </delete>
+  
   <!-- 전체 목록 -->
   <select id="list_all" resultType="dev.mvc.survey.SurveyVO">
-    SELECT surveyno, topic, startdate, enddate, cnt, visible, file1, file1saved, thumb1, size1
+    SELECT surveyno, topic, startdate, enddate, cnt, visible, file1, file1saved, thumb1, size1,recom
     FROM survey 
     ORDER BY surveyno ASC
   </select>
@@ -56,7 +60,7 @@
 
   <!-- 검색 목록 -->
   <select id="list_search" resultType="dev.mvc.survey.SurveyVO" parameterType="String">
-    SELECT surveyno, topic, startdate, enddate, cnt, visible,  file1, file1saved, thumb1, size1
+    SELECT surveyno, topic, startdate, enddate, cnt, visible,  file1, file1saved, thumb1, size1,recom
     FROM survey
     <if test="word != null and word != ''">
       WHERE UPPER(topic) LIKE '%' || UPPER(#{word}) || '%'
@@ -68,11 +72,11 @@
 
   <!-- 페이징 -->
   <select id="list_paging" resultType="dev.mvc.survey.SurveyVO" parameterType="Map">
-    SELECT surveyno, topic, startdate, enddate, cnt, visible,  file1, file1saved, thumb1, size1, r
+    SELECT surveyno, topic, startdate, enddate, cnt, visible,  file1, file1saved, thumb1, size1,recom, r
     FROM (
-        SELECT surveyno, topic, startdate, enddate, cnt, visible,  file1, file1saved, thumb1, size1, rownum as r
+        SELECT surveyno, topic, startdate, enddate, cnt, visible,  file1, file1saved, thumb1, size1, recom, rownum as r
         FROM (
-            SELECT surveyno, topic, startdate, enddate, cnt, visible,  file1, file1saved, thumb1, size1
+            SELECT surveyno, topic, startdate, enddate, cnt, visible,  file1, file1saved, thumb1, size1, recom
             FROM survey
             ORDER BY startdate ASC
         )
@@ -83,11 +87,11 @@
 
   <!-- 검색 + 페이징 -->
   <select id="list_search_paging" resultType="dev.mvc.survey.SurveyVO" parameterType="Map">
-    SELECT surveyno, topic, startdate, enddate, cnt, visible,  file1, file1saved, thumb1, size1, r
+    SELECT surveyno, topic, startdate, enddate, cnt, visible,  file1, file1saved, thumb1, size1, recom, r
     FROM (
-        SELECT surveyno, topic, startdate, enddate, cnt, visible,  file1, file1saved, thumb1, size1, rownum as r
+        SELECT surveyno, topic, startdate, enddate, cnt, visible,  file1, file1saved, thumb1, size1, recom, rownum as r
         FROM (
-            SELECT surveyno, topic, startdate, enddate, cnt, visible,  file1, file1saved, thumb1, size1
+            SELECT surveyno, topic, startdate, enddate, cnt, visible,  file1, file1saved, thumb1, size1, recom
             FROM survey
             WHERE (UPPER(topic) LIKE '%' || UPPER(#{word}) || '%') OR (UPPER(surveyno) LIKE '%' || UPPER(#{word}) || '%')
             ORDER BY startdate ASC
@@ -101,6 +105,21 @@
      <update id="increaseCnt" parameterType="int">
         UPDATE survey
         SET cnt = cnt + 1
+        WHERE surveyno = #{surveyno}
+    </update>
+    
+    
+    <!-- 추천 수 증가 -->
+     <update id="increaseRecom" parameterType="int">
+        UPDATE survey
+        SET recom = recom + 1
+        WHERE surveyno = #{surveyno}
+    </update>
+    
+     <!-- 추천 수 감소 -->
+     <update id="decreaseRecom" parameterType="int">
+        UPDATE survey
+        SET recom = recom - 1
         WHERE surveyno = #{surveyno}
     </update>
     

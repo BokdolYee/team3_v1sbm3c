@@ -4,19 +4,19 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="dev.mvc.surveytopic.SurveytopicDAOInter"> 
   <insert id="create" parameterType="dev.mvc.surveytopic.SurveytopicVO">
-    INSERT INTO surveytopic(surveytopicno, surveyno, topic, seqno, file1, filesaved, filethumb, filesize) 
-    VALUES(surveytopic_seq.nextval, #{surveyno}, #{topic}, #{seqno}, #{file1}, #{filesaved}, #{filethumb}, #{filesize})
+    INSERT INTO surveytopic(surveytopicno, surveyno, title, seqno) 
+    VALUES(surveytopic_seq.nextval, #{surveyno}, #{title}, #{seqno})
   </insert>
   
   <select id="read" resultType="dev.mvc.surveytopic.SurveytopicVO" parameterType="Integer">
-    SELECT surveytopicno, surveyno, topic, seqno, file1, filesaved, filethumb, filesize
+    SELECT surveytopicno, surveyno, title, seqno
     FROM surveytopic
     WHERE surveytopicno=#{surveytopicno}
   </select>  
   
   <update id="update" parameterType="dev.mvc.surveytopic.SurveytopicVO">
     UPDATE surveytopic 
-    SET topic=#{topic}, seqno=#{seqno}
+    SET title=#{title}, seqno=#{seqno}
     WHERE surveytopicno=#{surveytopicno}
   </update> 
   
@@ -26,22 +26,76 @@
 
    <!-- 특정 설문조사에 대한 모든 개별 문제 조회 -->
    <select id="listBySurveyno" resultType="dev.mvc.surveytopic.SurveytopicVO" parameterType="int">
-       SELECT surveytopicno, surveyno, topic, seqno, file1, filesaved, filethumb, filesize
+       SELECT surveytopicno, surveyno, title, seqno
        FROM surveytopic
        WHERE surveyno = #{surveyno}
        ORDER BY seqno
    </select>
    
-    <!--우선 순위 높임, 10 등 -> 1 등-->
-    <update id="update_seqno_forward" parameterType="Integer">
-    Update surveytopic Set seqno=seqno-1
-    Where surveyno=#{surveyno}
-    </update>
+    <!-- 전체 목록 -->
+  <select id="list_all" resultType="dev.mvc.surveytopic.SurveytopicVO">
+    SELECT surveytopicno, surveyno, title, seqno
+    FROM surveytopic 
+    ORDER BY surveytopicno ASC
+  </select>
+  
+  
+  <!-- 검색 개수 -->
+  <select id="list_search_count" resultType="Integer" parameterType="String">
+    SELECT COUNT(*) as cnt
+    FROM surveytopic
+    <if test="word != null and word != ''">
+      WHERE UPPER(title) LIKE '%' || UPPER(#{word}) || '%'
+    </if>
+  </select>
+  
+  <!-- 검색 목록 -->
+  <select id="list_search" resultType="dev.mvc.surveytopic.SurveySurveytopicVO" parameterType="String">
+    SELECT surveytopicno, surveyno, title, seqno
+    FROM surveytopic
+    <if test="word != null and word != ''">
+      WHERE UPPER(topic) LIKE '%' || UPPER(#{word}) || '%'
+    </if>
+    ORDER BY seqno ASC
+  </select>
+  
+  <!-- 페이징 -->
+  <select id="list_paging" resultType="dev.mvc.surveytopic.SurveySurveytopicVO" parameterType="Map">
+    SELECT surveytopicno, surveyno, title, seqno, r
+    FROM (
+        SELECT surveytopicno, surveyno, title, seqno, rownum as r
+        FROM (
+            SELECT surveytopicno, surveyno, title, seqno
+            FROM surveytopic
+            ORDER BY seqno ASC
+        )
+        WHERE rownum &lt;= #{end_num}
+    )
+    WHERE r &gt;= #{start_num}
+  </select>
+  
+  <!-- 검색 + 페이징 -->
+  <select id="list_search_paging" resultType="dev.mvc.surveytopic.SurveySurveytopicVO" parameterType="Map">
+    SELECT surveytopicno, surveyno, title, seqno, r
+    FROM (
+        SELECT surveytopicno, surveyno, title, seqno, rownum as r
+        FROM (
+            SELECT surveytopicno, surveyno, title, seqno
+            FROM surveytopic
+            WHERE (UPPER(title) LIKE '%' || UPPER(#{word}) || '%') OR (UPPER(surveytopicno) LIKE '%' || UPPER(#{word}) || '%')
+            ORDER BY seqno ASC
+        )
+      
+    )
+    WHERE r &gt;= #{start_num}  AND r &lt;= #{end_num}  <!-- WHERE r >= 1 AND r <= 3 -->
+  </select>
     
-      <!--우선 순위 낮춤, 1 등 -> 10 등-->
-    <update id="update_seqno_backward" parameterType="Integer">
-    Update surveytopic Set seqno=seqno+1
-    Where surveyno=#{surveyno}
-    </update>
+    <select id="list_search_paging_join" resultType="dev.mvc.surveytopic.SurveySurveytopicVO">
+      SELECT r.surveytopicno, r.surveyno,c.topic , r.title, r.seqno
+      FROM survey c, surveytopic r
+      WHERE c.surveyno = r.surveyno
+      ORDER BY r.surveytopicno DESC
+    </select>
     
+  
 </mapper>

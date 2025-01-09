@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="dev.mvc.surveygood.SurveygoodDAOInter">
+      <!-- 등록 -->
+  <insert id="create" parameterType="dev.mvc.surveygood.SurveygoodVO">
+   INSERT INTO surveygood(surveygoodno, rdate, surveyno, memberno)
+  VALUES (surveygood_seq.nextval, sysdate, #{surveyno}, #{memberno})
+  </insert>
+  
+   <!-- 전체 목록 -->
+  <select id="list_all" resultType="dev.mvc.surveygood.SurveygoodVO">
+    SELECT surveygoodno, rdate, surveyno, memberno
+    FROM surveygood
+    ORDER BY surveygoodno DESC
+  </select>
+  
+  <!--삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM surveygood
+    WHERE surveygoodno = #{surveygoodno}
+  </delete>
+  
+   <!-- 특정 설문조사의 특정 회원 추천 갯수 산출 -->
+   <select id="hartCnt" resultType="int" parameterType='HashMap'>
+    SELECT COUNT(*) as cnt
+    FROM surveygood
+    WHERE surveyno=#{surveyno} AND memberno=#{memberno}
+  </select>
+  
+    <!-- 조회 -->
+  <select id="read" resultType="dev.mvc.surveygood.SurveygoodVO" parameterType="int">
+    SELECT surveygoodno, rdate, surveyno, memberno
+    FROM surveygood
+    WHERE surveygoodno=#{surveygoodno}
+  </select>  
+
+    <!--surveyno, memberno 조회 -->
+  <select id="readBySurveynoMemberno" 
+  resultType="dev.mvc.surveygood.SurveygoodVO" parameterType="HashMap">
+    SELECT surveygoodno, rdate, surveyno, memberno
+    FROM surveygood
+    WHERE surveyno=#{surveyno} AND memberno=#{memberno}
+  </select>  
+  
+  <!-- 테이블 3개 join -->
+   <select id="list_all_join" resultType="dev.mvc.surveygood.SurveySurveygoodMemberVO">
+    SELECT r.surveygoodno, r.rdate, r.surveyno, c.topic as c_topic, r.memberno, m.id, m.name
+    FROM survey c, surveygood r, member m
+    Where c.surveyno= r.surveyno AND r.memberno = m.memberno
+    ORDER BY surveygoodno DESC
+  </select>
+  
+
+</mapper> 

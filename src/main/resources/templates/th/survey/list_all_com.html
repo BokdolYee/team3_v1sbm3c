@@ -1,5 +1,7 @@
 <div th:fragment="list_all_fragment"> 
   <table class="table table-hover" style="width: 100%;">
+    
+    
     <colgroup>
       <col style='width: 10%;'/>
       <col style='width: 20%;'/>
@@ -8,7 +10,7 @@
       <col style='width: 10%;'/>
       <col style='width: 10%;'/>
       <col style='width: 10%;'/>
-      <col style='width: 15%;'/>
+      <col style='width: 20%;'/>
     </colgroup>
     <thead>
       <tr>
@@ -30,7 +32,7 @@
 
         <!-- 제목 -->
         <td class="td_bs">
-          <a th:href="@{|/survey/read/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}" style="display:block; color:black;" th:text="${surveyVO.topic}"></a>
+          <a th:href="@{|/surveytopic/read?surveyno=${surveyVO.surveyno}|}"  style="display:block; color:black;"  th:text="${surveyVO.topic}"></a>
         </td>
 
         <!-- 이미지 -->
@@ -46,13 +48,13 @@
 
         <!-- 시작 날 -->
         <td class="td_bs">
-          <a th:href="@{|/survey/read/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}" style="display:block; color:black;" th:text="${surveyVO.startdate}"></a>
+          <a th:href="@{|/surveytopic/read?surveyno=${surveyVO.surveyno}|}"  style="display:block; color:black;"  th:text="${surveyVO.startdate}"></a>
         </td>
 
         <!-- 종료 날 -->
         <td class="td_bs">
-          <a th:href="@{|/survey/read/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}" style="display:block; color:black;" th:text="${surveyVO.enddate}"></a>
-        </td>
+          <a th:href="@{|/surveytopic/read?surveyno=${surveyVO.surveyno}|}" style="display:block; color:black;" th:text="${surveyVO.enddate}"></a>
+          </td>
 
         <!-- 진행 여부 -->
         <td class="td_bs" style="text-align: center;">
@@ -70,7 +72,7 @@
 
         <!-- 조회 수 -->
         <td class="td_bs" style="text-align: center;">
-          <a th:href="@{|/survey/read/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}" style="display:block; color:black;" th:text="${surveyVO.cnt}"></a>
+          <a th:href="@{|/surveytopic/read/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}" style="display:block; color:black;" th:text="${surveyVO.cnt}"></a>
         </td> 
 
         <!-- 기타 -->
@@ -85,13 +87,18 @@
             <img src="/survey/images/create.png" class="icon" title="추가">
           </a>
           <a th:href="@{|/surveytopic/create?surveyno=${surveyVO.surveyno}|}"><img src="/survey/images/append.png" class="icon" title="추가"></a>
-
+        
+          
+          
           <li class="li_none" th:if="${surveyVO.size1 > 0}">
           <div>
             첨부 파일 : <a th:href="@{|/download?dir=survey/storage&filename=${surveyVO.file1saved}&downname=${surveyVO.file1}|}"
                          th:text="|${surveyVO.file1}|"></a>  
             <a th:href="@{|/download?dir=survey/storage&filename=${surveyVO.file1saved}&downname=${surveyVO.file1}|}">
               <img src="/survey/images/bottom.png"> 
+
+                
+            <span id="hart_panel"></span>
             </a>
           </div>
         </li>

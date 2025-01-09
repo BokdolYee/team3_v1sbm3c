@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속 -->
+<div layout:fragment="content">
+  <div class="title_line">설문조사 항목 수정</div>
+  <aside class="aside_right">
+    <a href="javascript: location.reload();" style="color: black">새로 고침</a>
+  </aside>
+
+  <div class="menu_line"></div>
+
+  <div style="width: 50%; margin: 0px auto;">  
+    <form name="frm" method="post" action="/surveyitem/update" th:object="${surveyitemVO}">
+      <input type="hidden" name="surveytopicno" th:value="${surveyitemVO.surveytopicno}"> <!-- /* 값 유지 */-->
+      <input type="hidden" name="surveyitemno" th:value="${surveyitemVO.surveyitemno}"> <!-- /* 값 유지 */-->
+      <div>
+        <label>항목</label>
+        <input type="text" class="form-control" style="width: 50%;" th:field="*{item}" autofocus="autofocus">
+        <div th:if="${#fields.hasErrors('item')}" class="alert alert-danger" role="alert" style="margin-top: 5px;">
+          <div th:each="err: ${#lists.sort(#fields.errors('item'))}" th:text="${err}"></div>
+        </div>  
+      </div>
+      <div>
+        <label>항목순서</label>
+        <input type="number" name="itemseq" value="" autofocus="autofocus"
+               class="form-control" style="width: 100%;" th:field="*{itemseq}">
+        <div th:if="${#fields.hasErrors('itemseq')}" class="alert alert-danger" role="alert" style="margin-top: 5px;">
+          <div th:each="err: ${#lists.sort(#fields.errors('itemseq'))}" th:text="${err}"></div>
+        </div>  
+      </div>
+      <div>
+        <label>선택인원 수</label>
+        <input type="number" name="itemcnt" value="" autofocus="autofocus"
+               class="form-control" style="width: 100%;" th:field="*{itemcnt}">
+        <div th:if="${#fields.hasErrors('itemcnt')}" class="alert alert-danger" role="alert" style="margin-top: 5px;">
+          <div th:each="err: ${#lists.sort(#fields.errors('itemcnt'))}" th:text="${err}"></div>
+        </div>  
+      </div>   
+      <div class="content_body_bottom">
+        <button type="submit" class="btn btn-secondary btn-sm">저장</button>
+        <button type="button" onclick="location.href='/survey/list_search'" class="btn btn-secondary btn-sm">취소</button>
+      </div>
+    </form>
+  </div>
+</div>
+</html>

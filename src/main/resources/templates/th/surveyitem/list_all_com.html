@@ -1,0 +1,53 @@
+<div th:fragment="list_all_fragment"> 
+  <table class="table table-hover" style="width: 100%; table-layout: fixed;">
+    <colgroup>
+      <col style="width: 10%;"/>
+      <col style="width: 30%;"/> <!-- 제목 열을 넓게 설정 -->
+      <col style="width: 25%;"/> <!-- 인원 수 열 크기 설정 -->
+      <col style="width: 25%;"/> <!-- 기타 열 크기 설정 -->
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="th_bs">순서</th>  
+        <th class="th_bs">설문조사 항목 번호</th>
+        <th class="th_bs">제목</th>
+        <th class="th_bs">인원 수</th>
+        <th class="th_bs">기타</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="surveyitemVO, status : ${list}">
+        <!-- 순서 -->
+        <td class="td_bs" style="text-align: center;" th:text="${status.index + 1}"></td>
+        
+        <!-- 설문조사 항목 번호 -->
+        <td class="td_bs" style="text-align: center;" th:text="${surveyitemVO.surveyitemno}"></td>
+        
+        <!-- 제목 -->
+        <td class="td_bs" style="text-align: center;">
+          <a th:href="@{|/surveyitem/read?surveytopicno=${surveyitemVO.surveytopicno}|}" style="color: black;" th:text="${surveyitemVO.item}"></a>
+        </td>
+        
+        <!-- 인원 수 -->
+        <td class="td_bs" style="text-align: center;" th:text="${surveyitemVO.itemcnt}">0</td>
+        
+        <!-- 기타 -->
+        <td class="td_bs" style="text-align: center;">
+          <a th:href="@{|/surveyitem/update?surveyitemno=${surveyitemVO.surveyitemno}&surveytopicno=${surveyitemVO.surveytopicno}|}">
+            <img src="/survey/images/update.png" class="icon" title="수정">
+          </a>
+          <a th:href="@{|/surveyitem/delete?surveyitemno=${surveyitemVO.surveyitemno}&surveytopicno=${surveyitemVO.surveytopicno}&word=${word}&now_page=${now_page}|}">
+            <img src="/survey/images/delete.png" class="icon" title="삭제" alt="삭제">
+          </a>
+          <!-- <a th:href="@{|/surveyitem/create?surveytopicno=${surveyitemVO.surveytopicno}|}">
+            <img src="/survey/images/create.png" class="icon" title="추가"> -->
+          </a>
+        </td>
+      </tr>
+    </tbody>
+    
+  </table>
+  
+  <!-- 페이지 버튼 목록 출력 -->
+  <div class="Bottom_menu" th:utext="${paging}"></div>
+</div>

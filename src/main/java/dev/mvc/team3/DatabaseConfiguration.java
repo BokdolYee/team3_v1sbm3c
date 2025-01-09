@@ -31,10 +31,15 @@ import com.zaxxer.hikari.HikariDataSource;
     "dev.mvc.surveyitem",
     "dev.mvc.surveytopic",
     "dev.mvc.loginlog",
+    "dev.mvc.surveygood",
     "dev.mvc.reply",
     "dev.mvc.post_earning",
     "dev.mvc.contentsgood",
-    "dev.mvc.post_goodbad"
+    "dev.mvc.post_goodbad",
+    "dev.mvc.calendar",
+    "dev.mvc.calendargood",
+    "dev.mvc.termbook"
+
 
 }) // DAO interface를 찾는 위치
 public class DatabaseConfiguration {

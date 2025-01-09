@@ -16,7 +16,8 @@ public class StockdataVO {
     private String volume;     // 거래량
     private String change;     // 변동률
     private Integer stockno;       // 종목 번호 (Foreign Key)
-
+    private String symbol;
+    
     private String stock_name;
     
     private StockVO stockVO;
@@ -33,7 +34,7 @@ public class StockdataVO {
     }
 
     // 매개변수 생성자
-    public StockdataVO(int sdatano, String rdate, float open_price, float close_price, String volume, String change, Integer stockno) {
+    public StockdataVO(int sdatano, String rdate, float open_price, float close_price, String volume, String change, Integer stockno, String symbol) {
         this.sdatano = sdatano;
         this.rdate = rdate;
         this.open_price = open_price;
@@ -41,6 +42,7 @@ public class StockdataVO {
         this.volume = volume;
         this.change = change;
         this.stockno = stockno;
+        this.symbol = symbol;
     }
 
     // Getter 및 Setter
@@ -99,6 +101,15 @@ public class StockdataVO {
     public void setStockno(Integer stockno) {
         this.stockno = stockno;
     }
+   
+
+    public String getSymbol() {
+        return symbol;
+    }
+    
+    public void setSymbol(String symbol) {
+      this.symbol = symbol;
+    }
 
     // toString() 메서드
     @Override
@@ -111,6 +122,7 @@ public class StockdataVO {
                 ", volume=" + volume +
                 ", change=" + change +
                 ", stockno=" + stockno +
+                ", symbol=" + symbol +
                 ", stock_name='" + stock_name + '\'' +
                 ", searchName='" + searchName + '\'' +
                 ", nowPage=" + nowPage +

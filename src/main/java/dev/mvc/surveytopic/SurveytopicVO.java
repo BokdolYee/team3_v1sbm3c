@@ -2,6 +2,7 @@ package dev.mvc.surveytopic;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import dev.mvc.survey.SurveyVO;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -22,23 +23,16 @@ public class SurveytopicVO {
   
   /** 제목 */
   @NotEmpty(message="제목은 필수")
-  @Size(min=2, max=200, message="제목은 최소 2자에서 최대 15자입니다.")
-  private String topic;
+  @Size(min=2, max=200, message="제목은 최소 2자에서 최대 30자입니다.")
+  private String title;
   /** 출력 순서 */
- 
+  @NotNull(message="출력순서 필수")
+  @Size(min=1, max=10, message="출력순서 필수")
   private String seqno;
-  /**  메인 이미지 */
-  private String file1 = "";
-  /** 실제 저장된 메인 이미지 */
-  private String filesaved = "";
-  /** 메인 이미지 preview */
-  private String filethumb = "";
-  /** 메인 이미지 크기 */
-  private long filesize = 0;
-  private MultipartFile file1MF = null;
   
-  
-  
+
+
+
 
 
 

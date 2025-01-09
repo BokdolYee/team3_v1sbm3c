@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  <div class="title_line">컨텐츠 추천</div>
+  <aside class="aside_right">
+    <a href="javascript: location.reload();">새로 고침</a>
+  </aside>
+  <div class="menu_line"></div>
+  
+  <!--/* '/contentsgood/list_all_com.html' 파일의 list_all_fragment를 가져다 사용 */--> 
+  <div th:replace="~{contentsgood/list_all_com::list_all_fragment}"></div> 
+  
+</div>
+</html>
+

@@ -6,7 +6,7 @@
   <!-- 등록한 레코드 갯수 1 리턴, #{memberno}: public int getAdminno() 호출됨 -->
   <insert id="create" parameterType="dev.mvc.contents.ContentsVO">
     INSERT INTO contents (contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, newscateno, recom, file1, file1saved, thumb1, size1)
-    VALUES (contents_seq.nextval, #{title}, #{passwd}, sysdate, #{cnt}, #{all_cnt}, #{visible}, #{stockno}, #{newsno}, #{recom}, #{newscateno}, #{file1}, #{file1saved}, #{thumb1}, #{size1})
+    VALUES (contents_seq.nextval, #{title}, #{passwd}, sysdate, #{cnt}, #{all_cnt}, #{visible}, #{stockno}, #{newsno}, #{newscateno}, #{recom}, #{file1}, #{file1saved}, #{thumb1}, #{size1})
   </insert>
 
 
@@ -120,6 +120,18 @@
     WHERE contentno=#{contentno}
   </delete>
   
+    <!-- 삭제 -->
+  <delete id="delete_contentsgood" parameterType="int">
+    DELETE FROM contentsgood
+    WHERE contentno = #{contentno}
+  </delete>
+  
+      <!-- 삭제 -->
+  <delete id="delete_reply" parameterType="int">
+    DELETE FROM reply
+    WHERE contentno = #{contentno}
+  </delete>
+  
   <!-- FK newcateno 컬럼에 대응하는 필수 SQL -->
   <!-- 특정 카테고리에 속한 레코드 갯수를 리턴 -->
   <select id="count_by_cateno" resultType="int" parameterType="int">
@@ -195,5 +207,19 @@
           WHERE newscateno = #{newscateno}
       ) AND name = '--'
   </update>
+  
+     <!-- 추천 수 증가 -->
+   <update id="increaseRecom" parameterType="int">
+     UPDATE contents
+     SET recom = recom + 1
+     WHERE contentno = #{contentno}
+   </update>
+      
+   <!-- 추천 수 감소 -->
+   <update id="decreaseRecom" parameterType="int">
+     UPDATE contents
+     SET recom = recom - 1
+     WHERE contentno = #{contentno}
+   </update>
 </mapper> 
 

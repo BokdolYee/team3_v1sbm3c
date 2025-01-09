@@ -20,7 +20,13 @@
   <form name="frm" method="post" th:object="${stockdataVO}" th:action="@{/stockdata/create}">
   
       <!-- Stockno를 hidden으로 포함 -->
+      <label for="stockno">종목번호</label>
       <input type="numer" id="stockno" name="stockno" th:value="${stockdataVO.stockno}" required="required" class="form-control" style="width: 100%;">
+       
+       <div>
+          <label for="symbol">종목코드</label>
+          <input type="text" id="symbol" name="symbol" th:value="${stockdataVO.symbol}" required="required" class="form-control" style="width: 100%;">
+      </div>
        
       <div>
           <label for="open_price">시가</label>

@@ -2,15 +2,10 @@
 
 <html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
 <div layout:fragment="content">
-  <div class="title_line">설문조사</div>
+  <div class="title_line">설문조사 개별 문제 등록</div>
   
   <aside class="aside_right">
-    <a th:href="@{|/surveytopic/update/${surveytopicVO.surveytopicno}|}" style ="color: black">수정</a>
-    <span class="menu_divide">|</span>
-    <a th:href="@{|/surveytopic/delete/${surveytopicVO.surveytopicno}|}" style ="color: black">삭제</a>
-    <span class="menu_divide">|</span>
-    <a th:href="@{|/surveytopic/read|}" style ="color: black">등록</a>
-    <span class="menu_divide" style ="color: black">|</span>
+    
     <a href="javascript: location.reload();" style ="color: black">새로 고침</a>
   </aside>
   
@@ -21,13 +16,14 @@
   <div style="width: 50%; margin: 0px auto;">  
     <form name="frm" method="post" action="./create" th:object="${surveytopicVO}" enctype="multipart/form-data">
         <input type="hidden" name="surveyno" th:field="*{surveyno}"/>
+        <input type="hidden" th:field="*{surveytopicno}"/> <!-- 설문 개별문제 번호 -->
 
       <div>
         <label>제목</label>
-        <input type="text" name="topic" value="" autofocus="autofocus"
-               class="form-control" style="width: 50%;" th:field="*{topic}">
-        <div th:if="${#fields.hasErrors('topic')}" class="alert alert-danger" role="alert" style="margin-top: 5px;">
-          <div th:each="err: ${#lists.sort(#fields.errors('topic'))}" th:text="${err}"></div>
+        <input type="text" name="title" value="" autofocus="autofocus"
+               class="form-control" style="width: 50%;" th:field="*{title}">
+        <div th:if="${#fields.hasErrors('title')}" class="alert alert-danger" role="alert" style="margin-top: 5px;">
+          <div th:each="err: ${#lists.sort(#fields.errors('title'))}" th:text="${err}"></div>
         </div>  
       </div>
       <div>
@@ -37,16 +33,13 @@
         <div th:if="${#fields.hasErrors('seqno')}" class="alert alert-danger" role="alert" style="margin-top: 5px;">
           <div th:each="err: ${#lists.sort(#fields.errors('seqno'))}" th:text="${err}"></div>
         </div>  
-        
-        <div>
-          <label>이미지</label>
-          <input type='file' class="form-control" name='file1MF' id='file1MF' value='' placeholder="파일 선택">
-        </div>
+      </div>      
 
       <div class="content_body_bottom">
         <button type="submit" class="btn btn-secondary btn-sm">완료</button>
         <button type="button" onclick="location.href='/survey/list_search'" class="btn btn-secondary btn-sm">목록</button>
       </div>
+       
       
     </form>
   <div>  

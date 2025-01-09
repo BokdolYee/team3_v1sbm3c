@@ -1,0 +1,51 @@
+<div th:fragment="list_all_fragment"> 
+  <table class="table table-hover" style="width: 100%;">
+    <colgroup>
+      <col style='width: 10%;'/>
+      <col style='width: 10%;'/>
+      <col style='width: 40%;'/> <!-- 제목 열의 너비를 늘림 -->
+      <col style='width: 10%;'/>
+      <col style='width: 5%;'/>
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="th_bs">순서</th>
+        <th class="th_bs">설문조사 번호</th>
+        <th class="th_bs">제목</th>        
+        <th class="th_bs">출력 순서</th>
+        <th class="th_bs">기타</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="surveytopicVO, status : ${list}">
+        <td class="td_bs" th:text="${status.index + 1}"></td>
+
+        <td class="td_bs">
+          <a th:href="@{|/surveytopic/read?surveyno=${surveytopicVO.surveyno}|}" style="display:block; color:black;" th:text="${surveytopicVO.surveyno}"></a>
+        </td>
+        
+        <td class="td_bs">
+          <a th:href="@{|/surveytopic/read?surveyno=${surveytopicVO.surveyno}|}" style="display:block; color:black;" th:text="${surveytopicVO.title}"></a>
+         
+        </td>
+
+        
+        <td class="td_bs">
+          <a th:href="@{|/surveytopic/read?surveyno=${surveytopicVO.surveyno}|}" style="display:block; color:black;" th:text="${surveytopicVO.seqno}"></a>
+        </td>
+
+        <td style="vertical-align: middle; text-align: center;">
+          <a th:href="@{|/surveytopic/update?surveytopicno=${surveytopicVO.surveytopicno}&surveyno=${surveytopicVO.surveyno}|}">
+            <img src="/survey/images/update.png" class="icon" title="수정">
+          </a>
+          <a th:href="@{|/surveytopic/delete?surveytopicno=${surveytopicVO.surveytopicno}&surveyno=${surveytopicVO.surveyno}|}">
+            <img src="/survey/images/delete.png" class="icon" title="삭제">
+          </a>
+          <!-- <a th:href="@{|/surveyitem/create?surveytopicno=${surveytopicVO.surveytopicno}|}">
+            <img src="/survey/images/create.png" class="icon" title="추가"> -->
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

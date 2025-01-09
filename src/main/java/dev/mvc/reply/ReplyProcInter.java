@@ -53,4 +53,6 @@ public interface ReplyProcInter {
      */
     public List<ReplyVO> list_by_contentno_join_500(int contentno);
 
+	public int delete_conts(int contentno);
+
 }

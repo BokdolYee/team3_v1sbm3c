@@ -38,6 +38,7 @@ public class SurveyVO {
   @NotNull(message="선택 조회 수는 0이 기본")
   private String cnt;
   
+  private int recom;
   
   private MultipartFile file1MF = null;
   /** 메인 이미지 크기 단위, 파일 크기 */

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="dev.mvc.calendargood.CalendargoodDAOInter">
+  <!-- 등록 -->
+  <insert id="create" parameterType="dev.mvc.calendargood.CalendargoodVO">
+    INSERT INTO calendargood(calendargoodno, rdate, calendarno, memberno, cnt)
+    VALUES (calendargood_seq.nextval, sysdate, #{calendarno}, #{memberno}, #{cnt})
+  </insert>
+  
+  <!-- 전체 목록 -->
+  <select id="list_all" resultType="dev.mvc.calendargood.CalendargoodVO">
+    SELECT calendargoodno, rdate, calendarno, memberno, cnt
+    FROM calendargood
+    ORDER BY calendargoodno DESC
+  </select> 
+  
+  <!-- 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM calendargood
+    WHERE calendargoodno = #{calendargoodno}
+  </delete>
+  
+  <!-- 조회 -->
+  <select id="read" resultType="dev.mvc.calendargood.CalendargoodVO" parameterType="int">
+    SELECT calendargoodno, rdate, calendarno, memberno, cnt
+    FROM calendargood
+    WHERE calendarno=#{calendarno} 
+  </select>
+  
+  <!-- 캘린더, 멤버 동시에 조회 -->
+  <select id="readByboth" resultType="dev.mvc.calendargood.CalendargoodVO" parameterType="HashMap">
+    SELECT calendargoodno, rdate, calendarno, memberno, cnt
+    FROM calendargood
+    WHERE calendarno=#{calendarno} AND memberno= #{memberno}
+  </select>
+  
+  <!-- 특정 컨텐츠 회원 추천 -->
+  <select id = "heartCnt" resultType="int" parameterType="HashMap">
+    SELECT COUNT(*) as cnt
+    FROM calendargood
+    WHERE calendarno= #{calendarno} AND memberno= #{memberno}
+  </select>
+  
+  <!-- 테이블 3개 join -->
+  <select id="list_all_join" resultType="dev.mvc.calendargood.CalendarCalendargoodMemberVO">
+    SELECT r.calendargoodno, r.rdate, r.calendarno, c.title as c_title, r.memberno, m.id, m.name as m_name
+    FROM calendar c, calendargood r, member m
+    WHERE c.calendarno = r.calendarno AND r.calendarno = m.memberno
+    ORDER BY calendargoodno DESC
+  </select>
+</mapper>

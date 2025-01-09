@@ -2,6 +2,7 @@
 
 <html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
 <div layout:fragment="content">
+  
   <div class='title_line'>
     <span th:text="${newscateVO.genre }" class="title_line_text"></span> 
     > <span th:text="${newscateVO.name}" class="title_line_text"></span> 
@@ -35,7 +36,7 @@
   <div class='menu_line'></div>
 
   <fieldset class="fieldset_basic">
-    <ul>
+    <br>
       <li class="li_none">
         <div style="width: 100%; word-break: break-all;">
           <div th:if="${contentsVO.file1.endsWith('jpg') or contentsVO.file1.endsWith('png')  or contentsVO.file1.endsWith('gif')}">
@@ -70,7 +71,12 @@
       
       <li class="li_none" th:text="|검색어(키워드): ${contentsVO.word }|">
       </li>
-      
+      <br></br>
+      <li class="li_none" style="text-align: center; list-style: none; display: flex; justify-content: center; align-items: center;">
+		<span id="hart_panel" style="margin-right: 30px; transform: scale(3);"></span>
+		<span id="recom_panel" style="font-size: 2em;"></span>
+	  </li>
+	  <br></br>
       <li class="li_none" th:if="${contentsVO.size1 > 0}">
         <div >
           첨부 파일: <a th:href='@{|/download?dir=contents/storage&filename=${contentsVO.file1saved}&downname=${contentsVO.file1}|}'
@@ -100,6 +106,21 @@
             let btn_delete_tag =document.getElementById("btn_delete"); // 삭제 처리
             let btn_cancel_tag =document.getElementById("btn_cancel"); // 수정/삭제 취소
             
+            let hartCnt = '[[${hartCnt}]]' ;; //  javascript -> Thymeleaf -> session
+		    let tag='';
+		    
+		    if (hartCnt == 1) {
+		      tag = '<a href="javascript:good([[${contentsVO.contentno}]])"><img src="/contents/images/1.png" style="width: 22px" title="추천"></a>';
+		      document.querySelector('#hart_panel').innerHTML = tag; 
+		    } else {
+		      tag = '<a href="javascript:good([[${contentsVO.contentno}]])"><img src="/contents/images/0.png" style="width: 22px" title="추천"></a>';
+		      document.querySelector('#hart_panel').innerHTML = tag; 
+            }
+		      
+	        document.querySelector('#recom_panel').innerHTML = '([[${contentsVO.recom}]])';
+		      
+		    
+			    
             // 댓글 입력
             content_tag.addEventListener('click', () => {
               let id =  '[[${session.id}]]'; //  javascript -> Thymeleaf -> session
@@ -343,6 +364,43 @@
             }
             
           }
+          
+          function good(contentno) {
+			      console.log('-> contentno: ' + contentno);
+			
+			      fetch("http://localhost:9093/contents/good", {
+			          "method": "post",
+			          "headers": {
+			              "Content-Type": "application/json"
+			          },
+			          body: JSON.stringify({contentno}) // {"contentno":contentno}, JSON 형식으로 전송
+			        })
+			        .then((response) => response.json()) // 응답 문자열 추출
+			        .then((data) => {
+			          console.log('-> data.isMember: ' + data.isMember);
+			
+			          if (data.isMember == 1) { // 회원
+			            let hartCnt =data.hartCnt; //  javascript -> Thymeleaf -> session
+			            let tag='';
+			            
+			            if (hartCnt == 1) {
+			              tag = '<a href="javascript:good([[${contentsVO.contentno}]])"><img src="/contents/images/1.png" style="width: 22px" title="추천"></a>';
+			              document.querySelector('#hart_panel').innerHTML = tag; 
+			            } else {
+			              tag = '<a href="javascript:good([[${contentsVO.contentno}]])"><img src="/contents/images/0.png" style="width: 22px" title="추천"></a>';
+			              document.querySelector('#hart_panel').innerHTML = tag; 
+			            }    
+			            
+			            document.querySelector('#recom_panel').innerHTML = '(' + data.recom + ')';
+			          
+			          } else { // 비회원
+			            alert("로그인해야 추천 할 수 있습니다.");
+			            location.href='/member/login_cookie_need';  
+			
+			          }
+			        }
+			      );
+			    }
         </script>
         
         <div style='width: 100%; margin: 0px auto; clear: both;'>

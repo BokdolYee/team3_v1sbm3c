@@ -3,7 +3,7 @@ package dev.mvc.survey;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -24,8 +26,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 import dev.mvc.member.MemberProcInter;
-import dev.mvc.newscate.NewsCateVO;
-import dev.mvc.newscate.NewsCateVOMenu;
+import dev.mvc.surveygood.SurveygoodProcInter;
+import dev.mvc.surveygood.SurveygoodVO;
+import dev.mvc.surveyitem.SurveyitemProcInter;
 import dev.mvc.surveytopic.SurveytopicProcInter;
 import dev.mvc.surveytopic.SurveytopicVO;
 import dev.mvc.tool.Tool;
@@ -47,12 +50,21 @@ public class SurveyCont {
   private String list_file_name = "/th/survey/list_search";
   
   @Autowired
+  @Qualifier("dev.mvc.surveygood.SurveygoodProc") 
+  SurveygoodProcInter surveygoodProc;
+  
+  @Autowired
   @Qualifier("dev.mvc.survey.SurveyProc")
   private SurveyProcInter surveyProc;
   
   @Autowired
   @Qualifier("dev.mvc.surveytopic.SurveytopicProc")
   private SurveytopicProcInter surveytopicProc; // 개별 문제를 관리하는 인터페이스 주입
+  
+  @Autowired
+  @Qualifier("dev.mvc.surveyitem.SurveyitemProc")
+  
+  private SurveyitemProcInter surveyitemProc;
   
   @Autowired
   @Qualifier("dev.mvc.member.MemberProc")
@@ -193,18 +205,20 @@ public class SurveyCont {
     @GetMapping(value = "/read/{surveyno}")
     public String read(Model model,
                                     @PathVariable("surveyno") Integer surveyno,
-                                    @ModelAttribute("surveytopicVO") SurveytopicVO surveytopicVO) {
+                                    @RequestParam(name = "surveytopicno", defaultValue = "0") Integer surveytopicno) {
       SurveyVO surveyVO = this.surveyProc.read(surveyno);
       model.addAttribute("surveyVO", surveyVO);
-      
-      ArrayList<SurveytopicVO> surveytopicList = this.surveytopicProc.listBySurveyno(surveyno);
-      model.addAttribute("surveytopicList", surveytopicList); // 개별 문제 목록 추가
-      
+                            
       
       this.surveyProc.increaseCnt(surveyno);
 
-      return "/th/survey/read";    
+//      this.surveyitemProc.increaseitemCnt(surveyitemno);
+      
+      return "/th/surveytopic/read" + surveyVO.getSurveyno();    
+
+
     }    
+
 
     /**
      * 수정폼 http://localhost:9093/survey/update/1
@@ -367,6 +381,7 @@ public class SurveyCont {
         SurveyVO surveyVO = this.surveyProc.read(surveyno); // 삭제전에 삭제 결과를 출력할 레코드 조회
         model.addAttribute("surveyVO", surveyVO);
         
+        this.surveyProc.deleteSurveygood(surveyno); // 자식 죽이기!!!
         
         int cnt = this.surveyProc.delete(surveyno);
         System.out.println("-> cnt: " + cnt);
@@ -404,48 +419,40 @@ public class SurveyCont {
     }
     }
     
-    /**
-     * 등록 폼 및 검색 목록 + 페이징
-     * @param model
-     * @return
-     */
     @GetMapping(value = "/list_search")
     public String list_search_paging(HttpSession session, Model model,
         @RequestParam(name = "word", defaultValue = "") String word,
         @RequestParam(name = "surveyno", defaultValue = "0") int surveyno,
         @RequestParam(name = "now_page", defaultValue = "1") int now_page) {
-     
-      
-        SurveyVO surveyVO = new SurveyVO();
 
-        
+        SurveyVO surveyVO = new SurveyVO();
         model.addAttribute("surveyVO", surveyVO);
-        
+
         word = Tool.checkNull(word);
-        
-        
 
         ArrayList<SurveyVO> list = this.surveyProc.list_search_paging(word, now_page, this.record_per_page);
         model.addAttribute("list", list);
 
-
         int search_cnt = this.surveyProc.list_search_count(word);
         model.addAttribute("search_cnt", search_cnt);
 
-        model.addAttribute("word", word); // 검색어
+        model.addAttribute("word", word);
 
         int search_count = this.surveyProc.list_search_count(word);
-        String paging = this.surveyProc.pagingBox(now_page, word, this.list_file_name, search_count, this.record_per_page,
-            this.page_per_block);
+        String paging = this.surveyProc.pagingBox(now_page, word, this.list_file_name, search_count, this.record_per_page, this.page_per_block);
         model.addAttribute("paging", paging);
         model.addAttribute("now_page", now_page);
 
         int no = search_count - ((now_page - 1) * this.record_per_page);
         model.addAttribute("no", no);
 
+
+   
+
         return "/th/survey/list_search"; 
       }
       
+
       
     
     /**
@@ -494,7 +501,72 @@ public class SurveyCont {
       } else {
         return "redirect:/member/login_cookie_need";  // redirect
       }
-
-     
+    
+    
     }
+    /** 수정 처리 http://localhost:9093/notice/update?noticeno0=1 */
+    @PostMapping(value = "/good")
+    @ResponseBody
+    public String good(HttpSession session, Model model,  @RequestBody String json_src) {
+      System.out.println("-> json_src: " + json_src); // json_src: {"noticeno":"4"}
+      
+      JSONObject src = new JSONObject(json_src); // String -> JSON
+      int surveyno = (int)src.get("surveyno"); // 값 가져오기
+      System.out.println("-> surveyno: " + surveyno);
+      
+      if (this.memberProc.isMember(session)) { // 회원 로그인 확인
+        // 추천을 한 상태인지 확인
+        int memberno = (int)session.getAttribute("memberno");
+        
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        map.put("surveyno", surveyno);
+        map.put("memberno", memberno);
+        
+        int good_cnt = this.surveygoodProc.hartCnt(map);
+        System.out.println("-> good_cnt: " + good_cnt);
+        
+      
+        
+        if(good_cnt == 1) {
+          System.out.println("-> 추천 해제: " + surveyno + ' ' + memberno);
+          //추천 해제
+          SurveygoodVO surveygoodVO = this.surveygoodProc.readBySurveynoMemberno(map);
+          
+          this.surveygoodProc.delete(surveygoodVO.getSurveygoodno()); // 추천 삭제
+          this.surveyProc.decreaseRecom(surveyno); // 카운트 감소
+        } else {
+          System.out.println("-> 추천 : " + surveyno + ' ' + memberno);
+          SurveygoodVO surveygoodVO_new = new SurveygoodVO();
+          surveygoodVO_new.setSurveyno(surveyno);
+          surveygoodVO_new.setMemberno(memberno);
+          
+          this.surveygoodProc.create(surveygoodVO_new);
+          this.surveyProc.increaseRecom(surveyno); // 카운트 증가
+        }
+        
+        // 추천 여부가 변경되어 다시 새로운 값을 읽어옴.
+        int hartCnt = this.surveygoodProc.hartCnt(map);
+        int recom = this.surveyProc.read(surveyno).getRecom();
+        
+        JSONObject result =  new JSONObject();
+        result.put("isMember", 1); // 로그인 :1, 비회원: 0
+        result.put("hartCnt", hartCnt); // 추천 여부, 추천:1, 비추천:0
+        result.put("recom", recom);   // 추천인 수
+        
+        System.out.println("-> result.toString(): " + result.toString());
+        
+        return result.toString();
+        
+      } else { // 정상적인 로그인이 아닌 경우 로그인 유도
+        JSONObject result =  new JSONObject();
+        result.put("isMember", 0); // 로그인 :1, 비회원: 0
+        
+        
+        System.out.println("-> result.toString(): " + result.toString());
+        
+        return result.toString();
+      }
+    }
+  
+    
 }

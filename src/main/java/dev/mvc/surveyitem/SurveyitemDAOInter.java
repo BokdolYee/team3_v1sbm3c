@@ -1,14 +1,14 @@
 package dev.mvc.surveyitem;
 
+
 import java.util.ArrayList;
 import java.util.Map;
 
-
+import dev.mvc.surveytopic.SurveytopicVO;
 
 
 
 public interface SurveyitemDAOInter {
-
   // 등록
   public int create(SurveyitemVO surveyitemVO);
 
@@ -20,16 +20,28 @@ public interface SurveyitemDAOInter {
 
   // 삭제
   public int delete(int surveyitemno);
-
-  // 전체 목록
+  
+  // 선택 인원 수 증가
+  public int increaseItemCount(String item);
+  
+  // 하나의 설문조사에 대한 개별문제 리스트 출력 
+  public ArrayList<SurveyitemVO>listBySurveytopicno(int surveytopicno);
+  
   public ArrayList<SurveyitemVO> list_all();
+  
+//검색 개수
+ public Integer list_search_count(String word);
 
-  public int update_itemseqno_forward(int surveyitemno);
+ // 검색 목록
+ public ArrayList<SurveyitemVO> list_search(String word);
+
+ // 페이징 목록
+ public ArrayList<SurveyitemVO> list_paging(Map<String, Object> map);
+
+ // 검색 + 페이징
+ public ArrayList<SurveyitemVO> list_search_paging(Map<String, Object> map);
+
   
-  public int update_itemseqno_backward(int surveyitemno);
-  
-  public int increaseCnt(int surveyno);
-  
-  
+
   
 }

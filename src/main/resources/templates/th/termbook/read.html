@@ -1,0 +1,48 @@
+<!DOCTYPE html> 
+
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  <div class='title_line'>
+    <span th:text="${termbookVO.term_title }" class="title_line_text"></span > 
+    > <span th:text="${termbookVO.category}" class="title_line_text"></span > 
+    > 용어 조회
+  </div>
+  
+  <aside class="aside_right">
+    <a href="javascript:location.reload();">새로고침</a>
+    <span class='menu_divide' >│</span>    
+    <a th:href="@{|/termbook/create|}">등록</a>
+    <span class='menu_divide' >│</span>
+    <a th:href="@{|/termbook/update/${termbookVO.termno}|}">수정</a>
+        <span class='menu_divide' >│</span>
+    <a th:href="@{|/termbook/delete/${termbookVO.termno}|}">삭제</a>
+
+ </aside> 
+
+  <aside class="aside_right">
+    <a th:href="@{|/termbook/list_all|}">목록</a>    
+    <span class='menu_divide' >│</span>
+  </aside> 
+
+  <div class='menu_line'></div>
+
+  <fieldset class="fieldset_basic">
+    <ul>
+      <li class="li_none">
+        <div style="width: 100%; word-break: break-all;">
+          <!-- 주식의 심볼이 표시됨 -->
+          <span>용어명 </span></br><span style="font-size: 1.5em; font-weight: bold;" th:text="${termbookVO.term_title}"></span><br><br>
+          <span>용어 범주 </span></br><span style="font-size: 1em;" th:text="${termbookVO.category}"></span><br><br>
+          <span>용어 설명 </span><br>
+          <p th:utext="${formattedMemo}"></p>
+        </div>
+      </li>
+      
+      <li class="li_none" th:if="${termbookVO.memo != null}">
+      </li>   
+    </ul>
+  </fieldset>
+
+</div>
+
+</html>

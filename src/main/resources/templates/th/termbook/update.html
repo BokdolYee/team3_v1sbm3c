@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  <div class='title_line'>
+    <span th:text="'용어 수정'" class="title_line_text"></span> 
+  </div>
+
+  <aside class="aside_right">
+    <a th:href="@{|/termbook/create|}">등록</a>
+    <span class='menu_divide'>│</span>
+    <a href="javascript:location.reload();">새로고침</a>
+    <span class='menu_divide'>│</span>
+    <a th:href="@{|/termbook/list_all|}">목록</a>
+  </aside>
+
+  <div class='menu_line'></div>
+
+  <form name="frm" method="post" th:object="${termbookVO}" action="/termbook/update">
+    <input type="hidden" name="termno" th:value="${termbookVO.termno}">
+    
+    <div>
+       <label>용어명</label>
+       <input type='text' name='term_title' th:value="${termbookVO.term_title}" required="required" 
+              autofocus="autofocus" class="form-control" style="width: 100%;">
+    </div>
+
+    <div>
+       <label>용어 범주</label>
+       <input type='text' name='category' th:value="${termbookVO.category}" required="required" 
+              class="form-control" style="width: 100%;">
+    </div>
+
+    <div>
+       <label>용어 설명</label>
+        <textarea name="memo" th:text="${termbookVO.memo}" 
+          class="form-control" rows="12" style="width: 100%; resize: none;">
+        </textarea>
+
+    <div class="content_body_bottom">
+      <button type="submit" class="btn btn-secondary btn-sm">저장</button>
+      <button type="button" th:attr="onclick=|location.href='/termbook/list_all'|" 
+              class="btn btn-secondary btn-sm">목록</button>
+    </div>
+  
+  </form>
+
+</div>
+</html>

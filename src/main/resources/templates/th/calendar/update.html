@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+
+  <div class='title_line'>
+    일정 수정
+  </div>
+  
+  <aside class="aside_right">
+    <a th:href="|javascript:location.reload();|">새로고침</a>
+    <span class='menu_divide' >│</span>
+    <a th:href="@{|/calendar/list_all|}">목록</a>    
+    <span class='menu_divide' >│</span>
+    <a th:href="@{|/calendar/create|}">등록</a>
+  </aside>
+  
+  <div class='menu_line'></div>
+  
+  <form name='frm' method='post' action='./update'>
+    <input type="hidden" name="calendarno" th:value="${calendarVO.calendarno }">
+       
+    <div>
+      <label>출력할 날짜</label>
+      <input type='date' name='labeldate' th:value='${calendarVO.labeldate}' required="required" 
+            autofocus="autofocus" class="form-control" style='width: 100%;'>
+    </div>
+    <div>
+      <label>달력에 출력될 레이블</label>
+      <input type='text' name='label' th:value='${calendarVO.label}' required="required" 
+              autofocus="autofocus" class="form-control" style='width: 100%;'>
+    </div>
+    <div>
+       <label>제목</label>
+       <input type='text' name='title' th:value='${calendarVO.title}' required="required" 
+                 autofocus="autofocus" class="form-control" style='width: 100%;'>
+    </div>
+    <div>
+       <label>글 내용</label>
+       <textarea name='content' required="required" class="form-control" rows="12" style='width: 100%;' th:text='${calendarVO.content}'></textarea>
+    </div>
+    <div>                
+      <label>출력 순서</label>
+      <input type="number" name="seqno" th:value="${calendarVO.seqno}" min="1" step="1"
+             class="form-control" style="width: 50%;">   
+    </div>
+
+    <div class="content_body_bottom">
+      <button type="submit" class="btn btn-secondary btn-sm">저장</button>
+      <button type="button" th:attr="onclick=|location.href='./list_all'|" class="btn btn-secondary btn-sm">취소(목록)</button>
+    </div>
+  
+  </form>
+
+</div>
+

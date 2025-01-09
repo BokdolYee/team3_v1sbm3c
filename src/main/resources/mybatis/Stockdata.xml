@@ -7,8 +7,8 @@
 
     <!-- 생성 -->
     <insert id="create" parameterType="dev.mvc.stockdata.StockdataVO">
-        INSERT INTO Stockdata (sdatano, rdate, open_price, close_price, volume, change, stockno)
-        VALUES (Stockdata_seq.nextval, sysdate, #{open_price}, #{close_price}, #{volume}, #{change}, #{stockno})
+        INSERT INTO Stockdata (sdatano, rdate, open_price, close_price, volume, change, stockno, symbol)
+        VALUES (Stockdata_seq.nextval, sysdate, #{open_price}, #{close_price}, #{volume}, #{change}, #{stockno}, #{symbol})
     </insert>
 
     <!-- Stock 데이터 조회 -->
@@ -18,14 +18,14 @@
 
     <!-- 기존의 CRUD 쿼리들 -->
     <select id="read" parameterType="int" resultType="dev.mvc.stockdata.StockdataVO">
-        SELECT sdatano, rdate, open_price, close_price, volume, change, stockno
+        SELECT sdatano, rdate, open_price, close_price, volume, change, stockno, symbol
         FROM Stockdata
         WHERE sdatano = #{sdatano}
     </select>
 
     <!-- 전체 목록 -->
     <select id="list" resultType="dev.mvc.stockdata.StockdataVO">
-        SELECT sd.sdatano, sd.rdate, sd.open_price, sd.close_price, sd.volume, sd.change, sd.stockno, s.name
+        SELECT sd.sdatano, sd.rdate, sd.open_price, sd.close_price, sd.volume, sd.change, sd.stockno, s.name, sd.symbol
         FROM Stockdata sd 
         JOIN Stock s ON sd.stockno = s.stockno 
         ORDER BY sd.rdate DESC 
@@ -33,7 +33,7 @@
 
     <!-- 검색 (검색어가 있을 때만 필터링) -->
     <select id="stockSearch" parameterType="HashMap" resultType="dev.mvc.stockdata.StockdataVO">
-        SELECT sdatano, rdate, open_price, close_price, volume, change, stockno
+        SELECT sdatano, rdate, open_price, close_price, volume, change, stockno, symbol
         FROM Stockdata
         WHERE
             (#{SearchName} IS NULL OR stockno IN 
@@ -51,9 +51,9 @@
     
     <!-- 검색된 데이터 목록 (페이징 포함) -->
     <select id="listSearchPaging" parameterType="HashMap" resultType="dev.mvc.stockdata.StockdataVO">
-        SELECT sdatano, rdate, open_price, close_price, volume, change, stockno
+        SELECT sdatano, rdate, open_price, close_price, volume, change, stockno, symbol
         FROM (
-            SELECT sdatano, rdate, open_price, close_price, volume, change, stockno, rownum AS r
+            SELECT sdatano, rdate, open_price, close_price, volume, change, stockno, symbol, rownum AS r
             FROM Stockdata
             WHERE 
                 (#{searchName} IS NULL OR stockno IN 
@@ -78,7 +78,8 @@
         close_price = #{close_price},
         volume = #{volume}, 
         change = #{change}, 
-        stockno = #{stockno}
+        stockno = #{stockno},
+        symbol = #{symbol}
     WHERE sdatano = #{sdatano}
     </update>
 

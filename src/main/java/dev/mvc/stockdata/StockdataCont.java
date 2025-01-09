@@ -27,7 +27,7 @@ public class StockdataCont {
   
   public int record_per_page = 4;
   public int page_per_block = 10;
-  private String list_file_name = "/th/stockdata/list_search";
+  private String list_file_name = "/stockdata/list_search";
 
   // 1. Create - 데이터 추가 폼
   @GetMapping("/create")
@@ -120,7 +120,7 @@ public class StockdataCont {
       int search_count = stockdataProc.list_search_count(params);
 
       // 페이징 HTML 생성
-      String paging = stockdataProc.pagingBox(now_page, searchName, "/th/stockdata/list_all", search_count, this.record_per_page, this.page_per_block);
+      String paging = stockdataProc.pagingBox(now_page, searchName, "/stockdata/list_all", search_count, this.record_per_page, this.page_per_block);
       model.addAttribute("paging", paging);
       model.addAttribute("now_page", now_page);
 
@@ -168,13 +168,13 @@ public class StockdataCont {
               return "redirect:/stockdata/list_all"; // 수정 성공 시 목록 페이지로 리다이렉트
           } else {
               model.addAttribute("errorMessage", "No rows were updated.");
-              return "/th/errorPage"; // 수정이 안된 경우 에러 페이지로 이동
+              return "errorPage"; // 수정이 안된 경우 에러 페이지로 이동
           }
       } catch (Exception e) {
           // 예외 발생 시 상세 정보 출력
           e.printStackTrace();  // 로그로 상세 예외 출력
           model.addAttribute("errorMessage", "An error occurred: " + e.getMessage());  // 모델에 예외 메시지 추가
-          return "/th/errorPage";  // 에러 페이지로 이동
+          return "errorPage";  // 에러 페이지로 이동
       }
   }
 
@@ -192,6 +192,7 @@ public class StockdataCont {
   // 5. Delete - 데이터 삭제 처리
   @PostMapping("/delete")
   public String delete(@RequestParam("sdatano") int sdatano) {
+      System.out.print("yes");
       stockdataProc.delete(sdatano); // sdatano로 삭제 작업
       return "redirect:/stockdata/list_all"; // 삭제 후 목록 페이지로 이동
   }

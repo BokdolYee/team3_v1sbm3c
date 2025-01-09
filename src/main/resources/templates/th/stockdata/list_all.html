@@ -8,11 +8,13 @@
   <form th:action="@{/stockdata/list_all}" method="get" style="float: right; margin-bottom: 1rem;">
     <input type="text" name="searchName" placeholder="종목명 검색" 
            th:value="${searchName}" class="form-control" style="width: 200px; display: inline-block;" />
-    <button type="submit" class="btn btn-primary">검색</button>
+    <button type="submit" class="btn btn-primary">검색</button>    
   </form>
-
+  
   <!-- 목록 상단 -->
   <aside class="aside_right" style="margin-right: 1rem;">
+  <a href="/stock/list_all" style="color: #0d6efd;">종목 목록</a>
+  <span> | </span>
   <a href="/stockdata/list_all">전체 목록</a>
   <span> | </span>
       <a href="javascript:location.reload();">새로고침</a>

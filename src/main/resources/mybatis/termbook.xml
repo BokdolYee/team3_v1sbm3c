@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.mvc.termbook.TermbookDAOInter"> <!-- SB가 자동으로 구현하여 연동하는 interface -->
+   <!-- 등록 --> 
+  <insert id="create" parameterType="dev.mvc.termbook.TermbookVO">
+    INSERT INTO termbook(termno, term_title, memo, category, rdate, memberno)
+    VALUES(termbook_seq.nextval, #{term_title}, #{memo}, #{category}, sysdate, #{memberno})
+  </insert>
+  
+  <!-- 특정 데이터 조회 -->
+    <select id="read" parameterType="int" resultType="dev.mvc.termbook.TermbookVO"> 
+        SELECT * FROM termbook WHERE termno = #{termno} 
+    </select>
+
+    <!-- 전체 데이터 목록 -->
+    <select id="list" resultType="dev.mvc.termbook.TermbookVO">
+        SELECT * FROM termbook ORDER BY termno DESC
+    </select> 
+
+    <!-- 검색 (검색어가 있을 때만 필터링) -->
+    <select id="termbookSearch" parameterType="HashMap" resultType="dev.mvc.termbook.TermbookVO">
+        SELECT termno, term_title, memo, category
+        FROM termbook
+        WHERE
+            (#{termbookSearchTerm_title} IS NULL OR term_title LIKE '%' || #{termbookSearchTerm_title} || '%') AND
+            (#{termbookSearchCategory} IS NULL OR category LIKE '%' || #{termbookSearchCategory} || '%')
+    </select>
+
+    <!-- 데이터 수정 -->
+    <update id="update" parameterType="dev.mvc.termbook.TermbookVO">
+        UPDATE termbook
+        SET term_title = #{term_title},
+            memo = #{memo},
+            category = #{category}
+        WHERE termno = #{termno}
+    </update>
+
+    <!-- 데이터 삭제 -->
+    <delete id="delete" parameterType="int">
+        DELETE FROM termbook WHERE termno = #{termno}
+    </delete>
+
+    <!-- 검색된 데이터 목록 (페이징 포함) -->
+    <select id="listSearchPaging" parameterType="HashMap" resultType="dev.mvc.termbook.TermbookVO">
+      SELECT termno, term_title, memo, category, r
+      FROM (
+          SELECT termno, term_title, memo, category, rownum AS r
+          FROM (
+              SELECT termno, term_title, memo, category
+              FROM termbook
+              WHERE
+                  (#{searchTerm_title} IS NULL OR term_title LIKE '%' || #{searchTerm_title} || '%')
+                  AND (#{searchCategory} IS NULL OR category LIKE '%' || #{searchCategory} || '%')
+              ORDER BY termno DESC
+          )
+      )
+        WHERE r &gt;= #{start_num} AND r &lt;= #{end_num} <!-- WHERE r >= 1 AND r <= 3 -->
+      </select>
+
+    <!-- 검색된 데이터 개수 -->
+    <select id="list_search_count" parameterType="HashMap" resultType="int">
+        SELECT COUNT(*)
+        FROM termbook
+        WHERE 
+            (#{searchTerm_title} IS NULL OR term_title LIKE '%' || #{searchTerm_title} || '%')
+            AND (#{searchCategory} IS NULL OR category LIKE '%' || #{searchCategory} || '%')
+    </select>
+  
+</mapper>

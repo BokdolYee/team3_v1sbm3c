@@ -135,4 +135,8 @@ public interface ContentsDAOInter {
   public void updateCnt(int newscateno);
   
   public void resetCnt(int newscateno);
+
+  public void increaseRecom(int contentno);
+
+  public void decreaseRecom(int contentno);
 }

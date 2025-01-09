@@ -2,12 +2,13 @@ DROP TABLE CONTENTSGOOD CASCADE CONSTRAINTS;
 DROP SEQUENCE CONTENTSGOOD_seq;
 
 CREATE TABLE CONTENTSGOOD (
-	CONTENTSGOODNO	    NUMBER(10)		NOT NULL    PRIMARY KEY,
-	rdate	            date		NULL,
-	contentno	        Number(10)		NOT NULL,
-	memberno	        number(10)		NOT NULL,
-    FOREIGN KEY (contentno) REFERENCES CONTENTS(contentno),
-    FOREIGN KEY (memberno) REFERENCES MEMBER(memberno)
+    CONTENTSGOODNO   NUMBER(10)       NOT NULL PRIMARY KEY,
+    GOODBAD          VARCHAR2(10)     NULL,    -- VARCHAR2로 수정
+    RDATE            DATE             NULL,            -- DATE 대문자로 수정
+    CONTENTNO        NUMBER(10)       NOT NULL,
+    MEMBERNO         NUMBER(10)       NOT NULL,
+    FOREIGN KEY (CONTENTNO) REFERENCES CONTENTS(CONTENTNO), -- 컬럼 이름 확인
+    FOREIGN KEY (MEMBERNO) REFERENCES MEMBER(MEMBERNO)      -- 컬럼 이름 확인
 );
 
 CREATE SEQUENCE CONTENTSGOOD_seq
@@ -19,7 +20,7 @@ CREATE SEQUENCE CONTENTSGOOD_seq
   
 -- 데이터 삽입
 INSERT INTO CONTENTSGOOD(CONTENTSGOODNO, rdate, contentno, memberno)
-VALUES(CONTENTSGOOD_seq.nextval, sysdate, 21, 3);
+VALUES(CONTENTSGOOD_seq.nextval, sysdate, 1, 3);
 
 -- 전체 조회
 SELECT CONTENTSGOODNO, rdate, contentno, memberno

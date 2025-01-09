@@ -6,6 +6,7 @@ import java.util.HashMap;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -13,8 +14,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -26,6 +29,7 @@ import dev.mvc.stock.StockVO;
 import dev.mvc.member.MemberProcInter;
 import dev.mvc.news.NewsProcInter;
 import dev.mvc.contentsgood.ContentsGoodProcInter;
+import dev.mvc.contentsgood.ContentsGoodVO;
 import dev.mvc.news.NewsVO;
 import dev.mvc.tool.Tool;
 import dev.mvc.tool.Upload;
@@ -298,7 +302,7 @@ public class ContentsCont {
    * @return
    */
   @GetMapping(value = "/read")
-  public String read(Model model, 
+  public String read(Model model, HttpSession session,
       @RequestParam(name="contentno", defaultValue = "1") int contentno, 
       @RequestParam(name="word", defaultValue = "") String word, 
       @RequestParam(name="now_page", defaultValue = "1") int now_page,
@@ -309,6 +313,8 @@ public class ContentsCont {
     model.addAttribute("menu", menu);
     ArrayList<NewsVO> newsList = this.newsProc.list();
     model.addAttribute("newsList", newsList);
+    ArrayList<NewsCateVO> newscateList = this.newscateProc.list_all();
+    model.addAttribute("newscateList", newscateList);
     ArrayList<StockVO> stockList = this.stockProc.list();
     model.addAttribute("stockList", stockList);
     
@@ -331,6 +337,24 @@ public class ContentsCont {
     
     model.addAttribute("word", word);
     model.addAttribute("now_page", now_page);
+    
+    // -------------------------------------------------------------------------------------------
+    // 추천 관련
+    // -------------------------------------------------------------------------------------------
+    HashMap<String, Object> map = new HashMap<String, Object>();
+    map.put("contentno", contentno);
+    
+    int hartCnt = 0;
+    if (session.getAttribute("memberno") != null ) { // 회원인 경우만 카운트 처리
+      int memberno = (int)session.getAttribute("memberno");
+      map.put("memberno", memberno);
+      
+      hartCnt = this.contentsgoodProc.hartCnt(map);
+    } 
+    
+    model.addAttribute("hartCnt", hartCnt);
+    System.out.println("->hartCnt: " + hartCnt);
+    // -------------------------------------------------------------------------------------------
 
     return "/th/contents/read";
   }
@@ -576,56 +600,125 @@ public class ContentsCont {
    */
   @PostMapping(value = "/delete")
   public String delete(RedirectAttributes ra, Model model,
-      @RequestParam(name="newscateno", defaultValue = "0") int newscateno,
-      @RequestParam(name="contentno", defaultValue = "0") int contentno,
-      @RequestParam(name="word", defaultValue = "") String word, 
-      @RequestParam(name="now_page", defaultValue = "1") int now_page,
-      @RequestParam(name="stockno", defaultValue = "0") int stockno) {
-    
-    StockVO stockVO = this.stockProc.read(stockno);
-    model.addAttribute("stockVO", stockVO);
-    // -------------------------------------------------------------------
-    // 파일 삭제 시작
-    // -------------------------------------------------------------------
-    // 삭제할 파일 정보를 읽어옴.
-    ContentsVO ContentsVO_read = contentsProc.read(contentno);
-        
-    String file1saved = ContentsVO_read.getFile1saved();
-    String thumb1 = ContentsVO_read.getThumb1();
-    
-    String uploadDir = Contents.getUploadDir();
-    Tool.deleteFile(uploadDir, file1saved);  // 실제 저장된 파일삭제
-    Tool.deleteFile(uploadDir, thumb1);     // preview 이미지 삭제
-    // -------------------------------------------------------------------
-    // 파일 삭제 종료
-    // -------------------------------------------------------------------
-    
-    this.contentsProc.delete(contentno); // DBMS 삭제
-    this.contentsProc.updateCntCount(contentno);
-    this.contentsProc.resetCnt(contentno);
-    this.contentsProc.updateCnt(contentno);
-    this.contentsProc.delete(contentno); // DBMS 글 삭제
-    
-    HashMap<String, Object> map = new HashMap<String, Object>();
-    map.put("newscateno", newscateno);
-    map.put("word", word);
-    
-    if (this.contentsProc.list_by_cateno_search_count(map) % Contents.RECORD_PER_PAGE == 0) {
-      now_page = now_page - 1; // 삭제시 DBMS는 바로 적용되나 크롬은 새로고침등의 필요로 단계가 작동 해야함.
-      if (now_page < 1) {
-        now_page = 1; // 시작 페이지
-      }
-    }
-    // -------------------------------------------------------------------------------------
+        @RequestParam(name="newscateno", defaultValue = "0") int newscateno,
+        @RequestParam(name="contentno", defaultValue = "0") int contentno,
+        @RequestParam(name="word", defaultValue = "") String word, 
+        @RequestParam(name="now_page", defaultValue = "1") int now_page,
+        @RequestParam(name="stockno", defaultValue = "0") int stockno) {
+      
+      StockVO stockVO = this.stockProc.read(stockno);
+      model.addAttribute("stockVO", stockVO);
+      
+      // -------------------------------------------------------------------
+      // 파일 삭제 시작
+      // -------------------------------------------------------------------
+      // 삭제할 파일 정보를 읽어옴.
+      ContentsVO ContentsVO_read = contentsProc.read(contentno);
+      
+      String file1saved = ContentsVO_read.getFile1saved();
+      String thumb1 = ContentsVO_read.getThumb1();
+      
+      String uploadDir = Contents.getUploadDir();
+      Tool.deleteFile(uploadDir, file1saved);  // 실제 저장된 파일삭제
+      Tool.deleteFile(uploadDir, thumb1);     // preview 이미지 삭제
+      // -------------------------------------------------------------------
+      // 파일 삭제 종료
+      // -------------------------------------------------------------------
 
-    ra.addAttribute("newscateno", newscateno);
-    ra.addAttribute("word", word);
-    ra.addAttribute("now_page", now_page);
-    
-    return "redirect:/contents/list_by_cateno";    
-    
-  }   
+      // 먼저 contentsgood 삭제
+      this.contentsProc.delete_contentsgood(contentno);
+      this.contentsProc.delete_reply(contentno);
+      // 그 후 contents 삭제
+      this.contentsProc.delete(contentno); // DBMS에서 contents 삭제
+
+      this.contentsProc.updateCntCount(contentno);
+      this.contentsProc.resetCnt(contentno);
+      this.contentsProc.updateCnt(contentno);
+
+      // 페이지 관련 설정
+      HashMap<String, Object> map = new HashMap<String, Object>();
+      map.put("newscateno", newscateno);
+      map.put("word", word);
+      
+      if (this.contentsProc.list_by_cateno_search_count(map) % Contents.RECORD_PER_PAGE == 0) {
+          now_page = now_page - 1; // 삭제시 DBMS는 바로 적용되나 크롬은 새로고침등의 필요로 단계가 작동 해야함.
+          if (now_page < 1) {
+              now_page = 1; // 시작 페이지
+          }
+      }
+
+      ra.addAttribute("newscateno", newscateno);
+      ra.addAttribute("word", word);
+      ra.addAttribute("now_page", now_page);
+
+      return "redirect:/contents/list_by_cateno";    
+  }
+
    
+  /**
+   * 추천 처리 http://localhost:9093/contents/good
+   * 
+   * @return
+   */
+  @PostMapping(value = "/good")
+  @ResponseBody
+  public String good(HttpSession session, Model model, @RequestBody String json_src){ 
+    System.out.println("-> json_src: " + json_src); // json_src: {"contentsno":"5"}
+    
+    JSONObject src = new JSONObject(json_src); // String -> JSON
+    int contentno = (int)src.get("contentno"); // 값 가져오기
+    System.out.println("-> contentno: " + contentno);
+        
+    if (this.memberProc.isMember(session)) { // 회원 로그인 확인
+      // 추천을 한 상태인지 확인
+      int memberno = (int)session.getAttribute("memberno");
+      
+      HashMap<String, Object> map = new HashMap<String, Object>();
+      map.put("contentno", contentno);
+      map.put("memberno", memberno);
+      
+      int good_cnt = this.contentsgoodProc.hartCnt(map);
+      System.out.println("-> good_cnt: " + good_cnt);
+      
+      if (good_cnt == 1) {
+        System.out.println("-> 추천 해제: " + contentno + ' ' + memberno);
+        
+        ContentsGoodVO contentsgoodVO = this.contentsgoodProc.readByContentsnoMemberno(map);
+        
+        this.contentsgoodProc.delete(contentsgoodVO.getContentsgoodno()); // 추천 삭제
+        this.contentsProc.decreaseRecom(contentno); // 카운트 감소
+      } else {
+        System.out.println("-> 추천: " + contentno + ' ' + memberno);
+        
+        ContentsGoodVO contentsgoodVO_new = new ContentsGoodVO();
+        contentsgoodVO_new.setContentno(contentno);
+        contentsgoodVO_new.setMemberno(memberno);
+        
+        this.contentsgoodProc.create(contentsgoodVO_new);
+        this.contentsProc.increaseRecom(contentno); // 카운트 증가
+      }
+      
+      // 추천 여부가 변경되어 다시 새로운 값을 읽어옴.
+      int hartCnt = this.contentsgoodProc.hartCnt(map);
+      int recom = this.contentsProc.read(contentno).getRecom();
+            
+      JSONObject result = new JSONObject();
+      result.put("isMember", 1); // 로그인: 1, 비회원: 0
+      result.put("hartCnt", hartCnt); // 추천 여부, 추천:1, 비추천: 0
+      result.put("recom", recom);   // 추천인수
+      
+      System.out.println("-> result.toString(): " + result.toString());
+      return result.toString();
+      
+    } else { // 정상적인 로그인이 아닌 경우 로그인 유도
+      JSONObject result = new JSONObject();
+      result.put("isMember", 0); // 로그인: 1, 비회원: 0
+      
+      System.out.println("-> result.toString(): " + result.toString());
+      return result.toString();
+    }
+
+  }
  
 }
 

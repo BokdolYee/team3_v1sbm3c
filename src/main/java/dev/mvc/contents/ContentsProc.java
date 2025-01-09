@@ -7,7 +7,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import dev.mvc.contentsgood.ContentsGoodDAOInter;
 import dev.mvc.newscate.NewsCateDAOInter;
+import dev.mvc.reply.ReplyDAOInter;
 import dev.mvc.tool.Security;
 import dev.mvc.tool.Tool;
 
@@ -22,6 +24,12 @@ public class ContentsProc implements ContentsProcInter {
   @Autowired // ContentsDAOInter interface를 구현한 클래스의 객체를 만들어 자동으로 할당해라.
   private ContentsDAOInter contentsDAO;
 
+  @Autowired
+  private ContentsGoodDAOInter contentsgoodDAO;
+  
+  @Autowired
+  private ReplyDAOInter replyDAO;
+  
   @Override // 추상 메소드를 구현했음.
   public int create(ContentsVO contentsVO) {
     // -------------------------------------------------------------------
@@ -240,7 +248,21 @@ public class ContentsProc implements ContentsProcInter {
   @Override
   public int delete(int contentno) {
     int cnt = this.contentsDAO.delete(contentno);
-    
+
+    return cnt;
+  }
+  
+  @Override
+  public int delete_contentsgood(int contentno) {
+    int cnt = this.contentsgoodDAO.delete_conts(contentno);
+
+    return cnt;
+  }
+  
+  @Override
+  public int delete_reply(int contentno) {
+    int cnt = this.replyDAO.delete_conts(contentno);
+
     return cnt;
   }
 
@@ -298,4 +320,15 @@ public class ContentsProc implements ContentsProcInter {
     
   }
   
+  @Override
+  public void increaseRecom(int contentno) {
+    contentsDAO.increaseRecom(contentno);
+    
+  }
+  
+  @Override
+  public void decreaseRecom(int contentno) {
+    contentsDAO.decreaseRecom(contentno);
+    
+  }
 }

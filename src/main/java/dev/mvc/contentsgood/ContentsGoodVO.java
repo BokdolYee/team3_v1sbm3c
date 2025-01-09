@@ -22,6 +22,8 @@ public class ContentsGoodVO {
     /** 회원 번호 */
     private int memberno;
 
+    /** 추천 or 비추천 */
+    private String goodbad = "";
     
 
 }

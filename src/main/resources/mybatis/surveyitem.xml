@@ -1,59 +1,96 @@
 <?xml version="1.0" encoding="UTF-8"?>
+ 
+
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="dev.mvc.surveyitem.SurveyitemDAOInter"> 
-  <!-- 등록 -->
-  <insert id="create" parameterType="dev.mvc.surveyitem.SurveyitemVO">
-    INSERT INTO surveyitem(surveyitemno, surveyno, seqno, item, cnt) 
-    VALUES(surveytiem_seq.nextval, #{surveyitemno}, #{surveyno}, #{seqno}, #{item}, #{cnt})
-  </insert>
 
-  <!-- 조회 -->
+  <insert id="create" parameterType="dev.mvc.surveyitem.SurveyitemVO">
+    INSERT INTO surveyitem(surveyitemno, surveytopicno, item, itemseq, itemcnt) 
+    VALUES(surveyitem_seq.nextval, #{surveytopicno}, #{item}, #{itemseq}, #{itemcnt})
+  </insert>
+  
   <select id="read" resultType="dev.mvc.surveyitem.SurveyitemVO" parameterType="Integer">
-    SELECT (surveyitemno, surveyno, seqno, item, cnt
+    SELECT surveyitemno, surveytopicno, item, itemseq, itemcnt
     FROM surveyitem
     WHERE surveyitemno=#{surveyitemno}
   </select>  
-
-  <!-- 수정 -->
+  
   <update id="update" parameterType="dev.mvc.surveyitem.SurveyitemVO">
     UPDATE surveyitem 
-    SET seqno=#{seqno}, item=#{item}, cnt=#{cnt}
+    SET item=#{item}, itemseq=#{itemseq}
     WHERE surveyitemno=#{surveyitemno}
   </update> 
-
-  <!-- 삭제 -->
+  
   <delete id="delete" parameterType="int">
     DELETE FROM surveyitem WHERE surveyitemno=#{surveyitemno}
   </delete>
 
-  <!-- 전체 목록 -->
-  <select id="list_all" resultType="dev.mvc.surveyitem.SurveyitemVO">
-    SELECT (surveyitemno, surveyno, seqno, item, cnt
-    FROM surveyitem 
-    ORDER BY surveyitemno ASC
+   <!-- 특정 설문조사문제에 대한 모든 항목 조회 -->
+   <select id="listBySurveytopicno" resultType="dev.mvc.surveyitem.SurveyitemVO" parameterType="int">
+       SELECT surveyitemno, surveytopicno, item, itemseq, itemcnt
+       FROM surveyitem
+       WHERE surveytopicno = #{surveytopicno}
+       ORDER BY itemseq
+   </select>
+   
+  <!-- 선택 인원 수 증가 -->
+      <update id="increaseItemCount" parameterType="String">
+       UPDATE surveyitem
+       SET itemcnt = itemcnt + 1
+       WHERE item = #{item} 
+      </update>
+   
+ 
+  
+  
+   <!-- 검색 개수 -->
+  <select id="list_search_count" resultType="Integer" parameterType="String">
+    SELECT COUNT(*) as cnt
+    FROM surveyitem
+    <if test="word != null and word != ''">
+      WHERE UPPER(item) LIKE '%' || UPPER(#{word}) || '%'
+    </if>
   </select>
 
-     <!--우선 순위 높임, 10 등 -> 1 등-->
-    <update id="update_itemseqno_forward" parameterType="Integer">
-    Update surveyitem Set seqno=seqno-1
-    Where surveyitemno=#{surveyitemno}
-    </update>
-    
-      <!--우선 순위 낮춤, 1 등 -> 10 등-->
-    <update id="update_itemseqno_backward" parameterType="Integer">
-    Update surveyitem Set seqno=seqno+1
-    Where itemseqno=#{itemseqno}
-    </update>
+  <!-- 검색 목록 -->
+  <select id="list_search" resultType="dev.mvc.surveyitem.SurveyitemVO" parameterType="String">
+    SELECT surveyitemno, surveytopicno, item, itemseq, itemcnt
+    FROM surveyitem
+    <if test="word != null and word != ''">
+      WHERE UPPER(item) LIKE '%' || UPPER(#{word}) || '%'
+    </if>
+    ORDER BY itemseq ASC
+  </select>
   
+    <!-- 페이징 -->
+  <select id="list_paging" resultType="dev.mvc.surveyitem.SurveyitemVO" parameterType="Map">
+    SELECT surveyitemno, surveytopicno, item, itemseq, itemcnt, r
+    FROM (
+        SELECT surveyitemno, surveytopicno, item, itemseq, itemcnt, rownum as r
+        FROM (
+            SELECT surveyitemno, surveytopicno, item, itemseq, itemcnt
+            FROM surveyitem
+            ORDER BY itemseq ASC
+        )
+        WHERE rownum &lt;= #{end_num}
+    )
+    WHERE r &gt;= #{start_num}
+  </select>
+  
+  <!-- 검색 + 페이징 -->
+  <select id="list_search_paging" resultType="dev.mvc.surveyitem.SurveyitemVO" parameterType="Map">
+    SELECT surveyitemno, surveytopicno, item, itemseq, itemcnt, r
+    FROM (
+        SELECT surveyitemno, surveytopicno, item, itemseq, itemcnt, rownum as r
+        FROM (
+            SELECT surveyitemno, surveytopicno, item, itemseq, itemcnt
+            FROM surveyitem
+            WHERE (UPPER(item) LIKE '%' || UPPER(#{word}) || '%') OR (UPPER(surveyitemno) LIKE '%' || UPPER(#{word}) || '%')
+            ORDER BY itemseq ASC
+        )
+      
+    )
+    WHERE r &gt;= #{start_num}  AND r &lt;= #{end_num}  <!-- WHERE r >= 1 AND r <= 3 -->
+  </select>
 
-
-  <!-- 조회수 증가 -->
-     <update id="increaseCnt" parameterType="int">
-        UPDATE surveyitem
-        SET cnt = cnt + 1
-        WHERE surveyitemno = #{surveyitemno}
-    </update>
-    
-  
-  
 </mapper>

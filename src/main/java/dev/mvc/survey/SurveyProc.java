@@ -7,10 +7,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import dev.mvc.newscate.NewsCateVO;
-import dev.mvc.newscate.NewsCateVOMenu;
-
-
 
 
 
@@ -232,7 +228,31 @@ public class SurveyProc implements SurveyProcInter{
 
   @Override
   public int increaseCnt(int surveyno) {
+    int cnt = this.surveyDAO.increaseCnt(surveyno);
+    return cnt;
+  }
+
+  @Override
+  public int increaseRecom(int surveyno) {
+    int cnt = this.surveyDAO.increaseRecom(surveyno);
+    return cnt;
+  }
+
+  @Override
+  public int decreaseRecom(int surveyno) {
+    int cnt = this.surveyDAO.decreaseRecom(surveyno);
+    return cnt;
+  }
+
+  @Override
+  public int deleteSurveygood(int surveyno) {
     // TODO Auto-generated method stub
+    return 0;
+  }
+  
+  @Override
+  public int good(int surveyno) {
+    
     return 0;
   }
 

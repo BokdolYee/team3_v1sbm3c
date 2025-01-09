@@ -17,9 +17,9 @@
       <input type="hidden" name="surveyno" th:value="${surveytopicVO.surveyno}"> <!-- /* 값 유지 */-->
       <div>
         <label>설문조사 개별 문제 제목</label>
-        <input type="text" class="form-control" style="width: 50%;" th:field="*{topic}" autofocus="autofocus">
-        <div th:if="${#fields.hasErrors('topic')}" class="alert alert-danger" role="alert" style="margin-top: 5px;">
-          <div th:each="err: ${#lists.sort(#fields.errors('topic'))}" th:text="${err}"></div>
+        <input type="text" class="form-control" style="width: 50%;" th:field="*{title}" autofocus="autofocus">
+        <div th:if="${#fields.hasErrors('title')}" class="alert alert-danger" role="alert" style="margin-top: 5px;">
+          <div th:each="err: ${#lists.sort(#fields.errors('title'))}" th:text="${err}"></div>
         </div>  
       </div>
       <div>
@@ -31,15 +31,17 @@
         </div>  
       </div>      
       <div class="content_body_bottom">
+        <!-- 저장 버튼 -->
         <button type="submit" class="btn btn-secondary btn-sm">저장</button>
+        
+        <!-- 취소 버튼 -->
         <button type="button" 
-        onclick="location.href='/survey/read/{surveyno}'" 
-        th:onclick="|location.href='/survey/read/${surveytopicVO.surveyno}'|" 
-        class="btn btn-secondary btn-sm">
-  취소
-</button>
-
-      </div>
+                th:onclick="|location.href='/surveytopic/read?surveyno=' + ${surveytopicVO.surveyno}|" 
+                class="btn btn-secondary btn-sm">
+            취소
+        </button>
+    </div>
+    
     </form>
   </div>
 </div>

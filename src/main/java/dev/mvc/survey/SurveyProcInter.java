@@ -80,6 +80,13 @@ public interface SurveyProcInter {
   
   public int increaseCnt(int surveyno);
   
-
-
+//추천수 증가
+ public int increaseRecom(int surveyno);
+ 
+ // 추천수 감소
+ public int decreaseRecom(int surveyno);
+ 
+ public int deleteSurveygood(int surveyno);
+ 
+ public int good(int surveyno);
 }

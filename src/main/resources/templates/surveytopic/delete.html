@@ -20,14 +20,15 @@
       설문조사 항목을 삭제하시겠습니까? 삭제하면 복구할 수 없습니다.<br>      
     </div>
     <div class="content_body_bottom" >
-      제목: <span th:text="${surveytopicVO.topic}"></span>
-      <button type="submit" class="btn btn-secondary btn-sm">삭제</button>
-      <button type="button" 
-        onclick="location.href='/survey/read/{surveyno}'" 
-        th:onclick="|location.href='/survey/read/${surveytopicVO.surveyno}'|" 
-        class="btn btn-secondary btn-sm">
-  취소
-</button>
+      제목: <span th:text="${surveytopicVO.title}"></span>
+      <button type="submit" class="btn btn-secondary btn-sm">확인</button>
+    
+    <!-- 취소 버튼 -->
+    <button type="button" 
+            th:onclick="|location.href='/surveytopic/read?surveyno=' + ${surveytopicVO.surveyno}|" 
+            class="btn btn-secondary btn-sm">
+        취소
+    </button>
 
     </div>
     

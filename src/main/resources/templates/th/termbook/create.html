@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  <div class='title_line'>
+    <span th:text="'주식 등록'" class="title_line_text"></span>
+  </div>
+
+  <aside class="aside_right">
+    <a th:href="@{/th/termbook/create}">등록</a>
+    <span class='menu_divide'>│</span>
+    <a href="javascript:location.reload();">새로고침</a>
+    <span class='menu_divide'>│</span>
+    <a th:href="@{|/th/termbook/list_all|}">목록</a>
+  </aside>
+
+  <div class='menu_line'></div>
+
+  <!-- 폼 시작 -->
+  <form category="frm" method="post" th:object="${termbookVO}" th:action="@{/termbook/create}" enctype="multipart/form-data">
+    <div>
+      <label for="term_title">용어</label>
+      <input type="text" id="term_title" name="term_title" th:value="${termbookVO.term_title}" required="required"
+             class="form-control" style="width: 100%;">
+    </div>
+
+    <div>
+      <label for="category">범주</label>
+      <input type="text" id="category" name="category" th:value="${termbookVO.category}" required="required"
+             class="form-control" style="width: 100%;">
+    </div>
+
+    <div>
+      <label for="memo">설명</label>
+      <textarea id="memo" name="memo" th:text="${termbookVO.memo}" class="form-control"
+                rows="12" style="width: 100%;">용어에 대한 설명을 입력하세요.</textarea>
+    </div>
+
+    <div class="content_body_bottom">
+      <button type="submit" class="btn btn-secondary btn-sm">등록</button>
+      <button type="button" th:attr="onclick=|location.href='/termbook/list_all'|" class="btn btn-secondary btn-sm">목록</button>
+    </div>
+  </form>
+  <!-- 폼 끝 -->
+
+</div>
+</html>

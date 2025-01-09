@@ -23,6 +23,12 @@
             <input type="hidden" id="stockno" name="stockno" th:value="${stockdataVO.stockno}" />
             <input type="number" id="stockno_display" value="${stockdataVO.stockno}" class="form-control" readonly="readonly" />
         </div>
+        
+        <div>
+            <label for="symbol">종목코드</label>
+            <!-- stockno를 hidden 필드로 변경 -->
+            <input type="string" name="symbol" th:value="${stockdataVO.symbol}"  class="form-control" readonly="readonly" />
+        </div>
   
         <input type="hidden" id="sdatano" name="sdatano" th:value="${stockdataVO.sdatano}" />
   

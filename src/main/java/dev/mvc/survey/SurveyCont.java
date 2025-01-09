@@ -211,14 +211,12 @@ public class SurveyCont {
                             
       
       this.surveyProc.increaseCnt(surveyno);
-<<<<<<< HEAD
+
 //      this.surveyitemProc.increaseitemCnt(surveyitemno);
       
-      return "/surveytopic/read" + surveyVO.getSurveyno();    
-=======
+      return "/th/surveytopic/read" + surveyVO.getSurveyno();    
 
-      return "/th/survey/read";    
->>>>>>> 6a9a98d7b9108e0af0b2f4564001cee5458f399c
+
     }    
 
 
@@ -448,18 +446,13 @@ public class SurveyCont {
         int no = search_count - ((now_page - 1) * this.record_per_page);
         model.addAttribute("no", no);
 
-<<<<<<< HEAD
-     
 
+   
 
-        return "/survey/list_search";
-    }
-
-=======
         return "/th/survey/list_search"; 
       }
       
->>>>>>> 6a9a98d7b9108e0af0b2f4564001cee5458f399c
+
       
     
     /**

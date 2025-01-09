@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html layout:decorate="~{layout}"> <!-- layout.html 상속-->
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
 <div layout:fragment="content">
   <div class="title_line">
     설문조사 개별 문제 <span th:if="${word != null and word != ''}" th:text="|${word} ${search_cnt} 건|"></span>
@@ -8,7 +8,7 @@
 
   <div class="menu_line"></div>
   
-  <div th:replace="~{surveytopic/list_search_com::list_search_fragment}"></div> 
+  <div th:replace="~{th/surveytopic/list_search_com::list_search_fragment}"></div> 
 
   <aside class="aside_right">
     <a th:href="@{|/surveytopic/list_search?word=${word}&now_page=${now_page}|}" style ="color: black">목록</a>
@@ -26,7 +26,7 @@
  
 
   <!--/* '/survey/list_all_com.html' 파일의 list_all_fragment를 가져다 사용 */--> 
-  <div th:replace="~{surveytopic/list_all_com_join::list_all_join_fragment}"></div> 
+  <div th:replace="~{th/surveytopic/list_all_com_join::list_all_join_fragment}"></div> 
   
 </div>
 </html>

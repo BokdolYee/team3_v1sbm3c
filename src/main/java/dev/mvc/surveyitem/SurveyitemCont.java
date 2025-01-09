@@ -64,7 +64,7 @@ public class SurveyitemCont {
           model.addAttribute("surveytopicVO", surveytopicVO);
 
           
-          return "/surveyitem/create"; // survey/create.html로 리턴
+          return "/th/surveyitem/create"; // survey/create.html로 리턴
       } 
   
 
@@ -85,7 +85,7 @@ public class SurveyitemCont {
         bindingResult.getAllErrors().forEach(error -> {
             System.out.println("Validation Error: " + error.getDefaultMessage());
         });
-        return "/surveyitem/create"; // 에러 발생 시 다시 입력 폼으로
+        return "/th/surveyitem/create"; // 에러 발생 시 다시 입력 폼으로
     }
      
     System.out.println("Received surveytopicno: " + surveyitemVO.getSurveytopicno());
@@ -103,7 +103,7 @@ public class SurveyitemCont {
     }
 
     model.addAttribute("cnt", cnt); // 결과 추가
-    return "/surveyitem/msg"; // 메시지 페이지로 이동
+    return "/th/surveyitem/msg"; // 메시지 페이지로 이동
   } else {
     return "redirect:/member/login_cookie_need"; // redirect
   }
@@ -130,7 +130,7 @@ public class SurveyitemCont {
       model.addAttribute("surveyitemList", surveyitemList);         
      
       System.out.println("->surveyitemList:" + surveyitemList);
-      return "/surveytopic/read/";    
+      return "/th/surveytopic/read/";    
     }    
     
     /**
@@ -153,7 +153,7 @@ public class SurveyitemCont {
         
 
   
-        return "/surveyitem/update"; // templaes/cate/update.html
+        return "/th/surveyitem/update"; // templaes/cate/update.html
       } else {
         return "redirect:/member/login_cookie_need"; // redirect
       }
@@ -207,7 +207,7 @@ public class SurveyitemCont {
         model.addAttribute("surveytopicVO", surveytopicVO);
         
 
-        return "/surveyitem/delete"; // templaes/surveyitem/delete.html
+        return "/th/surveyitem/delete"; // templaes/surveyitem/delete.html
         
       } else {
         model.addAttribute("code", "delete_fail");
@@ -279,7 +279,7 @@ public class SurveyitemCont {
     model.addAttribute("no", no);
     // --------------------------------------------------------------------------------------      
     
-    return "/surveyitem/list_all";
+    return "/th/surveyitem/list_all";
     } 
     
     @GetMapping(value = "/list_search")
@@ -327,6 +327,6 @@ public class SurveyitemCont {
         int no = search_cnt - ((now_page - 1) * this.record_per_page);
         model.addAttribute("no", no);
 
-        return "/surveyitem/list_search"; 
+        return "/th/surveyitem/list_search"; 
     }
 }

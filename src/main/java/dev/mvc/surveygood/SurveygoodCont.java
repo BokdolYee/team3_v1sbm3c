@@ -111,7 +111,7 @@ public class SurveygoodCont {
     ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
     model.addAttribute("menu", menu);
 
-    return "/surveygood/list_all"; // /templates/calendar/list_all.html
+    return "/th/surveygood/list_all"; // /templates/calendar/list_all.html
   }
   /**
    * 삭제 처리 http://localhost:9091/calendar/delete?calendarno=1

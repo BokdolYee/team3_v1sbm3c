@@ -47,7 +47,7 @@
                     AND m.nickname LIKE '%' || #{keyword} || '%'
                   </when>
                   <when test = "searchType == 'goodbad'">
-                    AND g.goodbad LIKE '%' || #{keyword} || '%'
+                    AND LOWER(g.goodbad) LIKE '%' || LOWER(#{keyword}) || '%'
                   </when>
                 </choose>
               </if>

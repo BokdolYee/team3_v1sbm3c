@@ -635,34 +635,26 @@
   }
   
   .vote_buttons {
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-  }
-  
-  .vote_buttons button {
-      /*padding: 8px 20px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      background: white;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 5px;*/
-      position: relative; /* 자식 요소 배치를 위한 기준점 설정 */
-      width: 80px;  /* 버튼 너비 축소 */
-      height: 80px; /* 버튼 높이 축소 */
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      background: none;
-      cursor: pointer;
+    display: flex;
+    justify-content: center;
+    gap: 30px;  /* 버튼 사이 간격 */
   }
 
-  .vote_img {
+  .vote_up, .vote_down {
+    position: relative; /* 자식 요소 배치를 위한 기준점 설정 */
+    width: 80px;  /* 버튼 너비 축소 */
+    height: 80px; /* 버튼 높이 축소 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: none;
+    cursor: pointer;
+  }
+
+  .vote_up img, .vote_down img {
     width: 65px;
     height: 65px;
     object-fit: contain;  /* 이미지 비율 유지 */
@@ -672,10 +664,59 @@
       background: #f5f5f5;
   }
   
-  /* 추천/비추천 숫자 스타일 */
+  /* 추천 비추천 숫자 스타일 */
   .vote_buttons span {
       /*font-weight: bold;*/
       position: absolute;
       bottom: 5px; /* 하단 여백 */
       font-size: 12px; /* 텍스트 크기 */
+  }
+
+  /* 띄울 메시지 상자 스타일 */
+  .toast-message {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 12px 24px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 1000;
+    transition: opacity 0.4s ease-in-out;
+    opacity: 0;
+  }
+
+  .toast-message span {
+    color: white;
+  }
+  
+  .toast-message.show {
+    opacity: 1;
+  }
+  
+  .toast-message.hidden {
+    display: none;
+  }
+  
+  .toast-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+  }
+  
+  .toast-close {
+    background: none;
+    border: none;
+    color: white;
+    margin-left: 8px;
+    cursor: pointer;
+    padding: 0 4px;
+  }
+
+  .img-icon {
+    width: 35px;
+    height: 35px;
+    border-radius: 4px;
   }

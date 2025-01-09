@@ -82,7 +82,7 @@
   <!-- 게시물 수정(제목, 글내용) -->
   <update id="update_text" parameterType="dev.mvc.post_earning.Post_earningVO">
     UPDATE post_earning
-    SET title=#{title}, content=#{content}
+    SET title=#{title}, content=#{content}, udate=sysdate
     WHERE postno = #{postno}
   </update>
   

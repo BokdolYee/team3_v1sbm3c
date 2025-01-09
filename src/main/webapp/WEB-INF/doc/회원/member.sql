@@ -54,3 +54,5 @@ VALUES(member_seq.nextval, 'admin', 'fS/kjO+fuEKk06Zl7VYMhg==', 'admin', '202412
                 '01012345678', '남성', '12345', '5층 512호', 0, sysdate, 1);
 
 SELECT * FROM member;
+
+SELECT * FROM member WHERE id = 'sun@gmail.com';

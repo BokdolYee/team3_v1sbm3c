@@ -431,7 +431,7 @@ public class MemberCont {
 
       model.addAttribute("memberVO", memberVO);
 
-      return "/th/member/update_passwd"; // /tamplates/th/member/pass_update.html
+      return "/th/member/update_passwd"; // /tamplates/th/member/update_passwd.html
     } else if (this.memberProc.isAdmin(session)) {
       int memberno = (int) session.getAttribute("memberno"); // session에서 가져오기
 

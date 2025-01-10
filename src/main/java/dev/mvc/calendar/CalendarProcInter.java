@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import dev.mvc.newscate.NewsCateVO;
 import dev.mvc.stock.StockVO;
 
 public interface CalendarProcInter {
@@ -19,7 +20,7 @@ public interface CalendarProcInter {
    * 전체 목록
    * @return
    */
-  public ArrayList<CalendarVO> list_all();  
+  public ArrayList<CalendarVO> list();  
   
   /**
    * 조회
@@ -80,8 +81,9 @@ public interface CalendarProcInter {
   public Integer list_search_count(Map<String, Object> map);
 
   public String pagingBox(int now_page, String searchLabel,
-              int search_count, int record_per_page, int page_per_block);
+                           int search_count, int record_per_page, int page_per_block);
   
   public ArrayList<CalendarVO> listSearchPaging(Map<String, Object> map);
 
+  
 }

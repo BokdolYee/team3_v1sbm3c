@@ -70,7 +70,7 @@
     <span class='menu_divide' >│</span>
     <a th:href="@{|/calendar/update?calendarno=${calendarVO.calendarno}|}" style="color: black;">수정</a>
     <span class='menu_divide' >│</span>
-    <a th:href="@{|/calendar/delete/${calendarVO.calendarno}|}" style="color: black;">삭제</a>  
+    <a th:href="@{|/calendar/delete|}" style="color: black;">삭제</a>  
  </aside> 
 
   <aside class="aside_right" th:if="${session.grade != 'admin'}">

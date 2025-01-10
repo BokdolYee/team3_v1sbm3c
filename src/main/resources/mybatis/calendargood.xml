@@ -48,6 +48,52 @@
     SELECT r.calendargoodno, r.rdate, r.calendarno, c.title as c_title, r.memberno, m.id, m.name as m_name
     FROM calendar c, calendargood r, member m
     WHERE c.calendarno = r.calendarno AND r.calendarno = m.memberno
-    ORDER BY calendargoodno DESC
+    ORDER BY rdate DESC
   </select>
+  
+  <!-- 추천 비추천 목록(검색 + 페이징, 테이블 3개 JOIN)(관리자만 확인) -->
+  <select id="list_search_paging" parameterType="dev.mvc.dto.SearchDTO" resultType="dev.mvc.calendargood.CalendarCalendargoodMemberVO">
+    SELECT *
+    FROM (
+      SELECT r.calendargoodno, r.rdate, r.calendarno, c.title AS c_title, r.memberno, m.id, m.name AS m_name,
+             ROW_NUMBER() OVER (ORDER BY r.rdate DESC) rnum
+      FROM calendar c
+      INNER JOIN calendargood r ON c.calendarno = r.calendarno
+      INNER JOIN member m ON r.memberno = m.memberno
+      <where>
+        <if test="searchType != null and keyword != null">
+          <choose>
+            <when test="searchType == 'name'">
+              AND m.name LIKE '%' || #{keyword} || '%'
+            </when>
+            <when test="searchType == 'title'">
+              AND c.title LIKE '%' || #{keyword} || '%'
+            </when>
+          </choose>
+        </if>
+      </where>
+    )
+    WHERE rnum &gt; #{offset} AND rnum &lt;= (#{offset} + #{size})
+  </select>
+
+
+
+  
+  <!-- 추천 비추천 검색된 수 -->
+  <select id="list_search_count" parameterType="dev.mvc.dto.SearchDTO" resultType="int">
+    SELECT COUNT(*)
+    FROM calendar c
+    INNER JOIN calendargood r ON c.calendarno = r.calendarno
+    INNER JOIN member m ON r.memberno = m.memberno
+    <where>
+      <if test="searchType != null and keyword != null">
+        <choose>
+          <when test="searchType == 'name'">
+            AND m.name LIKE '%' || #{keyword} || '%'
+          </when>
+        </choose>
+      </if>
+    </where>
+  </select>
+
 </mapper>

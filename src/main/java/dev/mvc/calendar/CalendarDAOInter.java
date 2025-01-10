@@ -3,6 +3,7 @@ package dev.mvc.calendar;
 import java.util.ArrayList;
 import java.util.Map;
 
+import dev.mvc.newscate.NewsCateVO;
 import dev.mvc.stock.StockVO;
 
 public interface CalendarDAOInter {
@@ -18,7 +19,7 @@ public interface CalendarDAOInter {
    * 전체 목록
    * @return
    */
-  public ArrayList<CalendarVO> list_all();
+  public ArrayList<CalendarVO> list();
 
   /**
    * 조회

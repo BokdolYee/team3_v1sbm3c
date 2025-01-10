@@ -2,8 +2,12 @@ package dev.mvc.calendargood;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import dev.mvc.calendar.CalendarVO;
+import dev.mvc.dto.SearchDTO;
+import dev.mvc.post_goodbad.Post_goodbadVO;
+import dev.mvc.stock.StockVO;
 
 public interface CalendargoodProcInter {
   /**
@@ -57,4 +61,19 @@ public interface CalendargoodProcInter {
   public CalendargoodVO readByboth(HashMap<String, Object> map);
   
   public ArrayList<CalendarCalendargoodMemberVO> list_all_join();  
+  
+  /**
+   * 추천, 비추천 검색 + 페이징 목록
+   * @param searchDTO
+   * @return
+   */
+  public ArrayList<CalendarCalendargoodMemberVO> list_search_paging(SearchDTO searchDTO);
+  
+  /**
+   * 검색 조건에 맞는 총 추천 비추천 내역 수
+   * @param searchDTO
+   * @return
+   */
+  public int list_search_count(SearchDTO searchDTO);
+
 }

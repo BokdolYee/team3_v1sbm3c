@@ -27,7 +27,9 @@ import dev.mvc.calendargood.CalendargoodProcInter;
 import dev.mvc.calendargood.CalendargoodVO;
 import dev.mvc.member.MemberProcInter;
 import dev.mvc.newscate.NewsCateProcInter;
+import dev.mvc.newscate.NewsCateVO;
 import dev.mvc.newscate.NewsCateVOMenu;
+import dev.mvc.stock.StockVO;
 import dev.mvc.tool.Tool;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -51,9 +53,11 @@ public class CalendarCont {
   @Qualifier("dev.mvc.calendargood.CalendargoodProc") 
   CalendargoodProcInter calendargoodProc;
   
+  /** 페이지당 출력할 레코드 갯수, nowPage는 1부터 시작 */
   public int record_per_page = 4;
-  public int page_per_block = 10;
-  private String list_file_name = "/th/calendar/list_search";
+
+  /** 블럭당 페이지 수, 하나의 블럭은 10개의 페이지로 구성됨 */
+  public int page_per_block = 10;  
   
   /**
    * POST 요청시 새로고침 방지, POST 요청 처리 완료 → redirect → url → GET → forward -> html 데이터
@@ -123,15 +127,16 @@ public class CalendarCont {
    * @return
    */
   @GetMapping(value = "/list_all")
-  public String list_all(@RequestParam(name = "searchLabel", defaultValue = "") String searchLabel,
-      HttpSession session, 
-      @RequestParam(name = "now_page", defaultValue = "1") int now_page, Model model) {
+  public String list_all(HttpSession session, 
+      @RequestParam(name = "searchLabel", defaultValue = "") String searchLabel,
+      @RequestParam(name = "now_page", defaultValue = "1") int now_page,
+      Model model) {
     
  // start_num 계산: 1페이지일 때 0, 2페이지일 때 10, 3페이지일 때 20
     int start_num = (now_page - 1) * record_per_page + 1;
     // end_num 계산: start_num + record_per_page - 1
     int end_num = start_num + record_per_page - 1;
-
+    
     Map<String, Object> params = new HashMap<>();
     params.put("searchLabel", searchLabel);
     params.put("nowPage", now_page);
@@ -139,20 +144,20 @@ public class CalendarCont {
     params.put("end_num", end_num);     // end_num
     params.put("recordsPerPage", this.record_per_page);
     
- // 페이징 및 검색 데이터 목록
+    // 페이징 및 검색 데이터 목록
     List<CalendarVO> calendarList = calendarProc.listSearchPaging(params);
     model.addAttribute("calendarList", calendarList);
-    
- // 전체 개수
+
+    // 전체 개수
     int search_count = calendarProc.list_search_count(params);
     
     // 페이징 HTML 생성
     String paging = calendarProc.pagingBox(now_page, searchLabel, search_count, this.record_per_page, this.page_per_block);
     model.addAttribute("paging", paging);
     model.addAttribute("now_page", now_page);
-
-    ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
-    model.addAttribute("menu", menu);
+    
+//    ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
+//    model.addAttribute("menu", menu);
 
     return "/th/calendar/list_all"; // /templates/calendar/list_all.html
   }
@@ -397,7 +402,7 @@ public class CalendarCont {
     System.out.println("-> calendarno: " + calendarno);
     
     
-    if (this.memberProc.isAdmin(session)) { // 관리자 로그인 확인
+    if (this.memberProc.isMember(session) || this.memberProc.isAdmin(session)) { // 회원 확인
       // 추천을 한 상태
       int memberno = (int)session.getAttribute("memberno");
       HashMap<String, Object> map = new HashMap<String, Object>();
@@ -448,4 +453,5 @@ public class CalendarCont {
     }
 
   }
+  
 }

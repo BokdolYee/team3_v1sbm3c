@@ -47,6 +47,14 @@ public class ReplyProc implements ReplyProcInter {
     
     return cnt;
   }
+  
+  @Override
+  public int delete_conts(int contentno) {
+    int cnt = this.replyDAO.delete_conts(contentno);
+    
+    return cnt;
+  }
+  
   @Override
   public List<ReplyVO> listByContentNoJoin(int contentno) {
       List<ReplyVO> list = replyDAO.listByContentNoJoin(contentno);

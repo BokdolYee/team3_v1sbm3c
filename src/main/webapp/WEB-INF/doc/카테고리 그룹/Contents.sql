@@ -27,3 +27,7 @@ CREATE SEQUENCE contents_seq
   CACHE 2                        -- 2번은 메모리에서만 계산
   NOCYCLE;                      -- 다시 1부터 생성되는 것을 방지
   
+  
+SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, newscateno, recom, file1, file1saved, thumb1, size1
+FROM contents
+WHERE contentno = 1;

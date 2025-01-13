@@ -4,6 +4,56 @@
 <div layout:fragment="content">
 
   <script>
+    let toastTimer; // 전역 변수로 토스트 타이머 선언
+
+    /* 추천 혹은 비추천을 이미 했을 경우 띄울 토스트 메시지 */
+    function showToast(message) {
+      let toast = ""
+      if(message ==='이미 호재로 간주한 게시물입니다.') {
+        toast = document.getElementById('toast-message-good');
+      } else if(message === '이미 악재로 간주한 게시물입니다.') {
+        toast = document.getElementById('toast-message-bad');
+      }
+      const messageSpan = toast.querySelector('span');
+
+      // 기존 타이머가 있으면 제거
+      if(toastTimer) {
+        clearTimeout(toastTimer);
+      }
+      
+      // 메시지 설정
+       messageSpan.textContent = message;
+
+      // 토스트 표시
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('show'),100);
+
+      // 3초 후 자동으로 사라짐
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+          toast.classList.add('hidden');
+        }, 300);  // 페이드아웃 애니메이션이 완료된 후 숨김
+      }, 3000);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // 모든 닫기 버튼에 대해 이벤트 리스너 등록
+      document.querySelectorAll('.toast-close').forEach(button => {
+        button.addEventListener('click', function() {
+          const toast = this.closest('.toast-message'); // 현재 버튼의 부모 토스트 메시지 찾기
+
+          // 기존 타이머가 있으면 제거
+          if(toastTimer) {
+            clearTimeout(toastTimer);
+          }
+
+          toast.classList.remove('show');
+          setTimeout(() => toast.classList.add('hidden'), 300);
+        });
+      });
+    });
+
     function good(event) {
       event.preventDefault();
 
@@ -35,24 +85,27 @@
           if(data.cnt == 1) {
             // 추천수 DOM 요소 찾기
             const goodcntElement = document.querySelector('.vote_up span');
-
             //화면 상단 추천수 DOM 요소 찾기
-            const goodcntElement2 = document.querySelector
+            const goodcntElement2 = document.querySelectorAll('.post_info span');
 
-            //현재 추천수 추출 및 증가
-            const currentCount = parseInt(goodcntElement.textContent.match(/\d+/)[0]);
+            // 추천이 등록됐을 때 db에서 증가된 추천수 가져오기
+            const goodcnt = data.goodcnt;
 
             //화면 업데이트
-            goodcntElement.textContent = `호재(${currentCount + 1})`;
+            goodcntElement.textContent = `호재(${goodcnt})`;
+            goodcntElement2[3].textContent = `추천수: ${goodcnt}`
+
             return;
           }
           else if(data.cnt == "g") {
-            alert("이미 호재로 간주한 게시물입니다.");
-            return false;
+            // 토스트 호출
+            showToast('이미 호재로 간주한 게시물입니다.');
+            return;
           }
           else if(data.cnt == "b") {
-            alert("이미 악재로 간주한 게시물입니다.");
-            return false;
+            // 토스트 호출
+            showToast('이미 악재로 간주한 게시물입니다.');
+            return;
           }
           else if(data.cnt == "login_fail");
             location.href = "/member/login_cookie_need";
@@ -70,7 +123,7 @@
 
       const session = "[[${session.memberno}]]";
       const postno = "[[${post_earningVO.postno}]]";
-      const goodbad = "g";
+      const goodbad = "b";
       const url = "/post_goodbad/create";
 
       if(session == null) {
@@ -97,20 +150,23 @@
             // 비추천수 DOM 요소 찾기
             const badcntElement = document.querySelector('.vote_down span');
 
-            //현재 추천수 추출 및 증가
-            const currentCount = parseInt(badcntElement.textContent.match(/\d+/)[0]);
+            // 비추천이 등록됐을 때 db에서 증가된 비추천수 가져오기
+            const badcnt = data.badcnt;
 
             //화면 업데이트
-            goodcntElement.textContent = `악재(${currentCount + 1})`;
+            badcntElement.textContent = `악재(${badcnt})`;
+
             return;
           }
           else if(data.cnt == "g") {
-            alert("이미 호재로 간주한 게시물입니다.");
-            return false;
+            // 토스트 호출
+            showToast('이미 호재로 간주한 게시물입니다.');
+            return;
           }
           else if(data.cnt == "b") {
-            alert("이미 악재로 간주한 게시물입니다.");
-            return false;
+            // 토스트 호출
+            showToast('이미 악재로 간주한 게시물입니다.');
+            return;
           }
           else if(data.cnt == "login_fail");
             location.href = "/member/login_cookie_need";
@@ -156,6 +212,7 @@
         });
       }
     }
+
   </script>
 
   <div class='title_line'>수익 인증 게시판</div>
@@ -198,8 +255,8 @@
     
       <div class="post_footer">
         <div class="vote_buttons">
-          <button onclick="good(event)" class="vote_up"><img src="/images/ho.png" class="vote_img"><span th:text="'호재(' + ${post_earningVO.goodcnt} + ')'"></span></button>
-          <button onclick="bad(event)" class="vote_down"><img src="/images/ak.png" class="vote_img"><span th:text="'악재(' + ${post_earningVO.badcnt} + ')'"></span></button>
+          <button onclick="good(event)" class="vote_up"><img src="/images/ho.png"><span th:text="'호재(' + ${post_earningVO.goodcnt} + ')'"></span></button>
+          <button onclick="bad(event)" class="vote_down"><img src="/images/ak.png"><span th:text="'악재(' + ${post_earningVO.badcnt} + ')'"></span></button>
         </div>
       </div>
     </div>
@@ -258,6 +315,20 @@
   
     <!-- 검색 결과가 없을 때 메시지 표시-->
     <div th:if="${total == 0}" class="text-center mt-3">검색 결과가 존재하지 않습니다.</div>
+
+    <!-- 이미 추천한 게시물일 경우 띄울 알림 -->
+     <div id="toast-message-good" class="toast-message hidden">
+      <img src="/images/mokoko_good.png" class="toast-icon" alt="알림-추천함">
+      <span></span>
+      <button class="toast-close">x</button>
+     </div>
+
+     <!-- 이미 비추천한 게시물일 경우 띄울 알림 -->
+     <div id="toast-message-bad" class="toast-message hidden">
+      <img src="/images/mokoko_sad.png" class="toast-icon" alt="알림-비추천함">
+      <span></span>
+      <button class="toast-close">x</button>
+     </div>
   
   
     <script>

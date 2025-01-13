@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+
+  <aside class="aside_right">
+    <a href="javascript:location.reload();">새로고침</a>
+    <span class='menu_divide' >│</span>
+    <a href="javascript:location.href='/post_earning/list_by_postno'">글목록</a>
+    <span class='menu_divide' >│</span>
+    <a href='/member/logout'>로그아웃</a>
+  </aside>
+
+  <div class='menu_line'></div>
+
+  <table class="table table-striped" style='width: 100%;'>
+    <colgroup>
+      <col style='width: 5%;'/>
+      <col style='width: 30%;'/>
+      <col style='width: 10%;'/>
+      <col style='width: 8%;'/>
+      <col style='width: 8%;'/>
+      <col style='width: 8%;'/>
+    </colgroup>
+    <tr>
+      <th class='th_bs'>번호</th>
+      <th class='th_bs'>게시물</th>
+      <th class='th_bs'>내용</th>
+      <th class='th_bs'>호악</th>  
+      <th class='th_bs'>닉네임</th>
+      <th class='th_bs'>날짜</th>
+    </tr>
+   
+    <tr th:each="post_goodbadVO : ${list}">
+      <td class='td_basic' th:text="${post_goodbadVO.goodbadno}"></td> <!-- 번호 -->
+      <td class='td_left'><a th:href="@{|/post_earning/read?postno=${post_goodbadVO.postno}|}" th:text="${post_goodbadVO.title}"></a></td>  <!-- 글제목 -->
+      <td class='td_left'> <!-- 글내용 -->
+        <span th:if="${post_goodbadVO.content.length() > 30}" th:text="|${post_goodbadVO.content.substring(0, 10)}...|"></span>
+        <span th:unless="${post_goodbadVO.content.length() > 30}" th:text="${post_goodbadVO.content}"></span>
+      </td>
+      <td class='td_basic' th:if="${post_goodbadVO.goodbad == 'g'}"><img src="/images/mokoko_good.png" class="img-icon" title="호재"></td> <!-- post_goodbadVO.goodbad가 g일 경우 호재 아이콘으로 출력-->
+      <td class='td_basic' th:if="${post_goodbadVO.goodbad == 'b'}"><img src="/images/mokoko_sad.png" class="img-icon" title="악재"></td> <!-- post_goodbadVO.goodbad가 b일 경우 악재 아이콘으로 출력-->
+      <td class='td_basic' th:text="${post_goodbadVO.nickname}"></td> <!-- 닉네임 -->
+      <td class='td_basic' th:text="${post_goodbadVO.rdate.substring(0, 16)}"></td> <!-- 등록일 -->
+    </tr>
+  </table>
+
+  <!-- 페이징 -->
+  <div class="pagination">
+    <!-- 검색 결과가 있을 때만 페이징 표시-->
+    <th:block th:if="${total > 0}">
+      <!-- 이전 페이지-->
+      <a th:if="${pageDTO.prev}" th:href="@{|/post_goodbad/list?page=${pageDTO.startPage - 1}&searchType=${searchDTO.searchType}&keyword=${searchDTO.keyword}|}"></a>
+      
+      <!-- 페이지 번호-->
+      <th:block th:each="num : ${#numbers.sequence(pageDTO.startPage, pageDTO.endPage)}">
+        <a th:href="@{|/post_goodbad/list?page=${num}&searchType=${searchDTO.searchType}&keyword=${searchDTO.keyword}|}"
+          th:class="${pageDTO.currentPage == num} ? 'active' : ''"
+          class="page-link"
+          th:text="${num}"></a>
+      </th:block>
+
+      <!-- 다음 페이지-->
+      <a th:if="${pageDTO.next}" th:href="@{|/post_goodbad/list?page=${pageDTO.endPage + 1}&searchType=${searchDTO.searchType}&keyword=${searchDTO.keyword}|}"></a>
+    </th:block>
+  </div>
+
+  <!-- 검색 결과가 없을 때 메시지 표시-->
+  <div th:if="${total == 0}" class="text-center mt-3">검색 결과가 존재하지 않습니다.</div>
+
+  <script>
+    function search() {
+      const searchType = document.getElementById('searchType').value;
+      const keyword = document.getElementById('keyword').value;
+        
+      if (keyword.trim() === '') {
+        alert('검색어를 입력해주세요');
+        return;
+      }
+        
+      location.href = `/post_goodbad/list?page=1&searchType=${searchType}&keyword=${keyword}`;
+    }
+    
+    // 엔터키 검색 기능
+    document.getElementById('keyword').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        search();
+      }
+    });
+  </script>
+
+  <div class='bottom_menu'>
+    <select id="searchType" th:value="${searchDTO.searchType}">
+      <option value="title">제목</option>
+      <option value="content">내용</option>
+      <option value="nickname">닉네임</option>
+      <option value="goodbad">호악(g, b)</option>
+    </select>
+    <input type="text" id="keyword" th:value="${searchDTO.keyword}" placeholder="검색어를 입력하세요">
+    <button onclick="search()">검색</button>
+    <button th:onclick="|location.href='/post_goodbad/list'|">취소</button>
+  </div>
+
+</div>
+</html>

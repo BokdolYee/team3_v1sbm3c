@@ -1,0 +1,106 @@
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+  <script>
+    window.onload = function() {
+      // <img src="/contents/images/loveout.png" style="width: 24px" title="추천">
+      // <img src="/contents/images/lovein.png" style="width: 18px" title="비추천">
+      // 현재 로그인한 사용자가 사용자의 추천 여부 반영.
+      let heartCnt = '[[${heartCnt}]]'; //  javascript -> Thymeleaf -> session
+      let tag='';
+      
+      if (heartCnt == 1) {
+        tag = '<a href="javascript:good([[${calendarVO.calendarno}]])"><img src="/contents/images/lovein.png" style="width: 22px" title="추천"></a>';
+        document.querySelector('#heart_panel').innerHTML = tag; 
+      } else {
+        tag = '<a href="javascript:good([[${calendarVO.calendarno}]])"><img src="/contents/images/loveout.png" style="width: 22px" title="비추천"></a>';
+        document.querySelector('#heart_panel').innerHTML = tag; 
+      }    
+      
+      document.querySelector('#recom_panel').innerHTML = '([[${calendarVO.recom}]])';
+    }
+
+    function good(calendarno) {
+      console.log('-> calendarno: ' + calendarno);
+      
+      fetch("/calendar/good", {
+          "method": "post",
+          "headers": {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify({calendarno}) // {"sentence":sentence, "language":language}, JSON 형식으로 전송
+        })
+        .then((response) => response.json()) // 응답 문자열 추출
+        .then((data) => {
+          console.log('-> data.isMember: ' + data.isMember); 
+          
+          if (data.isMember == 1) { // 회원
+            let heartCnt =data.heartCnt; //  javascript -> Thymeleaf -> session
+            let tag='';
+            
+            if (heartCnt == 1) {
+              tag = '<a href="javascript:good([[${calendarVO.calendarno}]])"><img src="/contents/images/lovein.png" style="width: 22px" title="추천"></a>';
+              document.querySelector('#heart_panel').innerHTML = tag; 
+            } else {
+              tag = '<a href="javascript:good([[${calendarVO.calendarno}]])"><img src="/contents/images/loveout.png" style="width: 22px" title="추천"></a>';
+              document.querySelector('#heart_panel').innerHTML = tag; 
+            }    
+            
+            document.querySelector('#recom_panel').innerHTML = '(' + data.recom + ')';
+          
+          } else { // 비회원
+            alert("로그인해야 추천 할 수 있습니다.");
+            location.href='/member/login_cookie_need';
+          }  
+        }
+      );
+    }
+  </script>
+  <div class='title_line'>
+    <div th:text="${calendarVO.title}"></div>
+  </div>
+  
+  <aside class="aside_right" th:if="${session.grade == 'admin'}">
+    <a th:href="|javascript:location.reload();|" style="color: black;">새로고침</a>
+    <span class='menu_divide' >│</span>    
+    <a th:href="@{|/calendar/list_calendar|}" style="color: black;">일정</a>        
+    <span class='menu_divide' >│</span>    
+    <a th:href="@{|/calendar/list_all|}" style="color: black;">목록</a>    
+    <span class='menu_divide' >│</span>
+    <a th:href="@{|/calendar/create|}" style="color: black;">등록</a>
+    <span class='menu_divide' >│</span>
+    <a th:href="@{|/calendar/update?calendarno=${calendarVO.calendarno}|}" style="color: black;">수정</a>
+    <span class='menu_divide' >│</span>
+    <a th:href="@{|/calendar/delete|}" style="color: black;">삭제</a>  
+ </aside> 
+
+  <aside class="aside_right" th:if="${session.grade != 'admin'}">
+    <a th:href="|javascript:location.reload();|">새로고침</a>
+    <span class='menu_divide' >│</span>    
+    <a th:href="@{|/calendar/list_calendar|}">일정</a>    
+  </aside> 
+ 
+  <div class='menu_line'></div>
+
+  <fieldset class="fieldset_basic">
+    <ul>
+      <li class="li_none">
+        <div style="width: 100%; word-break: break-all;">
+          <span style="font-size: 1.5em; font-weight: bold;" th:text="${calendarVO.title}"></span>
+          <span style="font-size: 1em;" th:text="${calendarVO.regdate }"></span><br><br>
+          <div style="white-space: pre-wrap;"><span th:text="${calendarVO.content}"></span></div>
+          
+        </div>
+      </li>
+      
+        <li class="li_none" th:text="|등록일: ${calendarVO.regdate} / 조회수(${calendarVO.cnt})|"></li>
+        </li>
+        <div>
+        <span id="heart_panel"></span><span id="recom_panel"></span>
+      </div>
+    </ul>
+  </fieldset>
+
+</div>
+
+</html>
+

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="dev.mvc.calendargood.CalendargoodDAOInter">
+  <!-- 등록 -->
+  <insert id="create" parameterType="dev.mvc.calendargood.CalendargoodVO">
+    INSERT INTO calendargood(calendargoodno, rdate, calendarno, memberno, cnt)
+    VALUES (calendargood_seq.nextval, sysdate, #{calendarno}, #{memberno}, #{cnt})
+  </insert>
+  
+  <!-- 전체 목록 -->
+  <select id="list_all" resultType="dev.mvc.calendargood.CalendargoodVO">
+    SELECT calendargoodno, rdate, calendarno, memberno, cnt
+    FROM calendargood
+    ORDER BY calendargoodno DESC
+  </select> 
+  
+  <!-- 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM calendargood
+    WHERE calendargoodno = #{calendargoodno}
+  </delete>
+  
+  <!-- 조회 -->
+  <select id="read" resultType="dev.mvc.calendargood.CalendargoodVO" parameterType="int">
+    SELECT calendargoodno, rdate, calendarno, memberno, cnt
+    FROM calendargood
+    WHERE calendarno=#{calendarno} 
+  </select>
+  
+  <!-- 캘린더, 멤버 동시에 조회 -->
+  <select id="readByboth" resultType="dev.mvc.calendargood.CalendargoodVO" parameterType="HashMap">
+    SELECT calendargoodno, rdate, calendarno, memberno, cnt
+    FROM calendargood
+    WHERE calendarno=#{calendarno} AND memberno= #{memberno}
+  </select>
+  
+  <!-- 특정 컨텐츠 회원 추천 -->
+  <select id = "heartCnt" resultType="int" parameterType="HashMap">
+    SELECT COUNT(*) as cnt
+    FROM calendargood
+    WHERE calendarno= #{calendarno} AND memberno= #{memberno}
+  </select>
+  
+  <!-- 테이블 3개 join -->
+  <select id="list_all_join" resultType="dev.mvc.calendargood.CalendarCalendargoodMemberVO">
+    SELECT r.calendargoodno, r.rdate, r.calendarno, c.title as c_title, r.memberno, m.id, m.name as m_name
+    FROM calendar c, calendargood r, member m
+    WHERE c.calendarno = r.calendarno AND r.calendarno = m.memberno
+    ORDER BY rdate DESC
+  </select>
+  
+  <!-- 추천 비추천 목록(검색 + 페이징, 테이블 3개 JOIN)(관리자만 확인) -->
+  <select id="list_search_paging" parameterType="dev.mvc.dto.SearchDTO" resultType="dev.mvc.calendargood.CalendarCalendargoodMemberVO">
+    SELECT *
+    FROM (
+      SELECT r.calendargoodno, r.rdate, r.calendarno, c.title AS c_title, r.memberno, m.id, m.name AS m_name,
+             ROW_NUMBER() OVER (ORDER BY r.rdate DESC) rnum
+      FROM calendar c
+      INNER JOIN calendargood r ON c.calendarno = r.calendarno
+      INNER JOIN member m ON r.memberno = m.memberno
+      <where>
+        <if test="searchType != null and keyword != null">
+          <choose>
+            <when test="searchType == 'name'">
+              AND m.name LIKE '%' || #{keyword} || '%'
+            </when>
+            <when test="searchType == 'title'">
+              AND c.title LIKE '%' || #{keyword} || '%'
+            </when>
+          </choose>
+        </if>
+      </where>
+    )
+    WHERE rnum &gt; #{offset} AND rnum &lt;= (#{offset} + #{size})
+  </select>
+
+
+
+  
+  <!-- 추천 비추천 검색된 수 -->
+  <select id="list_search_count" parameterType="dev.mvc.dto.SearchDTO" resultType="int">
+    SELECT COUNT(*)
+    FROM calendar c
+    INNER JOIN calendargood r ON c.calendarno = r.calendarno
+    INNER JOIN member m ON r.memberno = m.memberno
+    <where>
+      <if test="searchType != null and keyword != null">
+        <choose>
+          <when test="searchType == 'name'">
+            AND m.name LIKE '%' || #{keyword} || '%'
+          </when>
+        </choose>
+      </if>
+    </where>
+  </select>
+
+</mapper>

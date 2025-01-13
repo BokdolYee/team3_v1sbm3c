@@ -58,7 +58,6 @@ SELECT g.*, m.nickname
 FROM post_goodbad g INNER JOIN member m
                     ON g.memberno = m.memberno;
 
-SELECT * FROM post_goodbad;
 
 SELECT COUNT(g.memberno), g.goodbad
 FROM post_goodbad g INNER JOIN post_earning p
@@ -68,4 +67,6 @@ SELECT COUNT(goodbad)
 FROM post_goodbad
 WHERE postno = 5 AND memberno = 22;
 
-DELETE FROM post_goodbad;
+SELECT * FROM post_goodbad ORDER BY goodbadno DESC; -- 모든 레코드 조회
+
+DELETE FROM post_goodbad; -- 모든 레코드 삭제

@@ -149,4 +149,12 @@ public interface ContentsProcInter {
   public void updateCnt(int newscateno);
 
   public void resetCnt(int newscateno);
+
+  public void increaseRecom(int contentno);
+
+  public void decreaseRecom(int contentno);
+
+  public int delete_contentsgood(int contentno);
+
+  public int delete_reply(int contentno);
 }

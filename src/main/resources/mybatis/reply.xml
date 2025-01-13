@@ -55,6 +55,12 @@
     WHERE replyno=#{replyno}
   </delete>
   
+    <!-- 글 삭제 -->
+  <delete id="delete_conts" parameterType="int">
+    DELETE FROM reply
+    WHERE contentno=#{contentno}
+  </delete>
+  
   <!-- 특정 콘텐츠의 댓글 목록 조회 (Member 정보 포함) -->
   <select id="listByContentNoJoin" resultType="dev.mvc.reply.ReplyVO" parameterType="int">
       SELECT r.replyno, r.content, r.rdate, r.contentno, r.memberno, r.parentreplyno, r.file1, r.file1saved, r.thumb1, r.size1, 

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속 -->
+<div layout:fragment="content">
+
+  <div class="title_line">검색된 주식 목록</div>
+
+  <aside class="aside_right">
+    <a href="javascript:location.reload();">새로고침</a>
+    <span> | </span>
+    <a th:href="@{|/termbook/create|}">등록</a>
+    <span> | </span>
+    <a th:href="@{|/termbook/list_all|}">목록</a>
+
+    <!-- 검색 폼 추가 -->
+    <form action="/termbook/term_search" method="get" class="search-form" style="display: inline-block; margin-left: 20px;">
+      <input type="text" name="searchTerm_title" placeholder="심볼" class="form-control" style="width: 120px; display: inline-block;"/>
+      <input type="text" name="searchCategory" placeholder="주식명" class="form-control" style="width: 120px; display: inline-block;"/>
+      <button type="submit" class="btn btn-primary btn-sm">검색</button>
+    </form>
+  </aside>
+
+  <div class="menu_line"></div>
+
+  <!-- 검색된 결과가 없으면 메시지 출력 -->
+  <div th:if="${#lists.isEmpty(searchResults)}">
+    <p>검색된 결과가 없습니다.</p>
+  </div>
+
+  <!-- 검색된 주식 목록 테이블 -->
+  <table class="table table-striped" style="width: 100%;">
+    <colgroup>
+      <col style="width: 15%;" />
+      <col style="width: 20%;" />
+      <col style="width: 25%;" />
+      <col style="width: 40%;" />
+    </colgroup>
+    <tr>
+      <th class="th_bs">심볼</th>
+      <th class="th_bs">주식명</th>
+      <th class="th_bs">산업</th>
+      <th class="th_bs">설명</th>
+    </tr>
+
+    <tr th:each="termbookVO : ${searchResults}" 
+         th:attr="onclick=|location.href='/termbook/read/${termbookVO.termno}'|"
+         style="cursor: pointer;">
+      <td class="td_basic" th:text="${termbookVO.term_title}"></td>
+      <td class="td_basic" th:text="${termbookVO.category}"></td>
+      <td class="td_basic">
+        <span th:if="${termbookVO.memo.length() > 100}" 
+              th:text="|${termbookVO.memo.substring(0, 100)}...|"></span>
+        <span th:if="${termbookVO.memo.length() <= 100}" 
+              th:text="|${termbookVO.memo}|"></span>
+      </td>
+    </tr>
+  </table>
+
+  <!-- 페이징 버튼 목록 -->
+  <div class="paging-container">
+    <div th:utext="${paging}"></div>
+  </div>
+
+  <div class="bottom_menu">
+  </div>
+
+</div>
+</html>

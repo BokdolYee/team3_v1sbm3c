@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
+<div layout:fragment="content">
+
+  <div class='title_line'>전체 종목 목록</div>
+
+  <aside class="aside_right">
+    <a href="/termbook/list_all">전체 목록</a>
+    <span> | </span>
+    <a href="javascript:location.reload();">새로고침</a>
+    <span> | </span>
+    <a th:href="@{|/termbook/create|}">등록</a>
+
+    <!-- 검색 폼 -->
+    <form action="/termbook/list_all" method="get" class="search-form" style="display: inline-block; margin-left: 20px;">
+      <input type="text" name="searchTerm_title" placeholder="용어" class="form-control" style="width: 120px; display: inline-block;"/>
+      <input type="text" name="searchCategory" placeholder="범주" class="form-control" style="width: 120px; display: inline-block;"/>
+      <button type="submit" class="btn btn-primary btn-sm">검색</button>
+    </form>
+  </aside>
+
+  <div class='menu_line'></div>
+
+  <table class="table table-hover" style="width: 100%;">
+    <colgroup>
+      <col style="width: 20%;"/>
+      <col style="width: 10%;"/>
+      <col style="width: 40%;"/>
+    </colgroup>
+    <thead>
+      <tr>
+        
+        <th class="th_bs">용어</th>
+        <th class="th_bs">용어 범주</th>
+        <th class="th_bs">용어 설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- a 태그로 td 전체를 감싸도록 수정 -->
+      <tr th:each="termbookVO : ${termbookList}" 
+           th:attr="onclick=|location.href='./read/${termbookVO.termno}'|"
+           style="cursor: pointer;">
+          <td class="td_bs" style="cursor: pointer;">
+          <span th:text="${termbookVO.term_title}"></span>
+          </td>  
+          <td class="td_bs" style="cursor: pointer;">
+           <span th:text="${termbookVO.category}"></span> 
+          </td>
+          <td class="td_bs" style="cursor: pointer;">
+            <span th:if="${termbookVO.memo.length() > 100}" 
+                  th:text="|${termbookVO.memo.substring(0, 100)}...|"></span>
+            <span th:if="${termbookVO.memo.length() <= 100}" 
+                  th:text="${termbookVO.memo}"></span>
+          </td>
+        
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 페이지 버튼 목록 출력 시작 -->
+  <div class="Bottom_menu" th:utext="${paging}" style="text-align: center; #paging {text-align: center; margin-top: 5px; font-size: 1em;}  #paging A:link {text-decoration:none; color:black; font-size: 1em;}  #paging A:hover{text-decoration:none; background-color: #FFFFFF; color:black; font-size: 1em;}  #paging A:visited {text-decoration:none;color:black; font-size: 1em;}  .span_box_1{    text-align: center;    font-size: 1em;    border: 1px;    border-style: solid;    border-color: #cccccc;    padding:1px 6px 1px 6px; /*위, 오른쪽, 아래, 왼쪽*/    margin:1px 2px 1px 2px; /*위, 오른쪽, 아래, 왼쪽*/  }  .span_box_2{    text-align: center;    background-color: #668db4;    color: #FFFFFF;    font-size: 1em;    border: 1px;    border-style: solid;    border-color: #cccccc;    padding:1px 6px 1px 6px; /*위, 오른쪽, 아래, 왼쪽*/    margin:1px 2px 1px 2px; /*위, 오른쪽, 아래, 왼쪽*/"></div>
+  <!-- 페이지 버튼 목록 출력 종료 -->
+
+</div>
+</html>
+
+<style type="text/css">  #paging {text-align: center; margin-top: 5px; font-size: 1em;}  #paging A:link {text-decoration:none; color:black; font-size: 1em;}  #paging A:hover{text-decoration:none; background-color: #FFFFFF; color:black; font-size: 1em;}  #paging A:visited {text-decoration:none;color:black; font-size: 1em;}  .span_box_1{    text-align: center;    font-size: 1em;    border: 1px;    border-style: solid;    border-color: #cccccc;    padding:1px 6px 1px 6px; /*위, 오른쪽, 아래, 왼쪽*/    margin:1px 2px 1px 2px; /*위, 오른쪽, 아래, 왼쪽*/  }  .span_box_2{    text-align: center;    background-color: #668db4;    color: #FFFFFF;    font-size: 1em;    border: 1px;    border-style: solid;    border-color: #cccccc;    padding:1px 6px 1px 6px; /*위, 오른쪽, 아래, 왼쪽*/    margin:1px 2px 1px 2px; /*위, 오른쪽, 아래, 왼쪽*/  }</style>

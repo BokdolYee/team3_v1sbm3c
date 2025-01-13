@@ -6,6 +6,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 
 import dev.mvc.contents.Contents;
+import dev.mvc.stock.Stock;
 import dev.mvc.survey.Survey;
 import dev.mvc.tool.Tool;
 
@@ -24,6 +25,9 @@ public class WebMvcConfiguration implements WebMvcConfigurer{
         
         // C:/kd/deploy/resort/food/storage -> /food/storage -> http://localhost:9091/food/storage";
         registry.addResourceHandler("/contents/storage/**").addResourceLocations("file:///" +  Contents.getUploadDir());
+        
+        // C:/kd/deploy/resort/food/storage -> /food/storage -> http://localhost:9091/food/storage";
+        registry.addResourceHandler("/contents/storage/**").addResourceLocations("file:///" +  Stock.getUploadDir());        
         
         // C:/kd/deploy/resort/trip/storage -> /trip/storage -> http://localhost:9091/trip/storage";
         // registry.addResourceHandler("/trip/storage/**").addResourceLocations("file:///" +  Trip.getUploadDir());

@@ -1,0 +1,51 @@
+<!--/* 
+<div th:replace="~{calendar/list_all_com::list_all_fragment}"></div> 
+'/calendar/list_all_com.html' 파일의 list_all_fragment를 가져다 사용
+*/-->
+<div th:fragment="list_all_fragment"> 
+  <table class="table table-hover" style="width: 100%;">
+    <colgroup>
+      <col style='width: 10%;'/>
+      <col style='width: 20%;'/>
+      <col style='width: 20%;'/>
+      <col style='width: 10%;'/>    
+      <col style='width: 20%;'/>
+      <col style='width: 20%;'/>
+    </colgroup>
+    <thead>
+      <tr>
+        <th class="th_bs">순서</th>
+        <th class="th_bs">출력할 날짜</th>
+        <th class="th_bs">달력에 출력될 레이블</th>
+        <th class="th_bs">출력 순서</th>
+        <th class="th_bs">등록일</th>
+        <th class="th_bs">기타</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="calendarVO : ${calendarlist}"
+            th:attr="onclick=|location.href='./read/${calendarVO.calendarno}'|"
+           style="cursor: pointer;">
+        <td class="td_bs" th:text="|${status.index+1}|"></td>
+        <td class="td_bs" style="color: black;">
+          <a th:href="@{|/calendar/read/${calendarVO.calendarno}|}" 
+          style="display:block; color:black;" 
+          th:text="${calendarVO.labeldate}"></a>       
+        </td>
+        <td class="td_bs">
+          <a th:href="@{|/calendar/read/${calendarVO.calendarno}|}" style="display:block; color:black;" th:text="${calendarVO.label}"></a>
+        </td>
+        <td class="td_bs" th:text="${calendarVO.seqno}"></td>
+        <td class="td_bs" th:text="${calendarVO.regdate.substring(0, 10)}"></td>
+        <td class="td_bs">
+          <a th:href="@{|/calendar/update_seqno_forward/${calendarVO.calendarno}|}"><img src="/newscate/images/decrease.png" class="icon" title="우선순위 높임"></a>
+          <a th:href="@{|/calendar/update_seqno_backward/${calendarVO.calendarno}|}"><img src="/newscate/images/increase.png" class="icon" title="우선순위 낮춤"></a>
+          <a th:href="@{|/calendar/update/${calendarVO.calendarno}|}"><img src="/newscate/images/update.png" class="icon" title="수정"></a> <!-- /static 기준 -->
+          <a th:href="@{|/calendar/delete/${calendarVO.calendarno}|}"><img src="/newscate/images/delete.png" class="icon" title="삭제"></a> <!--/* /static 기준 */-->
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+</div>
+

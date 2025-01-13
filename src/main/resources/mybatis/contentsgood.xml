@@ -8,15 +8,53 @@
       VALUES (contents_seq.nextval, sysdate, #{contentno}, #{memberno})
     </insert>
     
-    <select id="read" resultType="dev.mvc.contentsgood.ContentsGoodVO" parameterType="int">
-      SELECT CONTENTSGOODNO, rdate, contentno, memberno
-	  FROM CONTENTSGOOD
-	  WHERE contentsgoodno = #{contentsgoodno};
-    </select>
-    
-    <delete id="delete" parameterType="int">
-      DELETE FROM contentsgood
-	  WHERE contentsgoodno = #{contentsgood};
-    </delete>
+  <!-- 전체 목록 -->
+  <select id="list_all" resultType="dev.mvc.contentsgood.ContentsGoodVO">
+    SELECT contentsgoodno, rdate, contentno, memberno
+    FROM contentsgood
+    ORDER BY contentsgoodno DESC
+  </select>
+   
+  <!-- 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM contentsgood
+    WHERE contentsgoodno = #{contentsgoodno}
+  </delete>
+  
+    <!-- 삭제 -->
+  <delete id="delete_conts" parameterType="int">
+    DELETE FROM contentsgood
+    WHERE contentno = #{contentno}
+  </delete>
+  
+  <!-- 특정 컨텐츠의 특정 회원 추천 갯수 산출 -->
+  <select id="hartCnt" resultType="int" parameterType='HashMap'>
+    SELECT COUNT(*) as cnt
+    FROM contentsgood
+    WHERE contentno=#{contentno} AND memberno=#{memberno}
+  </select>
+  
+  <!-- 일반적인 조회 -->
+  <select id="read" resultType="dev.mvc.contentsgood.ContentsGoodVO" parameterType="int">
+    SELECT contentsgoodno, rdate, contentno, memberno
+    FROM contentsgood
+    WHERE contentsgoodno = #{contentsgoodno}
+  </select>  
+
+  <!-- contentsno, memberno로 조회 -->
+  <select id="readByContentsnoMemberno" resultType="dev.mvc.contentsgood.ContentsGoodVO" parameterType="HashMap">
+    SELECT contentsgoodno, rdate, contentno, memberno
+    FROM contentsgood
+    WHERE contentno=#{contentno} AND memberno=#{memberno}
+  </select>
+  
+    <!-- 전체 목록, 테이블 3개 join -->
+  <select id="list_all_join" resultType="dev.mvc.contentsgood.ContentsContentsgoodMemberVO">
+    SELECT r.contentsgoodno, r.rdate, r.contentno, c.title as c_title, r.memberno, m.id, m.mname
+    FROM contents c, contentsgood r, member m
+    WHERE c.contentno = r.contentno AND r.memberno = m.memberno
+    ORDER BY contentsgoodno DESC
+  </select>
+  
 </mapper> 
 

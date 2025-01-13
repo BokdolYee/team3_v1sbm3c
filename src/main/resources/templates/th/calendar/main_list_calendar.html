@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        table {
+            width: 80%;
+            margin: 0 auto;
+            border-collapse: collapse;
+            table-layout: fixed; /* 고정 레이아웃 설정 */
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 2px;
+            text-align: center;
+            height: 100px;
+            vertical-align: top;
+            word-wrap: break-word; /* 단어 줄바꿈 허용 */
+            width: 15%; /* 모든 열의 너비를 균등하게 설정 */
+        }
+        th {
+            background-color: #f4f4f4;
+            height: 20px;
+        }
+        td div {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            height: 100%;
+        }
+        .weekend {
+            color: red;
+        }
+        .saturday {
+            color: blue;
+        }
+    </style>
+
+    <script>
+        async function fetchCalendarData(year, month) {
+            const url = `/calendar/list_calendar?year=${year}&month=${month + 1}`;  // 요청 URL
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error fetching calendar data:', error);
+                return [];
+            }
+        }
+
+        async function generateCalendar(year, month) {
+            const calendarBody = document.querySelector("tbody");
+            calendarBody.innerHTML = ''; // 기존 내용 초기화
+
+            const daysInMonth = new Date(year, month + 1, 0).getDate(); // 월의 마지막 날짜
+            const firstDay = new Date(year, month, 1).getDay(); // 첫 번째 날짜의 요일
+
+            let row = document.createElement("tr");
+            // 첫 번째 주 빈 칸 추가
+            for (let i = 0; i < firstDay; i++) {
+                const emptyCell = document.createElement("td");
+                row.appendChild(emptyCell);
+            }
+
+            // 날짜 추가
+            for (let day = 1; day <= daysInMonth; day++) {
+                const cell = document.createElement("td");
+                const contentDiv = document.createElement("div");
+                const fullDateSpan = document.createElement("span");
+
+                fullDateSpan.textContent = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                contentDiv.appendChild(fullDateSpan);
+                cell.appendChild(contentDiv);
+
+                // 주말 처리
+                if ((firstDay + day - 1) % 7 === 0) {
+                    cell.classList.add("weekend"); // 일요일
+                } else if ((firstDay + day - 1) % 7 === 6) {
+                    cell.classList.add("saturday"); // 토요일
+                }
+
+                row.appendChild(cell);
+
+                // 주 단위로 테이블 행 추가
+                if ((firstDay + day) % 7 === 0 || day === daysInMonth) {
+                    calendarBody.appendChild(row);
+                    row = document.createElement("tr");
+                }
+            }
+        }
+
+        window.onload = function () {
+            const year = 2025;  // 예시: 2025년
+            const month = 0; // 예시: 1월 (0부터 시작)
+            generateCalendar(year, month);
+        };
+    </script>
+</head>
+<body>
+
+    <h2>일정 달력</h2>
+    <h4 id="panel_year_month"></h4>
+    <table>
+        <thead>
+            <tr>
+                <th class="weekend">일요일</th>
+                <th>월요일</th>
+                <th>화요일</th>
+                <th>수요일</th>
+                <th>목요일</th>
+                <th>금요일</th>
+                <th class="saturday">토요일</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- 달력 내용이 동적으로 추가됩니다 -->
+        </tbody>
+    </table>
+
+</body>
+</html>

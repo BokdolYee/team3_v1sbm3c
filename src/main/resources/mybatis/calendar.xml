@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.mvc.calendar.CalendarDAOInter"> <!-- SB가 자동으로 구현하여 연동하는 interface -->
+   <!-- 등록 --> 
+  <insert id="create" parameterType="dev.mvc.calendar.CalendarVO">
+    INSERT INTO calendar(calendarno, labeldate, label, title, content, cnt, seqno, regdate, memberno)
+    VALUES(calendar_seq.nextval, #{labeldate}, #{label}, #{title}, #{content}, 0, 1, sysdate, #{memberno})
+  </insert>
+  
+  <!-- 전체 목록   
+  <select id="list_all" resultType="dev.mvc.calendar.CalendarVO">
+    SELECT calendarno, labeldate, label, title, content, cnt, seqno, regdate, memberno, recom
+    FROM calendar
+    ORDER BY calendarno DESC
+  </select> --> 
+  
+  <!-- 전체 데이터 목록 -->
+    <select id="list" resultType="dev.mvc.calendar.CalendarVO">
+        SELECT * FROM Calendar ORDER BY calendarno ASC
+    </select> 
+ 
+  <!-- 조회 -->  
+  <select id="read" resultType="dev.mvc.calendar.CalendarVO" parameterType="int">
+    SELECT calendarno, labeldate, label, title, content, cnt, regdate, seqno, recom
+    FROM calendar
+    WHERE calendarno = #{calendarno}
+  </select>    
+    
+  <!-- 변경 -->    
+  <update id="update" parameterType="dev.mvc.calendar.CalendarVO">
+    UPDATE calendar
+    SET labeldate = #{labeldate}, label = #{label}, title = #{title}, content = #{content}, seqno = #{seqno}
+    WHERE calendarno = #{calendarno}
+  </update>    
+
+  <!-- 삭제 -->  
+  <delete id="delete" parameterType="int">
+    DELETE FROM calendar WHERE calendarno = #{calendarno}
+  </delete>
+  
+  
+  <!-- 특정 달의 조회 -->
+  <select id="list_calendar" resultType="dev.mvc.calendar.CalendarVO" parameterType="String">
+    SELECT calendarno, labeldate, label, seqno
+    FROM calendar
+    WHERE SUBSTR(labeldate, 1, 7) = #{labeldate}
+    ORDER BY labeldate ASC, seqno ASC
+  </select>
+
+  <!-- 특정 날짜 조회 -->
+  <select id="list_calendar_day" resultType="dev.mvc.calendar.CalendarVO" parameterType="String">
+    SELECT calendarno, labeldate, label, seqno
+    FROM calendar
+    WHERE labeldate = #{labeldate}
+    ORDER BY seqno ASC
+  </select> 
+  
+    <!-- 조회수 증가 -->
+  <update id="increaseCnt" parameterType="int">
+    UPDATE calendar
+    SET cnt = cnt + 1
+    WHERE calendarno = #{calendarno}
+  </update>
+  
+      <!-- 추천 수 감소 -->
+  <update id="increaseRecom" parameterType="int">
+    UPDATE calendar
+    SET recom = recom + 1
+    WHERE calendarno = #{calendarno}
+  </update>
+  
+      <!-- 추천 수 증가 -->
+  <update id="decreaseRecom" parameterType="int">
+    UPDATE calendar
+    SET recom = recom - 1
+    WHERE calendarno = #{calendarno}
+  </update>
+  
+  <!-- 검색 (검색어가 있을 때만 필터링) -->
+    <select id="calendarSearch" parameterType="HashMap" resultType="dev.mvc.calendar.CalendarVO">
+        SELECT calendarno, labeldate, label, seqno, regdate
+        FROM Calendar
+        WHERE
+            (#{calendarSearchLabel} IS NULL OR label LIKE '%' || #{calendarSearchLabel} || '%')
+    </select>
+    
+  <!-- 검색된 데이터 목록 (페이징 포함) -->
+    <select id="listSearchPaging" parameterType="HashMap" resultType="dev.mvc.calendar.CalendarVO">
+      SELECT calendarno, labeldate, label, seqno, regdate, r
+      FROM (
+          SELECT calendarno, labeldate, label, seqno, regdate, rownum AS r
+          FROM (
+              SELECT calendarno, labeldate, label, seqno, regdate
+              FROM calendar
+              WHERE
+                  (#{searchLabel} IS NULL OR label LIKE '%' || #{searchLabel} || '%')
+              ORDER BY  labeldate DESC
+          )
+      )
+        WHERE r &gt;= #{start_num} AND r &lt;= #{end_num} <!-- WHERE r >= 1 AND r <= 3 -->
+      </select>
+
+    <!-- 검색된 데이터 개수 -->
+    <select id="list_search_count" parameterType="HashMap" resultType="int">
+        SELECT COUNT(*)
+        FROM calendar
+        WHERE 
+            (#{searchLabel} IS NULL OR label LIKE '%' || #{searchLabel} || '%')
+    </select>
+
+</mapper>

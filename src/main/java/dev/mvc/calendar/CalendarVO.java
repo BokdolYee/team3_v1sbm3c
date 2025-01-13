@@ -58,7 +58,7 @@ public class CalendarVO{
   // 검색용 필드
   private String searchLabel; // 검색할 심볼
   
-//페이징 관련 필드
+  // 페이징 관련 필드
   private int nowPage;       // 현재 페이지
   private int totalRecords;  // 전체 레코드 수
   private int recordsPerPage = 4; // 한 페이지에 표시할 레코드 수, 기본 4
@@ -67,20 +67,21 @@ public class CalendarVO{
   public CalendarVO() {}
 
   // 매개변수 생성자
-  public CalendarVO(int calendarno, String label, String title, String content) {
+  public CalendarVO(int calendarno, String label, String title, String content, String category) {
       this.calendarno = calendarno;
       this.label = label;
       this.title = title;
       this.content = content;
   }
   
+//검색용 필드에 대한 Getter, Setter 추가
   public String getSearchLabel() {
-    return searchLabel;
+      return searchLabel;
   }
-  
+
   public void setSearchLabel(String searchLabel) {
       this.searchLabel = searchLabel;
-}  
+  }
   
 //페이징 필드에 대한 Getter, Setter 추가
   public int getNowPage() {
@@ -121,5 +122,4 @@ public class CalendarVO{
               ", recordsPerPage=" + recordsPerPage +
               '}';
   }
-  
 }

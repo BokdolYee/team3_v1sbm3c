@@ -90,12 +90,27 @@
     WHERE r &gt;= #{start_num}  AND r &lt;= #{end_num}  <!-- WHERE r >= 1 AND r <= 3 -->
   </select>
     
+    <!--
     <select id="list_search_paging_join" resultType="dev.mvc.surveytopic.SurveySurveytopicVO">
       SELECT r.surveytopicno, r.surveyno,c.topic , r.title, r.seqno
       FROM survey c, surveytopic r
       WHERE c.surveyno = r.surveyno
       ORDER BY r.surveytopicno DESC
-    </select>
+    </select> -->
     
+  
+   <!-- 검색 + 페이징 -->
+  <select id="list_search_paging_join" resultType="dev.mvc.surveytopic.SurveySurveytopicVO" parameterType="Map">
+    SELECT surveytopicno, surveyno, topic, title, seqno, r
+    FROM (
+        SELECT r.surveytopicno, r.surveyno, c.topic, r.title, r.seqno, ROW_NUMBER() OVER (ORDER BY r.surveytopicno ASC) AS r
+        FROM survey c 
+        JOIN surveytopic r ON c.surveyno = r.surveyno
+        WHERE (UPPER(c.topic) LIKE '%' || UPPER(#{word}) || '%') 
+           OR (UPPER(r.title) LIKE '%' || UPPER(#{word}) || '%')
+      
+    )
+    WHERE r &gt;= #{start_num}  AND r &lt;= #{end_num}  <!-- WHERE r >= 1 AND r <= 3 -->
+  </select>
   
 </mapper>

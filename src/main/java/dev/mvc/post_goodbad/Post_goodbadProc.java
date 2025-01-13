@@ -1,9 +1,12 @@
 package dev.mvc.post_goodbad;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import dev.mvc.dto.SearchDTO;
 
 @Component("dev.mvc.post_goodbad.Post_goodbadProc")
 public class Post_goodbadProc implements Post_goodbadProcInter{
@@ -45,6 +48,9 @@ public class Post_goodbadProc implements Post_goodbadProcInter{
     return goodbad;
   }
 
+  /**
+   * 추천 등록 시 추천수 증가
+   */
   @Override
   public int increase_goodcnt(int postno) {
     int cnt = this.post_goodbadDAO.increase_goodcnt(postno);
@@ -52,11 +58,30 @@ public class Post_goodbadProc implements Post_goodbadProcInter{
     return cnt;
   }
 
+  /**
+   * 비추천 등록 시 비추천수 증가
+   */
   @Override
   public int increase_badcnt(int postno) {
     int cnt = this.post_goodbadDAO.increase_badcnt(postno);
     
     return cnt;
+  }
+
+  /**
+   * 추천, 비추천 내역 검색 + 페이징
+   */
+  @Override
+  public ArrayList<Post_goodbadVO> list_search_paging(SearchDTO searchDTO) {
+    return this.post_goodbadDAO.list_search_paging(searchDTO);
+  }
+
+  /**
+   * 조건에 맞는 내역 수
+   */
+  @Override
+  public int list_search_count(SearchDTO searchDTO) {
+    return this.post_goodbadDAO.list_search_count(searchDTO);
   }
   
 }

@@ -3,6 +3,7 @@ package dev.mvc.calendar;
 import java.util.ArrayList;
 import java.util.Map;
 
+import dev.mvc.newscate.NewsCateVO;
 import dev.mvc.stock.StockVO;
 
 public interface CalendarDAOInter {
@@ -18,7 +19,7 @@ public interface CalendarDAOInter {
    * 전체 목록
    * @return
    */
-  public ArrayList<CalendarVO> list_all();
+  public ArrayList<CalendarVO> list();
 
   /**
    * 조회
@@ -79,5 +80,31 @@ public interface CalendarDAOInter {
   public Integer list_search_count(Map<String, Object> map);
 
   public ArrayList<CalendarVO> listSearchPaging(Map<String, Object> map);
+  
+  /**
+   * 우선순위 상승
+   * @param newscateno 카테고리 번호
+   * @return 수정된 레코드 개수
+   */
+  public int update_seqno_forward(int calendarno);
+
+  /**
+   * 우선순위 하락
+   * @param newscateno 카테고리 번호
+   * @return 수정된 레코드 개수
+   */
+  public int update_seqno_backward(int calendarno);
+  
+  /**
+   * 특정 달의 조회
+   * @return
+   */
+  public ArrayList<CalendarVO> main_list_calendar(String date);
+
+  /**
+   * 특정 날짜의 조회
+   * @return
+   */
+  public ArrayList<CalendarVO> main_list_calendar_day(String date);
 
 }

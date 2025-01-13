@@ -27,7 +27,9 @@ import dev.mvc.calendargood.CalendargoodProcInter;
 import dev.mvc.calendargood.CalendargoodVO;
 import dev.mvc.member.MemberProcInter;
 import dev.mvc.newscate.NewsCateProcInter;
+import dev.mvc.newscate.NewsCateVO;
 import dev.mvc.newscate.NewsCateVOMenu;
+import dev.mvc.stock.StockVO;
 import dev.mvc.tool.Tool;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -51,9 +53,11 @@ public class CalendarCont {
   @Qualifier("dev.mvc.calendargood.CalendargoodProc") 
   CalendargoodProcInter calendargoodProc;
   
+  /** 페이지당 출력할 레코드 갯수, nowPage는 1부터 시작 */
   public int record_per_page = 4;
-  public int page_per_block = 10;
-  private String list_file_name = "/th/calendar/list_search";
+
+  /** 블럭당 페이지 수, 하나의 블럭은 10개의 페이지로 구성됨 */
+  public int page_per_block = 10;  
   
   /**
    * POST 요청시 새로고침 방지, POST 요청 처리 완료 → redirect → url → GET → forward -> html 데이터
@@ -123,15 +127,16 @@ public class CalendarCont {
    * @return
    */
   @GetMapping(value = "/list_all")
-  public String list_all(@RequestParam(name = "searchLabel", defaultValue = "") String searchLabel,
-      HttpSession session, 
-      @RequestParam(name = "now_page", defaultValue = "1") int now_page, Model model) {
+  public String list_all(HttpSession session, 
+      @RequestParam(name = "searchLabel", defaultValue = "") String searchLabel,
+      @RequestParam(name = "now_page", defaultValue = "1") int now_page,
+      Model model) {
     
  // start_num 계산: 1페이지일 때 0, 2페이지일 때 10, 3페이지일 때 20
     int start_num = (now_page - 1) * record_per_page + 1;
     // end_num 계산: start_num + record_per_page - 1
     int end_num = start_num + record_per_page - 1;
-
+    
     Map<String, Object> params = new HashMap<>();
     params.put("searchLabel", searchLabel);
     params.put("nowPage", now_page);
@@ -139,20 +144,20 @@ public class CalendarCont {
     params.put("end_num", end_num);     // end_num
     params.put("recordsPerPage", this.record_per_page);
     
- // 페이징 및 검색 데이터 목록
+    // 페이징 및 검색 데이터 목록
     List<CalendarVO> calendarList = calendarProc.listSearchPaging(params);
     model.addAttribute("calendarList", calendarList);
-    
- // 전체 개수
+
+    // 전체 개수
     int search_count = calendarProc.list_search_count(params);
     
     // 페이징 HTML 생성
     String paging = calendarProc.pagingBox(now_page, searchLabel, search_count, this.record_per_page, this.page_per_block);
     model.addAttribute("paging", paging);
     model.addAttribute("now_page", now_page);
-
-    ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
-    model.addAttribute("menu", menu);
+    
+//    ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
+//    model.addAttribute("menu", menu);
 
     return "/th/calendar/list_all"; // /templates/calendar/list_all.html
   }
@@ -397,7 +402,7 @@ public class CalendarCont {
     System.out.println("-> calendarno: " + calendarno);
     
     
-    if (this.memberProc.isAdmin(session)) { // 관리자 로그인 확인
+    if (this.memberProc.isMember(session) || this.memberProc.isAdmin(session)) { // 회원 확인
       // 추천을 한 상태
       int memberno = (int)session.getAttribute("memberno");
       HashMap<String, Object> map = new HashMap<String, Object>();
@@ -448,4 +453,119 @@ public class CalendarCont {
     }
 
   }
+  
+  /**
+   *  <!--우선 순위 높임, 10 등 -> 1 등-->,  http://localhost:9092/cate/update_seqno_forward/1
+   * @param model Controller -> Thymleaf HTML로 데이터 전송에 사용
+   * @return
+   */
+  @GetMapping(value="/update_seqno_forward/{calendarno}")
+  public String update_seqno_forward(Model model, @PathVariable("calendarno") Integer calendarno,
+      @RequestParam(name="word", defaultValue="") String word,
+      @RequestParam(name="now_page", defaultValue = "") int now_page,
+      RedirectAttributes ra ) {
+    this.calendarProc.update_seqno_forward(calendarno);
+     
+    ra.addAttribute("word", word); // redirect로 데이터 전송
+    ra.addAttribute("now_page", now_page); // redirect로 데이터 전송
+    
+    return "redirect:/calendar/list_all"; // @GetMapping(value="/list_all")
+  }
+  
+  /**
+   *  <!--우선 순위 높임, 10 등 -> 1 등-->,  http://localhost:9092/cate/update_seqno_backward/1
+   * @param model Controller -> Thymleaf HTML로 데이터 전송에 사용
+   * @return
+   */
+  @GetMapping(value="/update_seqno_backward/{calendarno}")
+  public String update_seqno_backward(Model model, @PathVariable("calendarno") Integer calendarno,
+      @RequestParam(name="word", defaultValue="") String word,
+      @RequestParam(name="now_page", defaultValue = "") int now_page,
+      RedirectAttributes ra ) {
+    this.calendarProc.update_seqno_backward(calendarno);
+    
+    ra.addAttribute("word", word); // redirect로 데이터 전송
+    ra.addAttribute("now_page", now_page); // redirect로 데이터 전송
+    
+    return "redirect:/calendar/list_all"; // @GetMapping(value="/list_all")
+  }
+  
+  /**
+   * 특정 날짜의 목록
+   * 현재 월: http://localhost:9091/calendar/list_calendar
+   * 이전 월: http://localhost:9091/calendar/list_calendar?year=2024&month=12 
+   * 다음 월: http://localhost:9091/calendar/list_calendar?year=2024&month=1
+   * @param model
+   * @return
+   */
+  @GetMapping(value = "/main_list_calendar")
+  public String main_list_calendar(Model model,
+      @RequestParam(name="year", defaultValue = "0") int year,
+      @RequestParam(name="month", defaultValue = "0") int month) {
+    
+    if (year == 0) {
+        // 현재 날짜를 가져옴
+        LocalDate today = LocalDate.now();
+
+        // 년도와 월 추출
+        year = today.getYear();
+        month = today.getMonthValue();
+    } 
+    
+    String month_str = String.format("%02d", month); // 두 자리 형식으로
+    System.out.println("-> month: " + month_str);
+  
+    String date = year + "-" + month;
+    System.out.println("-> date: " + date);
+    
+//    ArrayList<CalendarVO> list = this.calendarProc.list_calendar(date);
+//    model.addAttribute("list", list);
+
+    ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
+    model.addAttribute("menu", menu);
+
+    
+    model.addAttribute("year", year);
+    model.addAttribute("month", month-1);  // javascript는 1월이 0임. 
+    
+    return "/th/calendar/main_list_calendar"; // /templates/calendar/list_calendar.html
+  }
+  
+  /**
+   * 특정 날짜의 목록
+   * 
+   * @param model
+   * @return
+   */
+  // http://localhost:9091/calendar/list_calendar_day?labeldate=2025-01-03
+  @GetMapping(value = "/main_list_calendar_day")
+  @ResponseBody
+  public String main_list_calendar_day(Model model, @RequestParam(name="labeldate", defaultValue = "") String labeldate) {
+    System.out.println("-> labeldate: " + labeldate);  // console에서 labeldate 확인
+        
+        // 추가적인 검사
+        if ("undefined".equals(labeldate)) {
+            System.out.println("No labeldate parameter provided.");
+        }
+  
+    ArrayList<CalendarVO> list = this.calendarProc.main_list_calendar_day(labeldate);
+    model.addAttribute("list", list);
+
+    JSONArray schedule_list = new JSONArray();
+    
+    for (CalendarVO calendarVO: list) {
+        JSONObject schedual = new JSONObject();
+        schedual.put("calendarno", calendarVO.getCalendarno());
+        schedual.put("labeldate", calendarVO.getLabeldate());
+        schedual.put("label", calendarVO.getLabel());
+        schedual.put("seqno", calendarVO.getSeqno());
+        
+        schedule_list.put(schedual);
+    }
+
+    return schedule_list.toString();
+    
+  }
+
+  
 }

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import dev.mvc.newscate.NewsCateVO;
 import dev.mvc.stock.StockVO;
 
 @Service("dev.mvc.calendar.CalendarProc")
@@ -29,11 +30,16 @@ public class CalendarProc implements CalendarProcInter {
   }
   
   /** 목록 */
+//  @Override
+//  public ArrayList<CalendarVO> list() {
+//    ArrayList<CalendarVO> list = this.calendarDAO.list();
+//    
+//    return list;
+//  }
+  
   @Override
-  public ArrayList<CalendarVO> list_all() {
-    ArrayList<CalendarVO> list = this.calendarDAO.list_all();
-    
-    return list;
+  public ArrayList<CalendarVO> list() {
+    return calendarDAO.list();
   }
   
   /** 조회 */
@@ -94,6 +100,7 @@ public class CalendarProc implements CalendarProcInter {
     return 0;
   }
   
+  
   @Override
   public Integer list_search_count(Map<String, Object> map) {
     return calendarDAO.list_search_count(map);
@@ -117,8 +124,13 @@ public class CalendarProc implements CalendarProcInter {
       return calendarDAO.listSearchPaging(map);  // DAO 호출
   }
 
+
+
+
+
   @Override
-  public String pagingBox(int now_page, String searchLabel,  int search_count, int record_per_page, int page_per_block) {
+  public String pagingBox(int now_page, String searchLabel,
+                           int search_count, int record_per_page, int page_per_block) {
     int total_page = (int) (Math.ceil((double) search_count / record_per_page));
     int total_grp = (int) (Math.ceil((double) total_page / page_per_block));
     int now_grp = (int) (Math.ceil((double) now_page / page_per_block));
@@ -130,7 +142,7 @@ public class CalendarProc implements CalendarProcInter {
 
     int _now_page = (now_grp - 1) * page_per_block;
     if (now_grp >= 2) {
-      str.append("<span class='span_box_1'><a href='"  + "?&word=" + searchLabel + "&now_page=" + _now_page + "'>이전</a></span>");
+      str.append("<span class='span_box_1'><a href='" + "?&word=" + searchLabel  + "&now_page=" + _now_page + "'>이전</a></span>");
     }
 
     for (int i = start_page; i <= end_page; i++) {
@@ -140,7 +152,7 @@ public class CalendarProc implements CalendarProcInter {
       if (now_page == i) {
         str.append("<span class='span_box_2'>" + i + "</span>");
       } else {
-        str.append("<span class='span_box_1'><a href='" +  "?word=" + searchLabel + "&now_page=" + i + "'>" + i + "</a></span>");
+        str.append("<span class='span_box_1'><a href='" + "?word=" + searchLabel  + "&now_page=" + i + "'>" + i + "</a></span>");
       }
     }
 
@@ -152,4 +164,29 @@ public class CalendarProc implements CalendarProcInter {
     str.append("</div>");
     return str.toString();
   }
+  
+  @Override
+  public int update_seqno_forward(int calendarno) {
+    int cnt = this.calendarDAO.update_seqno_forward(calendarno);
+    return cnt;
+  }
+
+  @Override
+  public int update_seqno_backward(int calendarno) {
+    int cnt = this.calendarDAO.update_seqno_backward(calendarno);
+    return cnt;
+  }
+
+  @Override
+  public ArrayList<CalendarVO> main_list_calendar(String date) {
+    ArrayList<CalendarVO> list = this.calendarDAO.main_list_calendar(date);
+    return list;
+  }
+
+  @Override
+  public ArrayList<CalendarVO> main_list_calendar_day(String date) {
+    ArrayList<CalendarVO> list = this.calendarDAO.main_list_calendar_day(date);
+    return list;
+  }    
+
 }

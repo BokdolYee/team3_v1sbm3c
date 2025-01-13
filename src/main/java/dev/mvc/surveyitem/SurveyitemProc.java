@@ -57,8 +57,8 @@ public class SurveyitemProc implements SurveyitemProcInter{
   }
 
   @Override
-  public ArrayList<SurveyitemVO> list_all() {
-    ArrayList<SurveyitemVO> list = this.surveyitemDAO.list_all();
+  public ArrayList<SurveytopicitemVO> list_all() {
+    ArrayList<SurveytopicitemVO> list = this.surveyitemDAO.list_all();
     return list;
   }
   
@@ -151,7 +151,7 @@ public class SurveyitemProc implements SurveyitemProcInter{
   }
 
   @Override
-  public ArrayList<SurveyitemVO> list_paging(String word, int now_page, int record_per_page) {
+  public ArrayList<SurveytopicitemVO> list_paging(String word, int now_page, int record_per_page) {
 
    int start_num = ((now_page - 1) * record_per_page) + 1;
    int end_num=(start_num + record_per_page) - 1;
@@ -163,7 +163,7 @@ public class SurveyitemProc implements SurveyitemProcInter{
    map.put("start_num", start_num);
    map.put("end_num", end_num);
    
-   ArrayList<SurveyitemVO> list = this.surveyitemDAO.list_paging(map);
+   ArrayList<SurveytopicitemVO> list = this.surveyitemDAO.list_paging(map);
    // System.out.println("-> " + list.size());
    
    return list;
@@ -177,13 +177,13 @@ public class SurveyitemProc implements SurveyitemProcInter{
   }
 
   @Override
-  public ArrayList<SurveyitemVO> list_search(String word) {
-    ArrayList<SurveyitemVO> list = this.surveyitemDAO.list_search(word);
+  public ArrayList<SurveytopicitemVO> list_search(String word) {
+    ArrayList<SurveytopicitemVO> list = this.surveyitemDAO.list_search(word);
     return list;
   }
 
   @Override
-  public ArrayList<SurveyitemVO> list_search_paging(String word, int now_page, int record_per_page) {
+  public ArrayList<SurveytopicitemVO> list_search_paging(String word, int now_page, int record_per_page) {
     /*
      페이지당 10개의 레코드 출력
      1 page: WHERE r >= 1 AND r <= 10
@@ -208,7 +208,7 @@ public class SurveyitemProc implements SurveyitemProcInter{
     map.put("start_num", start_num);
     map.put("end_num", end_num);
     
-    ArrayList<SurveyitemVO> list = this.surveyitemDAO.list_search_paging(map);
+    ArrayList<SurveytopicitemVO> list = this.surveyitemDAO.list_search_paging(map);
  
     
     return list;

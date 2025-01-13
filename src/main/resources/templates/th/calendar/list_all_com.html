@@ -3,15 +3,6 @@
 '/calendar/list_all_com.html' 파일의 list_all_fragment를 가져다 사용
 */-->
 <div th:fragment="list_all_fragment"> 
-
-  <!-- 검색 폼 -->
-  <aside class="aside_right">
-    <form action="/calendar/list_all" method="get" class="search-form" style="display: inline-block; margin-left: 20px;">
-      <input type="text" name="searchLabel" placeholder="레이블" class="form-control" style="width: 120px; display: inline-block;"/>
-      <button type="submit" class="btn btn-primary btn-sm">검색</button>
-    </form>
-    </aside>
-    
   <table class="table table-hover" style="width: 100%;">
     <colgroup>
       <col style='width: 10%;'/>
@@ -32,8 +23,8 @@
       </tr>
     </thead>
     <tbody>
-      <tr th:each="calendarVO : ${calendarList}" 
-           th:attr="onclick=|location.href='./read/${calendarVO.calendarno}'|"
+      <tr th:each="calendarVO : ${calendarlist}"
+            th:attr="onclick=|location.href='./read/${calendarVO.calendarno}'|"
            style="cursor: pointer;">
         <td class="td_bs" th:text="|${status.index+1}|"></td>
         <td class="td_bs" style="color: black;">
@@ -56,10 +47,5 @@
     </tbody>
   </table>
   
-    <!-- 페이지 버튼 목록 출력 시작 -->
-  <div class="Bottom_menu" th:utext="${paging}" style="text-align: center; #paging {text-align: center; margin-top: 5px; font-size: 1em;}  #paging A:link {text-decoration:none; color:black; font-size: 1em;}  #paging A:hover{text-decoration:none; background-color: #FFFFFF; color:black; font-size: 1em;}  #paging A:visited {text-decoration:none;color:black; font-size: 1em;}  .span_box_1{    text-align: center;    font-size: 1em;    border: 1px;    border-style: solid;    border-color: #cccccc;    padding:1px 6px 1px 6px; /*위, 오른쪽, 아래, 왼쪽*/    margin:1px 2px 1px 2px; /*위, 오른쪽, 아래, 왼쪽*/  }  .span_box_2{    text-align: center;    background-color: #668db4;    color: #FFFFFF;    font-size: 1em;    border: 1px;    border-style: solid;    border-color: #cccccc;    padding:1px 6px 1px 6px; /*위, 오른쪽, 아래, 왼쪽*/    margin:1px 2px 1px 2px; /*위, 오른쪽, 아래, 왼쪽*/"></div>
-  <!-- 페이지 버튼 목록 출력 종료 -->
-  
 </div>
 
-<style type="text/css">  #paging {text-align: center; margin-top: 5px; font-size: 1em;}  #paging A:link {text-decoration:none; color:black; font-size: 1em;}  #paging A:hover{text-decoration:none; background-color: #FFFFFF; color:black; font-size: 1em;}  #paging A:visited {text-decoration:none;color:black; font-size: 1em;}  .span_box_1{    text-align: center;    font-size: 1em;    border: 1px;    border-style: solid;    border-color: #cccccc;    padding:1px 6px 1px 6px; /*위, 오른쪽, 아래, 왼쪽*/    margin:1px 2px 1px 2px; /*위, 오른쪽, 아래, 왼쪽*/  }  .span_box_2{    text-align: center;    background-color: #668db4;    color: #FFFFFF;    font-size: 1em;    border: 1px;    border-style: solid;    border-color: #cccccc;    padding:1px 6px 1px 6px; /*위, 오른쪽, 아래, 왼쪽*/    margin:1px 2px 1px 2px; /*위, 오른쪽, 아래, 왼쪽*/  }</style>

@@ -43,7 +43,7 @@ import jakarta.validation.Valid;
 @RequestMapping("/surveytopic")
 public class SurveytopicCont {
   /** 페이지당 출력할 레코드 갯수, nowPage는 1부터 시작 */
-  public int record_per_page = 5;
+  public int record_per_page = 10;
 
   /** 블럭당 페이지 수, 하나의 블럭은 10개의 페이지로 구성됨 */
   public int page_per_block = 5;
@@ -360,7 +360,7 @@ public class SurveytopicCont {
         word = Tool.checkNull(word);  // 검색어 처리
 
         // 리스트를 가져오는 부분
-        ArrayList<SurveySurveytopicVO> list = this.surveytopicProc.list_search_paging_join();
+        ArrayList<SurveySurveytopicVO> list = this.surveytopicProc.list_search_paging_join(word, now_page, this.record_per_page);
         model.addAttribute("list", list);
         
         System.out.println("-> list" + list);
@@ -376,11 +376,44 @@ public class SurveytopicCont {
 
         int no = search_cnt - ((now_page - 1) * this.record_per_page);
         model.addAttribute("no", no);
-
+        
+        model.addAttribute("word", word); // 검색어
+        
+        System.out.println("list: " + list);
+        
         // 화면에 전달할 모델을 반환
         return "/th/surveytopic/list_search";
     }
+    
+    @GetMapping("/read_res")
+    public String read_res(Model model, 
+                                                      @RequestParam(name = "surveyno", defaultValue = "0") int surveyno) {
+        
+      SurveyVO surveyVO = this.surveyproc.read(surveyno);
+      model.addAttribute("surveyVO", surveyVO);
+                  
+      ArrayList<SurveytopicVO> surveytopicList = this.surveytopicProc.listBySurveyno(surveyVO.getSurveyno());
+      model.addAttribute("surveytopicList", surveytopicList);
+      
+       // 각 주제에 대한 항목을 저장할 맵
+       Map<Integer, ArrayList<SurveyitemVO>> itemsByTopic = new HashMap<>();
+
+       // 각 주제에 대한 항목을 저장할 맵
+       for (SurveytopicVO topic : surveytopicList) {
+           ArrayList<SurveyitemVO> surveyitemList = this.surveyitemProc.listBySurveytopicno(topic.getSurveytopicno());
+           itemsByTopic.put(topic.getSurveytopicno(), surveyitemList);
+         
+       }
+
+       model.addAttribute("itemsByTopic", itemsByTopic);
+
+      
+        return "/th/surveytopic/read_res"; // 결과 페이지의 이름
+    }
+
 }
+
+
 
 
     

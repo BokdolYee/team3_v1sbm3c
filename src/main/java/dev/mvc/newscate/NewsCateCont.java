@@ -42,7 +42,7 @@ public class NewsCateCont {
   public int page_per_block = 10;
   
   /** 페이징 목록 주소 */
-  private String list_file_name = "/th/newscate/list_search";
+  private String list_file_name = "/newscate/list_search";
   
   @Autowired
   @Qualifier("dev.mvc.member.MemberProc")

@@ -77,7 +77,7 @@
     WHERE r &gt;= #{start_num}
   </select>
   
-  <!-- 검색 + 페이징 -->
+  <!-- 검색 + 페이징 
   <select id="list_search_paging" resultType="dev.mvc.surveyitem.SurveyitemVO" parameterType="Map">
     SELECT surveyitemno, surveytopicno, item, itemseq, itemcnt, r
     FROM (
@@ -90,7 +90,36 @@
         )
       
     )
+    WHERE r &gt;= #{start_num}  AND r &lt;= #{end_num}  
+  </select> -->
+  
+    <!-- 전체 목록 -->
+  <select id="list_all" resultType="dev.mvc.surveyitem.SurveytopicitemVO">
+    SELECT r.surveyno, r.title, r.surveytopicno, i.item, i.itemcnt
+    FROM surveytopic r
+    JOIN surveyitem i ON r.surveytopicno = i.surveytopicno
+    JOIN survey c ON c.surveyno = r.surveyno
+    ORDER BY r.surveytopicno ASC
+
+  </select>
+  
+  <!-- 검색 + 페이징 -->
+  <select id="list_search_paging" resultType="dev.mvc.surveyitem.SurveytopicitemVO" parameterType="Map">
+    SELECT surveyno, title, surveytopicno, item, itemcnt, r
+    FROM (
+        SELECT t.surveyno, t.title, t.surveytopicno, i.item, i.itemcnt, ROW_NUMBER() OVER (ORDER BY i.surveyitemno ASC) AS r
+        FROM surveyitem i 
+        JOIN surveytopic t ON i.surveytopicno = t.surveytopicno
+        WHERE (UPPER(t.title) LIKE '%' || UPPER(#{word}) || '%') 
+           OR (UPPER(i.item) LIKE '%' || UPPER(#{word}) || '%')
+      
+    )
     WHERE r &gt;= #{start_num}  AND r &lt;= #{end_num}  <!-- WHERE r >= 1 AND r <= 3 -->
   </select>
+  
+
+
+
+
 
 </mapper>

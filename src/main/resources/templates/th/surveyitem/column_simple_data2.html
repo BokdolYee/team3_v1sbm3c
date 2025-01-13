@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속 -->
+  <div layout:fragment="content" style="width: 80%; margin: 50px auto; text-align: center;">
+    <div class='title_line'>설문조사 결과 데이터 차트</div>
+      
+    <div id="chart_div" style='height: 500px;'></div>
+    <script type="text/javascript">
+      // Load the Visualization API and the corechart package.
+      google.charts.load('current', {'packages':['corechart']});
+
+      // Set a callback to run when the Google Visualization API is loaded.
+      google.charts.setOnLoadCallback(drawChart);
+
+      // Callback that creates and populates a data table,
+      // instantiates the column chart, passes in the data and
+      // draws it.
+      function drawChart() {
+        let chart_data = `[[${chart_data}]]`;
+        console.log('-> chart_data: ' + chart_data);
+        chart_data = chart_data.replace(/&#39;/g, "'");
+        console.log('-> chart_data: ' + chart_data);
+        
+        // chart_data = JSON.parse(chart_data); // ERROR
+        chart_data = eval(chart_data); // 문자열 -> 자바스크립트 코드로 변경
+            
+        var data = google.visualization.arrayToDataTable(chart_data);
+
+        // Set chart options
+        var options = {
+          title: '[[${title}]]',
+          hAxis: {title: '[[${xlabel}]]', titleTextStyle: {color: '#000'}},
+          
+          vAxis: {title: '[[${ylabel}]]', minValue: 0}
+        };
+
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+    </script>
+
+    <!-- 추가된 돌아가기 버튼 -->
+    <div style="margin-top: 20px; text-align: center;">
+      <a href="javascript:history.back();" class="btn btn-secondary" style="padding: 10px 20px; font-size: 16px; text-decoration: none; color: white; background-color: #6c757d; border-radius: 5px;">
+        뒤로가기
+      </a>
+    </div>
+  </div>
+</html>

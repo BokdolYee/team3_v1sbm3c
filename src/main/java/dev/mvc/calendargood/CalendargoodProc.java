@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 
 import dev.mvc.calendar.CalendarVO;
 import dev.mvc.calendargood.CalendargoodDAOInter;
+import dev.mvc.dto.SearchDTO;
+import dev.mvc.post_goodbad.Post_goodbadVO;
+import dev.mvc.stock.StockVO;
 
 @Service("dev.mvc.calendargood.CalendargoodProc")
 public class CalendargoodProc implements CalendargoodProcInter {
@@ -82,5 +85,21 @@ public class CalendargoodProc implements CalendargoodProcInter {
     ArrayList<CalendarCalendargoodMemberVO> list = this.calendargoodDAO.list_all_join();
     
     return list;
+  }
+  
+  /**
+   * 추천, 비추천 내역 검색 + 페이징
+   */
+  @Override
+  public ArrayList<CalendarCalendargoodMemberVO> list_search_paging(SearchDTO searchDTO) {
+    return this.calendargoodDAO.list_search_paging(searchDTO);
+  }
+
+  /**
+   * 조건에 맞는 내역 수
+   */
+  @Override
+  public int list_search_count(SearchDTO searchDTO) {
+    return this.calendargoodDAO.list_search_count(searchDTO);
   }
 }

@@ -49,13 +49,9 @@ public interface SurveytopicDAOInter {
   public ArrayList<SurveySurveytopicVO> list_paging(Map<String, Object> map);
 
   // 검색 + 페이징
-  public ArrayList<SurveySurveytopicVO> list_search_paging(Map<String, Object> map);
+  public ArrayList<SurveySurveytopicVO> list_search_paging_join(Map<String, Object> map);
 
-  /**
-   * 테이블 3개 조인
-   * @return
-   */
-  public ArrayList<SurveySurveytopicVO> list_search_paging_join();
+
   
   
   

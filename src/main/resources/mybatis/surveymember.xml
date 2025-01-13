@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="dev.mvc.surveymember.SurveymemberDAOInter">
+      <!-- 등록 -->
+  <insert id="create" parameterType="dev.mvc.surveymember.SurveymemberVO">
+   INSERT INTO surveymember(surveymemberno, rdate, surveyitemno, memberno)
+  VALUES (surveymember_seq.nextval, sysdate, #{surveyitemno}, #{memberno})
+  </insert>
+  
+   <!-- 전체 목록 -->
+  <select id="list_all" resultType="dev.mvc.surveymember.SurveymemberVO">
+    SELECT surveymemberno, rdate, surveyitemno, memberno
+    FROM surveymember
+    ORDER BY surveymemberno DESC
+  </select>
+  
+  <!--삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM surveymember
+    WHERE surveymemberno = #{surveymemberno}
+  </delete>
+ 
+  
+    <!-- 조회 -->
+  <select id="read" resultType="dev.mvc.surveymember.SurveymemberVO" parameterType="int">
+    SELECT surveymemberno, rdate, surveyitemno, memberno
+    FROM surveymember
+    WHERE surveymemberno=#{surveymemberno}
+  </select>  
+
+    <!--surveyno, memberno 조회 
+  <select id="readBySurveynoMemberno" 
+  resultType="dev.mvc.surveymember.SurveymemberVO" parameterType="HashMap">
+    SELECT surveygoodno, rdate, surveyno, memberno
+    FROM surveygood
+    WHERE surveyno=#{surveyno} AND memberno=#{memberno}
+  </select>   -->
+  
+  <!-- 테이블 3개 join -->
+   <select id="list_all_join" resultType="dev.mvc.surveymember.SurveytopicitemmemberVO">
+    SELECT r.surveymemberno, r.rdate, r.surveyitemno, c.title, r.memberno, m.id, m.name, i.item, s.topic
+    FROM surveytopic c, surveymember r, member m, surveyitem i, survey s
+    WHERE i.surveyitemno = r.surveyitemno AND r.memberno = m.memberno
+    ORDER BY r.surveymemberno DESC
+  </select>
+  
+
+</mapper> 

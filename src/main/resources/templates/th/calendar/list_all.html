@@ -2,15 +2,75 @@
 
 <html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
 <div layout:fragment="content">
-  <div class="title_line">일정</div>
+
+  <div class='title_line'>전체 일정 목록</div>
+
   <aside class="aside_right">
-    <a href="javascript: location.reload();" style="color: black;">새로 고침</a>
+    <a href="/calendar/list_all">전체 목록</a>
+    <span> | </span>
+    <a href="javascript:location.reload();">새로고침</a>
+    <span> | </span>
+    <a th:href="@{|/calendar/create|}">등록</a>
+
+    <!-- 검색 폼 -->
+    <form action="/calendar/list_all" method="get" class="search-form" style="display: inline-block; margin-left: 20px;">
+      <input type="text" name="searchLabel" placeholder="레이블" class="form-control" style="width: 120px; display: inline-block;"/>
+      <button type="submit" class="btn btn-primary btn-sm">검색</button>
+    </form>
   </aside>
-  <div class="menu_line"></div>
-  
-  <!--/* '/calendar/list_all_com.html' 파일의 list_all_fragment를 가져다 사용 */--> 
-  <div th:replace="~{th/calendar/list_all_com::list_all_fragment}"></div> 
-  
+
+  <div class='menu_line'></div>
+
+  <table class="table table-hover" style="width: 100%;">
+    <colgroup>
+      <col style="width: 20%;"/>
+      <col style="width: 20%;"/>
+      <col style="width: 10%;"/>
+      <col style="width: 20%;"/>
+      <col style="width: 20%;"/>
+    </colgroup>
+    <thead>
+      <tr>
+        
+        <th class="th_bs">출력 날짜</th>
+        <th class="th_bs">달력 출력 레이블</th>
+        <th class="th_bs">출력 순서</th>
+        <th class="th_bs">등록일</th>
+        <th class="th_bs">기타</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- a 태그로 td 전체를 감싸도록 수정 -->
+      <tr th:each="calendarVO : ${calendarList}" 
+           th:attr="onclick=|location.href='./read/${calendarVO.calendarno}'|"
+           style="cursor: pointer;">
+          <td class="td_bs" style="cursor: pointer;">
+          <span th:text="${calendarVO.labeldate}"></span>
+          </td>  
+          <td class="td_bs" style="cursor: pointer;">
+           <span th:text="${calendarVO.label}"></span> 
+          </td>
+          <td class="td_bs" style="cursor: pointer;">
+           <span th:text="${calendarVO.seqno}"></span> 
+          </td>
+          <td class="td_bs" style="cursor: pointer;">
+           <span th:text="${calendarVO.regdate}"></span> 
+          </td>
+          <td class="td_bs">
+          <a th:href="@{|/calendar/update_seqno_forward/${calendarVO.calendarno}?word=${word}&now_page=${now_page}|}"><img src="/newscate/images/decrease.png" class="icon" title="우선순위 높임"></a>
+          <a th:href="@{|/calendar/update_seqno_backward/${calendarVO.calendarno}?word=${word}&now_page=${now_page}|}"><img src="/newscate/images/increase.png" class="icon" title="우선순위 낮춤"></a>
+          <a th:href="@{|/calendar/update?calendarno=${calendarVO.calendarno}|}"><img src="/newscate/images/update.png" class="icon" title="수정"></a> <!-- /static 기준 -->
+          <a th:href="@{|/calendar/delete/${calendarVO.calendarno}|}"><img src="/newscate/images/delete.png" class="icon" title="삭제"></a> <!--/* /static 기준 */-->
+        </td> 
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 페이지 버튼 목록 출력 시작 -->
+  <div class="Bottom_menu" th:utext="${paging}" style="text-align: center; #paging {text-align: center; margin-top: 5px; font-size: 1em;}  #paging A:link {text-decoration:none; color:black; font-size: 1em;}  #paging A:hover{text-decoration:none; background-color: #FFFFFF; color:black; font-size: 1em;}  #paging A:visited {text-decoration:none;color:black; font-size: 1em;}  .span_box_1{    text-align: center;    font-size: 1em;    border: 1px;    border-style: solid;    border-color: #cccccc;    padding:1px 6px 1px 6px; /*위, 오른쪽, 아래, 왼쪽*/    margin:1px 2px 1px 2px; /*위, 오른쪽, 아래, 왼쪽*/  }  .span_box_2{    text-align: center;    background-color: #668db4;    color: #FFFFFF;    font-size: 1em;    border: 1px;    border-style: solid;    border-color: #cccccc;    padding:1px 6px 1px 6px; /*위, 오른쪽, 아래, 왼쪽*/    margin:1px 2px 1px 2px; /*위, 오른쪽, 아래, 왼쪽*/"></div>
+  <!-- 페이지 버튼 목록 출력 종료 -->
+
 </div>
 </html>
 
+<style type="text/css">  #paging {text-align: center; margin-top: 5px; font-size: 1em;}  #paging A:link {text-decoration:none; color:black; font-size: 1em;}  #paging A:hover{text-decoration:none; background-color: #FFFFFF; color:black; font-size: 1em;}  #paging A:visited {text-decoration:none;color:black; font-size: 1em;}  .span_box_1{    text-align: center;    font-size: 1em;    border: 1px;    border-style: solid;    border-color: #cccccc;    padding:1px 6px 1px 6px; /*위, 오른쪽, 아래, 왼쪽*/    margin:1px 2px 1px 2px; /*위, 오른쪽, 아래, 왼쪽*/  }  .span_box_2{    text-align: center;    background-color: #668db4;    color: #FFFFFF;    font-size: 1em;    border: 1px;    border-style: solid;    border-color: #cccccc;    padding:1px 6px 1px 6px; /*위, 오른쪽, 아래, 왼쪽*/    margin:1px 2px 1px 2px; /*위, 오른쪽, 아래, 왼쪽*/  }</style>

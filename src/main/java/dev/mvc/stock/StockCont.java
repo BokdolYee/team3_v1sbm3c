@@ -40,13 +40,19 @@ public class StockCont {
     System.out.println("-> StockCont created");
   }
 
-  // 1. Create - 데이터 추가 폼
+  //1. Create - 데이터 추가 폼
   @GetMapping("/create")
-  public String createForm(Model model) {
-    StockVO stockVO = new StockVO();
-    model.addAttribute("stockVO", stockVO);
-    return "/th/stock/create"; // create.html로 이동
+  public String createForm(Model model, HttpSession session) {
+     // 세션에서 관리자 확인
+     if (this.memberProc.isAdmin(session)) { // 관리자로 로그인한 경우
+         StockVO stockVO = new StockVO();
+         model.addAttribute("stockVO", stockVO);
+         return "/th/stock/create"; // create.html로 이동
+     } else { // 관리자가 아닌 경우 로그인 페이지로 리다이렉트
+         return "redirect:/member/login_cookie_need"; // 관리자만 접근 가능
+     }
   }
+
 
 //1. Create - 데이터 추가 처리
 @PostMapping("/create")
@@ -208,11 +214,17 @@ public String create(Model model, @Valid @ModelAttribute("stockVO") StockVO stoc
 
   // 5. Update - 데이터 수정 폼
   @GetMapping("/update/{stockno}")
-  public String updateForm(@PathVariable("stockno") int stockno, Model model) {
-    StockVO stockVO = stockProc.read(stockno);
-    model.addAttribute("stockVO", stockVO);
-    return "/th/stock/update"; // stock/update.html
+  public String updateForm(@PathVariable("stockno") int stockno, Model model, HttpSession session) {
+      // 세션에서 관리자 확인
+      if (this.memberProc.isAdmin(session)) { // 관리자로 로그인한 경우
+          StockVO stockVO = stockProc.read(stockno);
+          model.addAttribute("stockVO", stockVO);
+          return "/th/stock/update"; // stock/update.html
+      } else { // 관리자가 아닌 경우 로그인 페이지로 리다이렉트
+          return "redirect:/member/login_cookie_need"; // 관리자만 접근 가능
+      }
   }
+
 
   // 5. Update - 데이터 수정 처리
   @PostMapping("/update")
@@ -221,13 +233,19 @@ public String create(Model model, @Valid @ModelAttribute("stockVO") StockVO stoc
     return "redirect:/stock/list_all"; // 수정 후 목록 페이지로 이동
   }
 
-  // 6. Delete - 데이터 삭제 폼
+  //6. Delete - 데이터 삭제 폼
   @GetMapping("/delete/{stockno}")
-  public String deleteForm(@PathVariable("stockno") int stockno, Model model) {
-    StockVO stockVO = stockProc.read(stockno);
-    model.addAttribute("stockVO", stockVO);
-    return "/th/stock/delete"; // stock/delete.html
+  public String deleteForm(@PathVariable("stockno") int stockno, Model model, HttpSession session) {
+     // 세션에서 관리자 확인
+     if (this.memberProc.isAdmin(session)) { // 관리자로 로그인한 경우
+         StockVO stockVO = stockProc.read(stockno);
+         model.addAttribute("stockVO", stockVO);
+         return "/th/stock/delete"; // stock/delete.html
+     } else { // 관리자가 아닌 경우 로그인 페이지로 리다이렉트
+         return "redirect:/member/login_cookie_need"; // 관리자만 접근 가능
+     }
   }
+
 
   // 6. Delete - 데이터 삭제 처리
   @PostMapping("/delete")
@@ -236,18 +254,23 @@ public String create(Model model, @Valid @ModelAttribute("stockVO") StockVO stoc
     return "redirect:/stock/list_all"; // 삭제 후 목록 페이지로 이동
   }
   
-//1. 파일 수정 폼 (수정 화면)
+  //1. 파일 수정 폼 (수정 화면)
   @GetMapping("/update_file")
   public String update_file(@RequestParam(name = "stockno") int stockno, HttpSession session, Model model, 
-                            @RequestParam(name="word", defaultValue = "") String word, 
-                            @RequestParam(name="now_page", defaultValue = "1") int now_page) {
-      model.addAttribute("word", word);
-      model.addAttribute("now_page", now_page);
-
-      StockVO stockVO = this.stockProc.read(stockno);
-      model.addAttribute("stockVO", stockVO);
-
-      return "/th/stock/update_file"; 
+                           @RequestParam(name="word", defaultValue = "") String word, 
+                           @RequestParam(name="now_page", defaultValue = "1") int now_page) {
+     // 세션에서 관리자 확인
+     if (this.memberProc.isAdmin(session)) { // 관리자로 로그인한 경우
+         model.addAttribute("word", word);
+         model.addAttribute("now_page", now_page);
+  
+         StockVO stockVO = this.stockProc.read(stockno);
+         model.addAttribute("stockVO", stockVO);
+  
+         return "/th/stock/update_file"; // 수정 화면
+     } else { // 관리자가 아닌 경우 로그인 페이지로 리다이렉트
+         return "redirect:/member/login_cookie_need"; // 관리자만 접근 가능
+     }
   }
 
 

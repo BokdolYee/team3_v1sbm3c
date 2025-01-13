@@ -64,7 +64,9 @@
                         <li class="nav-item"><a class="nav-link"th:if="${session.grade=='admin' or session.grade=='member'}" th:href="@{|/surveytopic/list_search|}">설문조사 개별 문제 목록</a></li>
                         <li class="nav-item"><a class="nav-link"th:if="${session.grade=='admin' or session.grade=='member'}" th:href="@{|/surveyitem/list_search|}">설문조사 항목 문제 목록</a></li>
                         <li class="nav-item"><a class="nav-link" th:href="@{|/surveygood/list_all|}">설문조사 추천 목록</a></li>
-
+                        <li class="nav-item"><a class="nav-link" th:href="@{|/surveyitem/read_res|}">설문조사 결과 목록</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{|/surveyitem/column_simple_data2|}">설문조사 차트 결과 목록</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{|/surveymember/list_all|}">설문조사 참여 회원 목록</a></li>
                     </ul>
                 </li>
 
@@ -96,7 +98,7 @@
                           <a class="nav-link" th:href="@{|/member/create|}">회원 가입</a>
                         </li>
                         <li class="nav-item" th:if="${session.memberno != null}">
-                          <a class="nav-link" th:href="@{|/member/passwd_update|}">비밀번호 변경</a>
+                          <a class="nav-link" th:href="@{|/member/update_passwd|}">비밀번호 변경</a>
                         </li>
                         <li class="nav-item" th:if="${session.memberno != null}">
                           <a class="nav-link" th:href="@{|/member/read|}">내 정보 보기</a>
@@ -112,7 +114,10 @@
                         <li class="nav-item"><a class="nav-link" th:href="@{|/member/list|}">회원 목록</a></li>
                         <li class="nav-item"><a class="nav-link" th:href="@{|/newscate/list_search?word=${word}|}">카테고리 목록</a></li>
                         <li class="nav-item"><a class="nav-link" href="/contents/list_all">전체 글 목록</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{|/news/list|}">뉴스 목록</a></li>
+                        <li class="nav-item"><a class="nav-link" th:href="@{|/post_goodbad/list|}">추천 내역</a></li>
                         
+
                     </ul>
                 </li>
  

@@ -57,9 +57,9 @@
            <span th:text="${calendarVO.regdate}"></span> 
           </td>
           <td class="td_bs">
-          <a th:href="@{|/calendar/update_seqno_forward/${calendarVO.calendarno}|}"><img src="/newscate/images/decrease.png" class="icon" title="우선순위 높임"></a>
-          <a th:href="@{|/calendar/update_seqno_backward/${calendarVO.calendarno}|}"><img src="/newscate/images/increase.png" class="icon" title="우선순위 낮춤"></a>
-          <a th:href="@{|/calendar/update/${calendarVO.calendarno}|}"><img src="/newscate/images/update.png" class="icon" title="수정"></a> <!-- /static 기준 -->
+          <a th:href="@{|/calendar/update_seqno_forward/${calendarVO.calendarno}?word=${word}&now_page=${now_page}|}"><img src="/newscate/images/decrease.png" class="icon" title="우선순위 높임"></a>
+          <a th:href="@{|/calendar/update_seqno_backward/${calendarVO.calendarno}?word=${word}&now_page=${now_page}|}"><img src="/newscate/images/increase.png" class="icon" title="우선순위 낮춤"></a>
+          <a th:href="@{|/calendar/update?calendarno=${calendarVO.calendarno}|}"><img src="/newscate/images/update.png" class="icon" title="수정"></a> <!-- /static 기준 -->
           <a th:href="@{|/calendar/delete/${calendarVO.calendarno}|}"><img src="/newscate/images/delete.png" class="icon" title="삭제"></a> <!--/* /static 기준 */-->
         </td> 
       </tr>

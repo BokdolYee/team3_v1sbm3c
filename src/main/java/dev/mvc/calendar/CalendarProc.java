@@ -164,5 +164,29 @@ public class CalendarProc implements CalendarProcInter {
     str.append("</div>");
     return str.toString();
   }
+  
+  @Override
+  public int update_seqno_forward(int calendarno) {
+    int cnt = this.calendarDAO.update_seqno_forward(calendarno);
+    return cnt;
+  }
+
+  @Override
+  public int update_seqno_backward(int calendarno) {
+    int cnt = this.calendarDAO.update_seqno_backward(calendarno);
+    return cnt;
+  }
+
+  @Override
+  public ArrayList<CalendarVO> main_list_calendar(String date) {
+    ArrayList<CalendarVO> list = this.calendarDAO.main_list_calendar(date);
+    return list;
+  }
+
+  @Override
+  public ArrayList<CalendarVO> main_list_calendar_day(String date) {
+    ArrayList<CalendarVO> list = this.calendarDAO.main_list_calendar_day(date);
+    return list;
+  }    
 
 }

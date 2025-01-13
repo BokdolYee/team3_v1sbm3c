@@ -16,8 +16,6 @@ public class ContentsGoodProc implements ContentsGoodProcInter{
 	  
 	@Autowired
 	private ContentsGoodDAOInter contentgoodDAO; // Cate DAO 주입
-
-	private Object contentsgoodDAO;
   
 	  @Override
 	  public int create(ContentsGoodVO contentsgoodVO) {

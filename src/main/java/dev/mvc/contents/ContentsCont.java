@@ -212,7 +212,7 @@ public class ContentsCont {
       @RequestParam(name = "now_page", defaultValue = "1") int now_page) {
 
     // System.out.println("-> cateno: " + cateno);
-
+	Integer memberno = (Integer) session.getAttribute("memberno");
     ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
     model.addAttribute("menu", menu);
 

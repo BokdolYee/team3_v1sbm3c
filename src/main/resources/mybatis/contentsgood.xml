@@ -21,7 +21,7 @@
     WHERE contentsgoodno = #{contentsgoodno}
   </delete>
   
-    <!-- 삭제 -->
+  <!-- 삭제 -->
   <delete id="delete_conts" parameterType="int">
     DELETE FROM contentsgood
     WHERE contentno = #{contentno}

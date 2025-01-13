@@ -82,9 +82,9 @@ public interface SurveytopicProcInter {
    */
   public ArrayList<SurveySurveytopicVO> list_paging(String word, int now_page, int record_per_page);
    
-  public ArrayList<SurveySurveytopicVO> list_search_paging(String word, int now_page, int record_per_page);
   
-  public ArrayList<SurveySurveytopicVO> list_search_paging_join();
+  
+  public ArrayList<SurveySurveytopicVO> list_search_paging_join(String word, int now_page, int record_per_page);
 }
 
   

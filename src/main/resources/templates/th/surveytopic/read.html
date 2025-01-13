@@ -23,9 +23,9 @@
                     let tag = '';
 
                     if (hartCnt == 1) {
-                        tag = '<a href="javascript:good([[${surveyVO.surveyno}]])"><img src="/survey/images/like1.png" style="width: 22px" title="추천"></a>';
+                        tag = '<a href="javascript:good([[${surveyVO.surveyno}]])"><img src="/survey/images/love.png" style="width: 22px" title="추천"></a>';
                     } else {
-                        tag = '<a href="javascript:good([[${surveyVO.surveyno}]])"><img src="/survey/images/nope1.png" style="width: 22px" title="비추천"></a>';
+                        tag = '<a href="javascript:good([[${surveyVO.surveyno}]])"><img src="/survey/images/loveout.png" style="width: 22px" title="비추천"></a>';
                     }
 
                     document.querySelector('#hart_panel').innerHTML = tag;
@@ -45,10 +45,10 @@
             let tag = '';
 
             if (hartCnt == 1) {
-                tag = '<a href="javascript:good([[${surveyVO.surveyno}]])"><img src="/survey/images/like1.png" style="width: 22px" title="추천"></a>';
+                tag = '<a href="javascript:good([[${surveyVO.surveyno}]])"><img src="/survey/images/love.png" style="width: 30px" title="추천"></a>';
                 document.querySelector('#hart_panel').innerHTML = tag;
             } else {
-                tag = '<a href="javascript:good([[${surveyVO.surveyno}]])"><img src="/survey/images/nope1.png" style="width: 22px" title="비추천"></a>';
+                tag = '<a href="javascript:good([[${surveyVO.surveyno}]])"><img src="/survey/images/loveout.png" style="width: 30px" title="비추천"></a>';
                 document.querySelector('#hart_panel').innerHTML = tag;
             }
 
@@ -115,7 +115,7 @@
                 console.log('서버 응답:', result);
                 alert('응답이 성공적으로 제출되었습니다!');
                 // read_res 페이지로 리다이렉트
-                window.location.href = `/surveytopic/read_res?surveyno=${surveyno}`; // 동적으로 작성
+                window.location.href = `/surveyitem/read_res?surveyno=${surveyno}`; // 동적으로 작성
             } catch (error) {
                 console.error('데이터 전송 오류:', error);
                 alert('응답 제출에 실패했습니다.');
@@ -225,7 +225,16 @@
                 </div>
             </div>
         </div>
-        <span id="hart_panel"></span> <span id="recom_panel"></span>
+        <div style="text-align: center;">
+            <span id="hart_panel" style="display: inline-block; width: 150px; height: 50px; background-color: lightgray; font-size: 18px; text-align: center; line-height: 40px;">
+              하트 패널
+            </span>
+            <span id="recom_panel" style="display: inline-block; width: 150px; height: 50px; background-color: lightblue; font-size: 18px; text-align: center; line-height: 40px;">
+              추천 패널
+            </span>
+          </div>
+          
+          
     </div> <!-- 이 부분에서 div가 제대로 닫히지 않아서 추가된 부분 -->
 
     

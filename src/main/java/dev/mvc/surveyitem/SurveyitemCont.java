@@ -18,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import dev.mvc.member.MemberProcInter;
 import dev.mvc.survey.SurveyProcInter;
 import dev.mvc.survey.SurveyVO;
+import dev.mvc.surveygood.SurveySurveygoodMemberVO;
 import dev.mvc.surveytopic.Surveytopic;
 import dev.mvc.surveytopic.SurveytopicProcInter;
 import dev.mvc.surveytopic.SurveytopicVO;
@@ -30,7 +31,7 @@ import jakarta.validation.Valid;
 @RequestMapping("/surveyitem")
 public class SurveyitemCont {
   /** 페이지당 출력할 레코드 갯수, nowPage는 1부터 시작 */
-  public int record_per_page = 5;
+  public int record_per_page = 10;
 
   /** 블럭당 페이지 수, 하나의 블럭은 10개의 페이지로 구성됨 */
   public int page_per_block = 5;
@@ -103,7 +104,7 @@ public class SurveyitemCont {
     }
 
     model.addAttribute("cnt", cnt); // 결과 추가
-    return "/th/surveyitem/msg"; // 메시지 페이지로 이동
+    return "/surveyitem/msg"; // 메시지 페이지로 이동
   } else {
     return "redirect:/member/login_cookie_need"; // redirect
   }
@@ -248,39 +249,34 @@ public class SurveyitemCont {
       }
     }
     
-    @GetMapping(value = "/list_all")
+    @GetMapping(value = "/read_res")
     public String list_all(HttpSession session, Model model,
           @RequestParam(name="word", defaultValue = "") String word,
           @RequestParam(name = "surveyitemno", defaultValue = "0") int surveyitemno,
           @RequestParam(name = "surveytopicno", defaultValue = "0") int surveytopicno,
           @RequestParam(name="now_page", defaultValue = "1") int now_page) {
-  
-    
-        SurveyitemVO surveyitemVO = new SurveyitemVO();
-    model.addAttribute("surveyitemVO", surveyitemVO);
-    
-   
-    
-    ArrayList<SurveyitemVO> list = this.surveyitemProc.list_paging(word, now_page, now_page);
-    model.addAttribute("list", list);
-    
-    
-    model.addAttribute("word", word);
-    
-    // 페이지 번호 목록 생성
-    int search_count = this.surveyitemProc.list_search_count(word);
-    String paging = this.surveyitemProc.pagingBox(now_page, word, this.list_file_name, search_count, this.record_per_page,
-    this.page_per_block);
-    model.addAttribute("paging", paging);
-    model.addAttribute("now_page", now_page);
-    
-    // 일련 변호 생성: 레코드 갯수 - ((현재 페이지수 -1) * 페이지당 레코드 수)
-    int no = search_count - ((now_page - 1) * this.record_per_page);
-    model.addAttribute("no", no);
-    // --------------------------------------------------------------------------------------      
-    
-    return "/th/surveyitem/list_all";
-    } 
+        
+        // 페이징된 설문 항목 리스트를 가져옵니다.
+      ArrayList<SurveytopicitemVO> list = this.surveyitemProc.list_all();
+      model.addAttribute("list", list);
+        
+        model.addAttribute("word", word);
+        
+        // 페이지 번호 목록 생성
+        int search_count = this.surveyitemProc.list_search_count(word);
+        String paging = this.surveyitemProc.pagingBox(now_page, word, this.list_file_name, search_count, this.record_per_page,
+        this.page_per_block);
+        model.addAttribute("paging", paging);
+        model.addAttribute("now_page", now_page);
+        
+        // 일련 번호 생성: 레코드 갯수 - ((현재 페이지수 -1) * 페이지당 레코드 수)
+        int no = search_count - ((now_page - 1) * this.record_per_page);
+        model.addAttribute("no", no);
+        
+        // 템플릿 경로를 수정합니다.
+        return "/th/surveyitem/list_all_res"; // /th/ 제거
+    }
+
     
     @GetMapping(value = "/list_search")
     public String list_search_paging(HttpSession session, Model model,
@@ -292,11 +288,11 @@ public class SurveyitemCont {
       System.out.println("Received surveytopicno: " + surveytopicno);
         
       
-        SurveyitemVO surveyitemVO = new SurveyitemVO();
-        model.addAttribute("surveyitemVO", surveyitemVO);
-        
-        SurveytopicVO surveytopicVO = this.surveytopicProc.read(surveytopicno);
-        model.addAttribute("surveytopicVO", surveytopicVO);
+//        SurveyitemVO surveyitemVO = new SurveyitemVO();
+//        model.addAttribute("surveyitemVO", surveyitemVO);
+//        
+//        SurveytopicVO surveytopicVO = this.surveytopicProc.read(surveytopicno);
+//        model.addAttribute("surveytopicVO", surveytopicVO);
         
         // 검색어 및 값 초기화
         word = Tool.checkNull(word);
@@ -308,7 +304,7 @@ public class SurveyitemCont {
         model.addAttribute("word", word); // 검색어
         
         // 페이징 처리된 검색 결과 가져오기
-        ArrayList<SurveyitemVO> list = this.surveyitemProc.list_search_paging(word, now_page, this.record_per_page);
+        ArrayList<SurveytopicitemVO> list = this.surveyitemProc.list_search_paging(word, now_page, this.record_per_page);
         model.addAttribute("list", list);
 
         // 검색 결과 개수
@@ -329,4 +325,34 @@ public class SurveyitemCont {
 
         return "/th/surveyitem/list_search"; 
     }
+    
+    @GetMapping("/column_simple_data2")
+    public String column_simple_data2(Model model) {
+        // 예: 설문 항목 데이터를 가져옵니다.
+        ArrayList<SurveytopicitemVO> list = this.surveyitemProc.list_all();
+        
+        // chart_data에 필요한 형식으로 변환
+        StringBuilder chartDataBuilder = new StringBuilder("[['항목', '응답 수']"); // 첫 행: 열 이름
+        for (SurveytopicitemVO item : list) {
+            chartDataBuilder.append(", ['")
+            
+                            .append(item.getTitle()) // 설문 항목 이름
+                            .append(item.getItem()) // 설문 항목 이름
+                        
+                            .append("', ")
+                          
+                            .append(item.getItemcnt())  // 응답 수
+                            .append("]");
+        }
+        chartDataBuilder.append("]");
+        
+        model.addAttribute("title", "설문조사 결과 데이터");
+        
+        model.addAttribute("xlabel", "설문 항목");
+        model.addAttribute("ylabel", "응답 수");
+        model.addAttribute("chart_data", chartDataBuilder.toString());
+        
+        return "/th/surveyitem/column_simple_data2.html";
+    }
+
 }

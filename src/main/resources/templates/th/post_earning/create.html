@@ -3,30 +3,80 @@
 <html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
 <div layout:fragment="content">
   <script>
-
-    function send(event) {
+    async function send(event) {
       event.preventDefault();
 
       const url = '/post_earning/create';
       const formData = new FormData(document.getElementById('frm'));  // 폼 데이터 가져오기
 
-      fetch(url, {
-        method: 'POST',
-        body: formData, // 서버에 formData 전송
-      }).then(res => res.json())
-        .then(data => {
-          if (data.cnt === 1) {
-            alert('게시물이 등록되었습니다.');
-            window.location.href = "/post_earning/list_by_postno"; //"/post_earning/list_by_postno_search_paging"
-          }
-          else {
-            alert("게시물 등록에 실패하였습니다.");
-            return false;
+      try {
+        //게시물 등록
+        const response = await fetch(url, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await response.json();
+
+        if (data.cnt === 1) {
+          //첨부파일이 있는 경우에 처리
+          const files = document.getElementById('fileInput').files;
+
+          if (files.length > 0) {
+            const postno = data.postno; //서버에서 반환한 게시물 번호
+            const attachmentData = new FormData();
+
+            // 모든 파일을 한번에 추가
+            for (let file of files) {
+              attachmentData.append('file', file);
+            }
+            attachmentData.append('postno', postno);  // postno 전달
+
+            // 한번의 요청으로 모든 파일 전송
+            const attachResponse = await fetch('/attachment/create', {
+              method: 'POST',
+              body: attachmentData
+            });
+
+            const attachData = await attachResponse.json();
+            if (attachData.cnt !== files.length) {
+              throw new Error('일부 이미지 업로드에 실패했습니다.');
+            }
           }
 
-        }).catch(error => { // 서버 다운 등 통신 에러
-          console.error('Error', error);
-        })
+          alert('게시물이 등록되었습니다.');
+          window.location.href = "/post_earning/list_by_postno"; //"/post_earning/list_by_postno_search_paging"
+        } else {
+          alert("게시물 등록에 실패하였습니다.");
+          return false;
+        }
+      } catch (error) {
+        console.error('Error', error);
+        alert("게시물 등록 중 오류가 발생했습니다.");
+      }
+    }
+
+    //이미지 미리보기 함수
+    function handleFileSelect(event) {
+      const files = event.target.files;
+      const preview = document.getElementById('imagesPreview');
+      preview.innerHTML = '';
+
+      for (let file of files) {
+        if (!file.type.startsWith('image/')) {
+          continue;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const div = document.createElement('div');
+          div.className = 'preview-item';
+          div.innerHTML = `
+          <img src="${e.target.result}" style="max-width: 200px; margin: 10px;">
+            <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove()">삭제</button>`;
+          preview.appendChild(div);
+        }
+        reader.readAsDataURL(file);
+      }
     }
 
   </script>
@@ -35,15 +85,15 @@
   <aside class="aside_right">
     <a href="javascript:location.reload();">새로고침</a>
     <span class='menu_divide'>│</span>
-    <a>기본 목록형</a>
+    <a href="javascript:location.href='/post_earning/list_by_postno'">목록</a>
     <span class='menu_divide'>│</span>
-    <a>갤러리형</a>
+    <a href='/member/logout'>로그아웃</a>
   </aside>
 
   <div class='menu_line'></div>
 
-  <form name='frm' id="frm" method='post' th:object="${post_earningVO}" action='/post_earning/create'>
-    <!--enctype="multipart/form-data" -->
+  <form name='frm' id="frm" method='post' th:object="${post_earningVO}" action='/post_earning/create'
+    enctype="multipart/form-data">
     <div>
       <label>제목</label>
       <input type='text' name='title' value="엔비디아 숏 결과 떴냐??" required="required" autofocus="autofocus"
@@ -53,6 +103,15 @@
       <label>내용</label>
       <textarea name='content' required="required" class="form-control" rows="12" style='width: 100%;'></textarea>
     </div>
+
+    <!-- 파일 첨부 영역-->
+    <div class="form-group">
+      <label>이미지 첨부</label>
+      <input type="file" id="fileInput" multiple accept="image/*" class="form-control"
+        onchange="handleFileSelect(event)">
+      <div id="imagesPreview" class="mt-2"></div>
+    </div>
+
     <div class="content_body_bottom">
       <input type="button" value="등록" onclick="send(event)" class="btn btn-secondary btn-sm">
       <button type="button" onclick="history.back();" class="btn btn-secondary btn-sm">취소</button>

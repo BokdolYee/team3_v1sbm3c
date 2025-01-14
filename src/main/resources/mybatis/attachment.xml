@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.mvc.attachment.AttachmentDAOInter">
+  
+  <!-- 첨부파일 등록 -->
+  <insert id="create" parameterType="dev.mvc.attachment.AttachmentVO">
+    INSERT INTO attachment(attachmentno, postno, upfile, thumb, fname, fsize, rdate, uuid)
+    VALUES(attachment_seq.nextval, #{postno}, #{upfile}, #{thumb}, #{fname}, #{fsize}, sysdate, #{uuid})
+  </insert>
+  
+  <select id="list_by_postno" resultType="dev.mvc.attachment.AttachmentVO" parameterType="int">
+    SELECT attachmentno, postno, upfile, thumb, fname, fsize, rdate, uuid, visible 
+    FROM attachment
+    WHERE postno = #{postno}
+    ORDER BY attachmentno ASC
+  </select>
+  
+</mapper>

@@ -65,7 +65,7 @@
       <td class='td_basic' th:text="${loginlogVO.ip}"></td>
       <td class='td_basic' th:text="${loginlogVO.result}"></td>
       <td class='td_basic' th:text="${loginlogVO.ldate}"></td>
-      <td class='td_basic'><button type="button" th:onclick="delete_log([[${loginlogVO.loginlogno}]])"><img src='/member/images/x.png' title='삭제' class="icon" style="border: none; background-color: white;"></button></td>
+      <td class='td_basic'><button type="button" th:onclick="delete_log([[${loginlogVO.loginlogno}]])" style="border: none";><img src='/member/images/x.png' title='삭제' class="icon"></button></td>
     </tr>
   </table>
   

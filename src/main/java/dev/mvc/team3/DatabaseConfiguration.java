@@ -39,7 +39,8 @@ import com.zaxxer.hikari.HikariDataSource;
     "dev.mvc.surveymember",
     "dev.mvc.calendar",
     "dev.mvc.calendargood",
-    "dev.mvc.termbook"
+    "dev.mvc.termbook",
+    "dev.mvc.attachment"
 
 }) // DAO interface를 찾는 위치
 public class DatabaseConfiguration {

@@ -138,7 +138,7 @@
               if (content.length == 0) {
                 alert('내용이 없습니다. 내용을 입력해주세요.');
               } else {
-                fetch("http://localhost:9093/reply/create", {
+                fetch("/reply/create", {
                   "method": "post", 
                   "headers": {"Content-Type": "application/json"},
                   body: JSON.stringify({"contentno": "[[${contentsVO.contentno}]]", "content": content})
@@ -212,7 +212,7 @@
               if (content.length == 0) {
                 alert('내용이 없습니다. 내용을 입력해주세요.');
               } else {
-                fetch("http://localhost:9093/reply/update", {
+                fetch("/reply/update", {
                   "method": "post", 
                   "headers": {"Content-Type": "application/json"},
                   body: JSON.stringify({"replyno": replyno, "memberno": memberno, "content": content})
@@ -243,7 +243,7 @@
           function list_by_contentno_join() { // 목록 출력
             let cnt = 0; // 출력 순환 횟수  
         
-            fetch("http://localhost:9093/reply/listByContentNoJoin?contentno=[[${contentsVO.contentno}]]", {
+            fetch("/reply/listByContentNoJoin?contentno=[[${contentsVO.contentno}]]", {
                 "method": "get" 
             })
             .then((response) => response.json())
@@ -293,7 +293,7 @@
             let content_tag = document.getElementById('content')
             
             // fetch로 데이터 읽어 오기
-            fetch("http://localhost:9093/reply/read?replyno=" + replyno, {
+            fetch("/reply/read?replyno=" + replyno, {
               "method": "get", 
               "headers": {"Content-Type": "application/json"},
               // body: JSON.stringify({"contentno": "[[${contentsVO.contentno}]]"})
@@ -325,7 +325,7 @@
               let sw = confirm("「" + data['res']['content'] + "」 삭제하시려면 확인 버튼을 누르세요. 삭제후 복구 할 수 없습니다." );
               if (sw == true) {
                 // alert('삭제를 진행합니다.');
-                fetch("http://localhost:9093/reply/delete", {
+                fetch("/reply/delete", {
                     "method": "post", 
                     "headers": {"Content-Type": "application/json"},
                     body: JSON.stringify({"replyno": replyno, "memberno": data['res']['memberno']})
@@ -368,7 +368,7 @@
           function good(contentno) {
 			      console.log('-> contentno: ' + contentno);
 			
-			      fetch("http://localhost:9093/contents/good", {
+			      fetch("/contents/good", {
 			          "method": "post",
 			          "headers": {
 			              "Content-Type": "application/json"

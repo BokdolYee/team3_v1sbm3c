@@ -1,6 +1,8 @@
 package dev.mvc.post_earning;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.json.JSONObject;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import dev.mvc.attachment.AttachmentProcInter;
+import dev.mvc.attachment.AttachmentVO;
 import dev.mvc.dto.PageDTO;
 import dev.mvc.dto.SearchDTO;
 import dev.mvc.member.MemberProcInter;
@@ -40,6 +44,10 @@ public class Post_earningCont {
   @Autowired
   @Qualifier("dev.mvc.post_earning.Post_earningProc") // @Component("dev.mvc.post_earning.Post_earningProc")
   private Post_earningProcInter post_earningProc;
+  
+  @Autowired
+  @Qualifier("dev.mvc.attachment.AttachmentProc") // @Service("dev.mvc.member.MemberProc")
+  private AttachmentProcInter attachmentProc;
 
   public Post_earningCont() {
     System.out.println("Post_earningCont 생성됨");
@@ -108,6 +116,7 @@ public class Post_earningCont {
 
       JSONObject obj = new JSONObject();
       obj.put("cnt", cnt);
+      obj.put("postno", post_earningVO.getPostno());
 
       return obj.toString();
     } else { // 로그인 상태가 아닌데 경로에 들어온 경우
@@ -137,6 +146,10 @@ public class Post_earningCont {
     // 게시물 정보 읽고 뷰에 전송
     Post_earningVO post_earningVO = this.post_earningProc.read_join_nickname(postno);
     model.addAttribute("post_earningVO", post_earningVO);
+    
+    // 첨부파일 목록 가져오기
+    List<AttachmentVO> attachmentList = this.attachmentProc.list_by_postno(postno);
+    model.addAttribute("attachmentList", attachmentList);
 
     // 조회수 증가
     int cnt = this.post_earningProc.increase_viewcnt(postno);
@@ -220,6 +233,16 @@ public class Post_earningCont {
     model.addAttribute("searchDTO", searchDTO);
     model.addAttribute("pageDTO", pageDTO);
     model.addAttribute("total", total);
+    
+    // 각 게시물의 첫 번째 첨부파일(썸네일) 가져오기
+    Map<Integer, String> thumbnails = new HashMap<>();
+    for (Post_earningVO post : list) {
+      List<AttachmentVO> attachments = this.attachmentProc.list_by_postno(post.getPostno());
+      if (!attachments.isEmpty() && attachments.get(0).getThumb() != null) {
+        thumbnails.put(post.getPostno(), attachments.get(0).getThumb());
+      }
+    }
+    model.addAttribute("thumbnails", thumbnails);
 
     // /templates/th/post_earning/list_by_postno_search_paging.html
     return "/th/post_earning/list_by_postno_search_paging";

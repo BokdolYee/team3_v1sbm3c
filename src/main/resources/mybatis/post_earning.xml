@@ -5,8 +5,11 @@
 
   <!-- 게시물 등록 -->
   <insert id="create" parameterType="dev.mvc.post_earning.Post_earningVO">
+    <selectKey keyProperty="postno" resultType="int" order="BEFORE">
+      SELECT post_earning_seq.nextval FROM dual
+    </selectKey>
     INSERT INTO post_earning(postno, memberno, viewcnt, replycnt, goodcnt, badcnt, title, content, rdate)
-    VALUES(post_earning_seq.nextval, #{memberno}, 0, 0, 0, 0, #{title}, #{content}, sysdate)
+    VALUES(#{postno}, #{memberno}, 0, 0, 0, 0, #{title}, #{content}, sysdate)
   </insert>
   
   <!-- 게시물 조회 + memberno 이용 member 테이블과 JOIN 해서 닉네임 조회-->

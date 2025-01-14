@@ -21,6 +21,7 @@
       <span> | </span>
       <!-- 수정된 "등록" 링크 -->
       <a th:href="@{|/stockdata/create|}">등록</a>
+      <span> | </span>
   </aside>
   
   <!-- 목록 테이블 -->
@@ -58,6 +59,10 @@
   <!-- 페이징 처리 -->
   <div class="Bottom_menu" th:utext="${paging}" style="text-align: center; #paging {text-align: center; margin-top: 5px; font-size: 1em;}  #paging A:link {text-decoration:none; color:black; font-size: 1em;}  #paging A:hover{text-decoration:none; background-color: #FFFFFF; color:black; font-size: 1em;}  #paging A:visited {text-decoration:none;color:black; font-size: 1em;}  .span_box_1{    text-align: center;    font-size: 1em;    border: 1px;    border-style: solid;    border-color: #cccccc;    padding:1px 6px 1px 6px; /*위, 오른쪽, 아래, 왼쪽*/    margin:1px 2px 1px 2px; /*위, 오른쪽, 아래, 왼쪽*/  }  .span_box_2{    text-align: center;    background-color: #668db4;    color: #FFFFFF;    font-size: 1em;    border: 1px;    border-style: solid;    border-color: #cccccc;    padding:1px 6px 1px 6px; /*위, 오른쪽, 아래, 왼쪽*/    margin:1px 2px 1px 2px; /*위, 오른쪽, 아래, 왼쪽*/"></div>
 
+  <!-- 업데이트 버튼 -->
+    <form action="/stockdata/updateStockData" method="post"  style="text-align: center; margin-top: 1.5rem;">
+        <button type="submit" class="btn btn-primary">업데이트</button>
+    </form>
 
 </div>
 </html>

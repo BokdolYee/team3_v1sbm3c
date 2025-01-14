@@ -115,7 +115,7 @@
                 console.log('서버 응답:', result);
                 alert('응답이 성공적으로 제출되었습니다!');
                 // read_res 페이지로 리다이렉트
-                window.location.href = `/surveytopic/read_res?surveyno=${surveyno}`; // 동적으로 작성
+                window.location.href = `/surveyitem/read_res?surveyno=${surveyno}`; // 동적으로 작성
             } catch (error) {
                 console.error('데이터 전송 오류:', error);
                 alert('응답 제출에 실패했습니다.');
@@ -164,9 +164,9 @@
 
     <aside class="aside_right" style="text-align: right; margin-top: 10px;">
         <a href="javascript: location.reload();" style="font-weight: bold;">새로 고침</a>
-       <span th:if="${session.grade == 'admin'}" class="menu_divide" style="color: black;">|</span>
-        <a th:if="${session.grade == 'admin'}" th:href="@{|/surveytopic/create?surveyno=${surveyVO.surveyno}|}" style="font-weight: bold;">등록</a>
-       <!-- <span class="menu_divide" style="color: black;">|</span>
+      <!-- <span class="menu_divide" style="color: black;">|</span>
+        <a th:href="@{|/surveytopic/create?surveyno=${surveyVO.surveyno}|}" style="font-weight: bold;">등록</a>
+        <span class="menu_divide" style="color: black;">|</span>
         <a th:href="@{|/surveytopic/list_all?word=${word}&now_page=${now_page}|}" style ="font-weight: bold;">목록</a>--> 
     </aside>
 
@@ -198,47 +198,42 @@
                 
             </div>
 
-            <!-- 항목 리스트 출력 -->
-            <div th:each="surveyitemVO : ${itemsByTopic[surveytopicVO.surveytopicno]}" 
-            style="display: flex; align-items: center; background-color: #4aff89; color: rgb(29, 201, 161); padding: 12px; margin-top: 10px; border-radius: 8px;">
+           <!-- 항목 리스트 출력 -->
+    <div th:each="surveyitemVO : ${itemsByTopic[surveytopicVO.surveytopicno]}" 
+    style="display: flex; align-items: center; background-color: #4aff89; color: rgb(29, 201, 161); padding: 12px; margin-top: 10px; border-radius: 8px;">
 
-           
-            <div style="text-align: left; margin-right: 10px; flex-grow: 1;">
+    <div style="text-align: left; margin-right: 10px; flex-grow: 1;">
+    <span th:text="${surveyitemVO.item}" style="margin-left: 5px;"></span> <!-- 항목 텍스트만 표시 -->
+    </div>
 
-               <label style="display: flex; align-items: center; color: black;"> 
-                   <input type="radio" th:id="'radio_' + ${surveyitemVO.surveyitemno}" 
-                          th:name="'selectedItem_' + ${surveytopicVO.surveytopicno}" 
-                          th:value="${surveyitemVO.surveyitemno}" 
-                          style="margin-left: 5px;" required />
-                   <span th:text="${surveyitemVO.item}"  style="margin-left: 5px;"> <!-- 라디오 버튼 옆에 텍스트 --> 
-               </label> 
-           </div>
-           <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
-         
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
+    <div style="display: flex; align-items: center;">
+        <span style="color: black;">선택 인원 :</span>
+        <span th:text="${surveyitemVO.itemcnt}" style="color: black; margin-left: 5px;"></span>
         
-            <div style="display: flex; align-items: center; gap: 3px;"> <!-- gap 속성 추가 -->
-                <a th:if="${session.grade == 'admin'}" th:href="@{|/surveyitem/update?surveyitemno=${surveyitemVO.surveyitemno}&surveytopicno=${surveytopicVO.surveytopicno}|}">
-                    <img src="/surveytopic/images/update.png" class="icon" style="width: 20px; height: 20px; margin-left: 10px;" title="수정"> <!-- margin-left 추가 -->
-                </a>
-                <a th:if="${session.grade == 'admin'}" th:href="@{|/surveyitem/delete?surveyitemno=${surveyitemVO.surveyitemno}&surveytopicno=${surveytopicVO.surveytopicno}|}">
-                    <img src="/surveytopic/images/delete.png" class="icon" style="width: 20px; height: 20px; margin-left: 10px;" title="삭제"> <!-- margin-left 추가 -->
-                </a>
-            </div>
+        <!-- 막대 그래프 추가 -->
+        <div style="width: 100px; height: 30px; background-color: lightgray; border-radius: 5px; margin-left: 15px; position: relative; display: flex; align-items: center;">
+            <div th:style="'width:' + (${surveyitemVO.itemcnt} * 5) + 'px; height: 100%; background-color:' + 
+                (${surveyitemVO.itemcnt} >= 10 ? 'green' : (${surveyitemVO.itemcnt} >= 5 ? 'orange' : 'red')) + 
+                '; border-radius: 5px; position: absolute; transition: width 0.5s;'" class="progress-bar"></div>
         </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 3px;"> <!-- gap 속성 추가 -->
+        <a th:if="${session.grade == 'admin'}" th:href="@{|/surveyitem/update?surveyitemno=${surveyitemVO.surveyitemno}&surveytopicno=${surveytopicVO.surveytopicno}|}">
+            <img src="/survey/images/update.png" class="icon" style="width: 20px; height: 20px; margin-left: 10px;" title="수정"> <!-- margin-left 추가 -->
+        </a>
+        <a th:if="${session.grade == 'admin'}" th:href="@{|/surveyitem/delete?surveyitemno=${surveyitemVO.surveyitemno}&surveytopicno=${surveytopicVO.surveytopicno}|}">
+            <img src="/survey/images/delete.png" class="icon" style="width: 20px; height: 20px; margin-left: 10px;" title="삭제"> <!-- margin-left 추가 -->
+        </a>
+    </div>
+    </div>
+    </div>
+
         
         
         
         
-            </div>
-        </div>
-        <div style="text-align: center;">
-            <span id="hart_panel" style="display: inline-block; width: 150px; height: 50px; background-color: lightgray; font-size: 18px; text-align: center; line-height: 40px;">
-              하트 패널
-            </span>
-            <span id="recom_panel" style="display: inline-block; width: 150px; height: 50px; background-color: lightblue; font-size: 18px; text-align: center; line-height: 40px;">
-              추천 패널
-            </span>
-          </div>
           
           
     </div> <!-- 이 부분에서 div가 제대로 닫히지 않아서 추가된 부분 -->
@@ -246,9 +241,9 @@
     
     <!-- 완료 및 목록 버튼 -->
     <div class="content_body_bottom" style="text-align: center; margin-top: 30px;">
-        <button id="btn_handleSubmit" type="button" class="btn btn-secondary btn-sm" style="background-color: #007BFF; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;">
+        <!--<button id="btn_handleSubmit" type="button" class="btn btn-secondary btn-sm" style="background-color: #007BFF; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;">
             완료
-        </button>
+        </button> -->
         <button type="button" onclick="location.href='/survey/list_search'" class="btn btn-secondary btn-sm" style="background-color: #007BFF; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-left: 10px; transition: background-color 0.3s;">
             목록
         </button>

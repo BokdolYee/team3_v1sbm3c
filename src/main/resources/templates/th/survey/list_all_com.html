@@ -1,4 +1,32 @@
 <div th:fragment="list_all_fragment"> 
+  <head>
+    <style>
+        .container {
+            border: 12px solid #87CEEB; /* 하늘색 테두리 */
+            border-radius: 20px; /* 모서리 둥글게 */
+            padding: 20px; /* 내부 여백 */
+            background-color: white; /* 배경색 */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* 그림자 효과 */
+            width: 80%; /* 너비 설정 */
+            margin: 50px auto; /* 중앙 정렬 */
+            text-align: center; /* 텍스트 중앙 정렬 */
+        }
+
+        .title_line {
+            background-image: url(/survey/images/경제.jpg); 
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat; 
+            padding: 40px; 
+            font-size: 36px; /* 폰트 크기 증가 */
+            text-align: center; 
+            border-radius: 50px; 
+            position: relative; 
+            color: white; /* 텍스트 색상 */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* 텍스트 그림자 추가 */
+        }
+    </style>
+</head>
   <table class="table table-hover" style="width: 100%;">
     
     
@@ -72,22 +100,28 @@
 
         <!-- 조회 수 -->
         <td class="td_bs" style="text-align: center;">
-          <a th:href="@{|/surveytopic/read/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}" style="display:block; color:black;" th:text="${surveyVO.cnt}"></a>
+          <a  style="display:block; color:black;" th:text="${surveyVO.cnt}"></a>
         </td> 
 
         <!-- 기타 -->
         <td class="td_bs" style="text-align: center;">
-          <a th:href="@{|/survey/update/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}">
+          
+          <a th:if="${session.grade == 'admin'}"th:href="@{|/survey/update/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}">
             <img src="/survey/images/update.png" class="icon" title="수정">
           </a>
-          <a th:href="@{|/survey/delete/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}">
+          <a th:if="${session.grade == 'admin'}"th:href="@{|/survey/delete/${surveyVO.surveyno}?word=${word}&now_page=${now_page}|}">
             <img src="/survey/images/delete.png" class="icon" title="삭제">
           </a>
-          <a th:href="@{|/survey/create|}">
+          <a th:if="${session.grade == 'admin'}"th:href="@{|/survey/create|}">
             <img src="/survey/images/create.png" class="icon" title="추가">
           </a>
-          <a th:href="@{|/surveytopic/create?surveyno=${surveyVO.surveyno}|}"><img src="/survey/images/append.png" class="icon" title="추가"></a>
-        
+          <a th:if="${session.grade == 'admin'}"th:href="@{|/surveytopic/create?surveyno=${surveyVO.surveyno}|}"><img src="/survey/images/append.png" class="icon" title="추가"></a>
+           
+            <!-- 새로운 버튼 추가 -->
+        <a th:href="@{|/surveytopic/read_res?surveyno=${surveyVO.surveyno}|}" class="btn" style="padding: 3px 8px; text-decoration: none; color: #007BFF; background-color: transparent; border: 1px solid #007BFF; border-radius: 3px; font-size: 14px; transition: background-color 0.3s, color 0.3s;">
+          결과 보기
+        </a>
+
           
           
           <li class="li_none" th:if="${surveyVO.size1 > 0}">

@@ -548,7 +548,7 @@ public class CalendarCont {
             System.out.println("No labeldate parameter provided.");
         }
   
-    ArrayList<CalendarVO> list = this.calendarProc.main_list_calendar_day(labeldate);
+    ArrayList<CalendarVO> list = this.calendarProc.list_calendar_day(labeldate);
     model.addAttribute("list", list);
 
     JSONArray schedule_list = new JSONArray();

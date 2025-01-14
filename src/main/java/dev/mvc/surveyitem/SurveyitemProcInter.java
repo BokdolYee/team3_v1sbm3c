@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import dev.mvc.surveymember.SurveytopicitemmemberVO;
 import dev.mvc.surveytopic.SurveytopicVO;
 
 public interface SurveyitemProcInter {
@@ -61,6 +62,8 @@ public interface SurveyitemProcInter {
   public ArrayList<SurveytopicitemVO> list_paging(String word, int now_page, int record_per_page);
   
   public ArrayList<SurveytopicitemVO> list_search_paging(String word, int now_page, int record_per_page);
+
+
   
  
   

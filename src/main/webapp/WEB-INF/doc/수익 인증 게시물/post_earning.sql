@@ -12,7 +12,8 @@ CREATE TABLE post_earning (
   badcnt     NUMBER(4)       DEFAULT 0 NOT NULL, -- 비추천수, 게시물 등록 시 기본적으로 0
   title      VARCHAR(60)               NOT NULL, -- 제목
   content    VARCHAR(1000)             NOT NULL, -- 내용
-  rdate      DATE                      NOT NULL, -- 등록일    
+  fcnt       NUMBER(2)       DEFAULT 0 NOT NULL, -- 첨부파일 개수
+  rdate      DATE                      NOT NULL, -- 등록일
   udate      DATE,                               -- 수정일, 처음 댓글 등록 시 수정 상태가 아니므로 NULL 허용
   
   PRIMARY KEY (postno),

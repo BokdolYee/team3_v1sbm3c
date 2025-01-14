@@ -99,16 +99,4 @@ public interface CalendarProcInter {
    */
   public int update_seqno_backward(int calendarno);
   
-  /**
-   * 특정 달의 조회
-   * @return
-   */
-  public ArrayList<CalendarVO> main_list_calendar(String date);
-
-  /**
-   * 특정 날짜의 조회
-   * @return
-   */
-  public ArrayList<CalendarVO> main_list_calendar_day(String date);
-  
 }

@@ -93,7 +93,7 @@ public class ContentsGoodCont {
 	    ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
 	    model.addAttribute("menu", menu);
 
-	    return "/contentsgood/list_all"; // /templates/contentsgood/list_all.html
+	    return "contentsgood/list_all"; // /templates/contentsgood/list_all.html
 	  }
 	  
 	  /**

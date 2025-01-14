@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,7 +29,6 @@ public class NewsCont {
     @Autowired
     private PythonAPIClient pythonAPIClient;
 
-    
     @GetMapping("/list")
     public String list(HttpSession session, Model model, @ModelAttribute("NewsVO") NewsVO newsVO) {
 
@@ -55,6 +55,24 @@ public class NewsCont {
         return "/th/news/detail";  // /th/news/detail.html로 이동
     }
 
+    @GetMapping("/start_crawl")
+    @ResponseBody
+    public ResponseEntity<String> startCrawl() {
+        try {
+            // Flask API 호출
+            String apiUrl = "http://localhost:5000/start_crawl";
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
+
+            // 성공적으로 처리되었을 경우 응답 반환
+            return ResponseEntity.ok("뉴스 최신화 완료");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body("뉴스 최신화 중 오류 발생: " + e.getMessage());
+        }
+    }
+    
     @PostMapping("/analyze/{newsno}")
     public String analyzeAndSummarize(@PathVariable("newsno") int newsno, Model model) {
         // 뉴스 본문 가져오기
@@ -67,23 +85,15 @@ public class NewsCont {
         String text = newsVO.getText(); // 뉴스 본문
 
         try {
-            // Python API 분석 요청
-            String analysisResult = pythonAPIClient.analyze(text);
-            if (analysisResult == null) {
-                throw new Exception("분석 결과가 null입니다.");
+            // Python API 분석 및 요약 요청
+            Map<String, String> analysisAndSummary = pythonAPIClient.analyzeAndSummarize(text);
+            if (analysisAndSummary == null) {
+                throw new Exception("분석 및 요약 결과가 null입니다.");
             }
 
-            // 분석 결과 디코딩 (JSON에서 데이터 추출)
-            String decodedAnalysis = decodeJson(analysisResult);
-
-            // Python API 요약 요청
-            String summary = pythonAPIClient.summarize(text);
-            if (summary == null) {
-                throw new Exception("요약 결과가 null입니다.");
-            }
-
-            // 요약 디코딩 (JSON에서 데이터 추출)
-            String decodedSummary = decodeJson(summary);
+            // 분석 및 요약 결과 추출
+            String decodedAnalysis = analysisAndSummary.get("analysis");
+            String decodedSummary = analysisAndSummary.get("summary");
 
             // 분석 결과와 요약을 뉴스 객체에 저장
             newsVO.setImpact(decodedAnalysis);

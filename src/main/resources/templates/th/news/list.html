@@ -5,12 +5,90 @@
 <head>
     <meta charset="UTF-8">
     <title>뉴스 목록</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery를 사용하려면 추가 -->
+    <style>
+        /* 로딩 중 화면 덮기 스타일 */
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* 어두운 배경 */
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999; /* 다른 요소보다 위에 표시 */
+        }
+
+        #loading img {
+            width: 50px;
+            height: 50px;
+        }
+
+        /* 로딩 메시지 스타일 */
+        .loading-text {
+            font-size: 20px;
+            color: white;
+            text-align: center;
+        }
+
+        /* UI 요소 비활성화 스타일 */
+        #content.disabled {
+            pointer-events: none;
+        }
+    </style>
 </head>
+
 <body>
-    <div layout:fragment="content">
+    <div layout:fragment="content" id="content">
+        <script>
+            function reloadNews() {
+                // 로딩 표시 시작
+                $('#loading').show();
+                // 콘텐츠 비활성화
+                $('#content').addClass('disabled');
+                // 버튼 비활성화
+                $('#reloadButton').prop('disabled', true);
+
+                $.ajax({
+                    url: '/news/start_crawl',  // Flask API 호출
+                    type: 'GET',
+                    success: function(response) {
+                        console.log("성공적인 응답:", response);
+                        alert("뉴스 목록이 최신화되었습니다.");
+                        location.reload();  // 페이지 새로 고침
+                    },
+                    error: function(error) {
+                        console.error("AJAX 요청 실패:", error);
+                        alert("뉴스를 최신화하는데 오류가 발생했습니다.");
+                    },
+                    complete: function() {
+                        // 요청이 끝나면 로딩 숨기기
+                        $('#loading').hide();
+                        // 콘텐츠 다시 활성화
+                        $('#content').removeClass('disabled');
+                        // 버튼 다시 활성화
+                        $('#reloadButton').prop('disabled', false);
+                    }
+                });
+            }
+        </script>
+
+        <!-- 로딩 애니메이션과 소요 시간 안내 메시지 -->
+        <div id="loading">
+            <div>
+                <img src="https://i.imgur.com/llF5iyg.gif" alt="로딩 중..." /> <!-- 로딩 애니메이션 이미지 -->
+                <p class="loading-text">로딩 중... 1~2분 정도 소요됩니다.</p> <!-- 소요 시간 안내 메시지 -->
+            </div>
+        </div>
+
         <div class='title_line'>뉴스 목록</div>
 
         <aside class="aside_right">
+            <!-- 최신화 버튼, 클릭 시 reloadNews 함수 실행 -->
+            <a id="reloadButton" href="javascript:reloadNews();" class="btn btn-success btn-sm">최신화</a>
+            <span class='menu_divide'>│</span>
             <a href="javascript:location.reload();">새로 고침</a>
         </aside>
 
@@ -35,24 +113,20 @@
                 style="cursor: pointer;">
                 <td class='td_basic' th:text="${newsVO.newsno}"></td>
                 <td class='td_left'>
-                    <span th:text="${newsVO.newsno}" style="font-weight: bold;"></span><br>
-                    <span th:if="${newsVO.text.length() > 160}"
-                          th:text="${newsVO.text.substring(0,160)} + '...'"></span>
-                    <span th:if="${newsVO.text.length() <= 160}"
-                          th:text="${newsVO.text}"></span>
+                    <span th:if="${#strings.isEmpty(newsVO.impact)}">분석 내용이 없습니다</span>
+                    <span th:if="${!#strings.isEmpty(newsVO.impact) && newsVO.impact.length() > 160}"
+                          th:text="${newsVO.impact.substring(0,160)} + '...'"></span>
+                    <span th:if="${!#strings.isEmpty(newsVO.impact) && newsVO.impact.length() <= 160}"
+                          th:text="${newsVO.impact}"></span>
                 </td>
                 <td class='td_basic' th:text="${newsVO.source}"></td>
                 <td class='td_basic' th:text="${newsVO.publish_date}"></td>
-                <td class='td_basic'>
-                    <a th:href="@{/news/detail/{newsno}(newsno=${newsVO.newsno})}" 
-                       class="btn btn-info btn-sm">상세보기</a>
-                </td>
+            </tr>
+
+            <tr th:if="${list.size() == 0}">
+                <td colspan="4" style="text-align: center;">등록된 뉴스가 없습니다.</td>
             </tr>
         </table>
-
-        <div class='bottom_menu'>
-            <button type='button' onclick="location.reload();" class="btn btn-primary btn-sm">새로 고침</button>
-        </div>
     </div>
 </body>
 </html>

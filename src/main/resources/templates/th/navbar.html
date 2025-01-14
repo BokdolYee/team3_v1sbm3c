@@ -69,17 +69,9 @@
                         <li class="nav-item"><a class="nav-link" th:href="@{|/surveymember/list_all|}">설문조사 참여 회원 목록</a></li>
                     </ul>
                 </li>
-
-				<li class="nav-item dropdown down-text">
-				    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownFavorites" role="button" data-bs-toggle="dropdown" aria-expanded="false">즐겨찾기</a>
-				    <ul class="dropdown-menu" id="favoritesDropdownMenu" aria-labelledby="navbarDropdownFavorites">
-				        <!-- 동적으로 즐겨찾기 목록이 추가될 위치 -->
-				        <li><a class="dropdown-item" href="javascript:void(0);" id="favoritesLoginPrompt">로그인 후 이용가능합니다.</a></li>
-				    </ul>
-				</li>
 				
                 <li class="nav-item"><a class="nav-link" th:href="@{|/issue/list|}">공지사항</a></li>
-
+				<li class="nav-item"><a class="nav-link" th:if="${session.grade=='admin' or session.grade=='member'}" th:href="@{|/news/list|}">뉴스 목록</a></li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" 
                         role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="게시판">                                                            
@@ -115,7 +107,6 @@
                         <li class="nav-item"><a class="nav-link" th:href="@{|/loginlog/list|}">로그인 내역</a></li>
                         <li class="nav-item"><a class="nav-link" th:href="@{|/newscate/list_search?word=${word}|}">카테고리 목록</a></li>
                         <li class="nav-item"><a class="nav-link" href="/contents/list_all">전체 글 목록</a></li>
-                        <li class="nav-item"><a class="nav-link" th:href="@{|/news/list|}">뉴스 목록</a></li>
                         <li class="nav-item"><a class="nav-link" th:href="@{|/post_goodbad/list|}">추천 내역</a></li>
                         
 
@@ -135,33 +126,7 @@
         </div>
         <!-- 메뉴 종료 -->
     </div>  
-    <script>
-	document.addEventListener("DOMContentLoaded", function () {
-    loadFavorites();
 
-    function loadFavorites() {
-        fetch('/favorites/list_ajax')
-            .then(response => response.json())
-            .then(data => {
-                let menu = document.getElementById('favoritesDropdownMenu');
-                menu.innerHTML = ''; // 기존 메뉴 초기화
-
-                if (data.length > 0) {
-                    data.forEach(favorite => {
-                        let listItem = document.createElement('li');
-                        listItem.innerHTML = `<a class="dropdown-item" href="#">${favorite.name}</a>`;
-                        menu.appendChild(listItem);
-                    });
-                } else {
-                    menu.innerHTML = '<li><a class="dropdown-item" href="#">즐겨찾기가 없습니다.</a></li>';
-                }
-            })
-            .catch(() => {
-                document.getElementById('favoritesLoginPrompt').style.display = 'block';
-            });
-    }
-});
-	</script>
   </nav>
 </div>
 

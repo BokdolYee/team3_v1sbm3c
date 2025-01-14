@@ -1,72 +1,34 @@
 package dev.mvc.news;
 
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.http.*;
 
-import java.util.HashMap;
 import java.util.Map;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
-@Component
+@Service
 public class PythonAPIClient {
 
-    private final String ANALYZE_API_URL = "http://localhost:5001/analyze";
-    private final String SUMMARIZE_API_URL = "http://localhost:5000/summarize";
+    private static final String BASE_URL = "http://localhost:5000/start_crawl"; // Python 서버 URL
 
-    private final RestTemplate restTemplate = new RestTemplate();
-
-    // 분석 요청
-    public String analyze(String text) {
-        try {
-            // 요청 헤더 설정 (Content-Type: application/json)
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-
-            // 요청 본문 설정 (text를 JSON 형태로 변환)
-            Map<String, String> body = new HashMap<>();
-            body.put("text", text);
-
-            // HttpEntity 생성 (본문과 헤더 포함)
-            HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
-
-            // POST 요청 보내기
-            return restTemplate.postForObject(ANALYZE_API_URL, entity, String.class);
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            return "HTTP Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString();
-        } catch (Exception e) {
-            return "Error: " + e.getMessage();
-        }
-    }
-
-    // 요약 요청
-    public String summarize(String text) {
-        try {
-            // 요청 헤더 설정 (Content-Type: application/json)
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-
-            // 요청 본문 설정 (text를 JSON 형태로 변환)
-            Map<String, String> body = new HashMap<>();
-            body.put("text", text);
-
-            // HttpEntity 생성 (본문과 헤더 포함)
-            HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
-
-            // POST 요청 보내기
-            return restTemplate.postForObject(SUMMARIZE_API_URL, entity, String.class);
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            return "HTTP Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString();
-        } catch (Exception e) {
-            return "Error: " + e.getMessage();
+    public Map<String, String> analyzeAndSummarize(String text) {
+        RestTemplate restTemplate = new RestTemplate();
+        
+        // JSON 데이터 만들기
+        Map<String, String> requestData = Map.of("text", text);
+        
+        // POST 요청 만들기
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map<String, String>> request = new HttpEntity<>(requestData, headers);
+        
+        // Python 서버로 POST 요청 보내기
+        ResponseEntity<Map> response = restTemplate.exchange(BASE_URL, HttpMethod.POST, request, Map.class);
+        
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return response.getBody();  // Python API로부터 받은 분석 및 요약 결과 반환
+        } else {
+            throw new RuntimeException("API 호출 실패: " + response.getStatusCode());
         }
     }
 }

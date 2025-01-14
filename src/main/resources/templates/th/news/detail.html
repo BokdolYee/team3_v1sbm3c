@@ -9,9 +9,6 @@
           <!-- 분석 및 요약 -->
             <div class="analyze-btn text-center mt-3">
                 <h2>분석 및 요약</h2>
-                <form th:action="@{/news/analyze/{newsno}(newsno=${news.newsno})}" method="POST">
-                    <button type="submit" class="btn btn-primary">분석 및 요약 요청</button>
-                </form>
             </div>
             <div th:if="${news}">
               <h2>요약:</h2>

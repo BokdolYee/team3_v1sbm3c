@@ -1,8 +1,45 @@
 <!DOCTYPE html>
 
 <html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
+<head>
+  <style>
+      .container {
+          border: 12px solid #87CEEB; /* 하늘색 테두리 */
+          border-radius: 20px; /* 모서리 둥글게 */
+          padding: 20px; /* 내부 여백 */
+          background-color: white; /* 배경색 */
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* 그림자 효과 */
+          width: 80%; /* 너비 설정 */
+          margin: 50px auto; /* 중앙 정렬 */
+          text-align: center; /* 텍스트 중앙 정렬 */
+      }
+
+      .title_line {
+          background-image: url(/survey/images/경제.jpg); 
+          background-size: cover; 
+          background-position: center; 
+          background-repeat: no-repeat; 
+          padding: 40px; 
+          font-size: 36px; /* 폰트 크기 증가 */
+          text-align: center; 
+          border-radius: 50px; 
+          position: relative; 
+          color: white; /* 텍스트 색상 */
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* 텍스트 그림자 추가 */
+      }
+  </style>
+</head>
 <div layout:fragment="content">
-  <div class="title_line">설문조사 개별 조회</div>
+  <div class="title_line" 
+  style="background-image: url(/survey/images/경제.jpg); 
+         background-size: cover; 
+         background-position: center; 
+         background-repeat: no-repeat; 
+         padding: 40px; 
+         font-size: 30px; 
+         text-align: center; 
+         border-radius: 50px; 
+         position: relative;">설문조사 개별 조회</div>
   <aside class="aside_right">
   
     <a href="javascript: location.reload();" style ="color: black">새로 고침</a>

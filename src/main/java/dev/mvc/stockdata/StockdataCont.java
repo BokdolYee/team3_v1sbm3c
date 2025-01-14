@@ -10,8 +10,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import dev.mvc.member.MemberProcInter;
 import dev.mvc.stock.StockProcInter;
 import dev.mvc.stock.StockVO;
+import dev.mvc.team3.StockCrawlerScheduler;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/stockdata") // 기본 URL 매핑
@@ -25,24 +28,51 @@ public class StockdataCont {
   @Qualifier("dev.mvc.stock.StockProc")
   private StockProcInter stockProc;
   
+  @Autowired
+  @Qualifier("dev.mvc.member.MemberProc")
+  private MemberProcInter memberProc;  
+  
+  @Autowired
+  private StockCrawlerScheduler stockCrawlerScheduler;
+
+  // 페이지 로딩 시 버튼을 포함한 HTML 반환
+  @RequestMapping("/updatePage")
+  public String showUpdatePage() {
+      return "list_all";  // list_all.html 페이지를 반환
+  }
+
+  // 버튼 클릭 시 크롤링 작업 실행
+  @PostMapping("/updateStockData")
+  public String updateStockData() {
+      // 크롤링 작업을 즉시 실행
+      stockCrawlerScheduler.fetchAndUpdateStockDataOnDemand();  // 즉시 실행되는 메소드 호출
+      return "redirect:/stockdata/list_all";  // 크롤링이 완료된 후 동일 페이지로 돌아가기
+  }
+  
   public int record_per_page = 4;
   public int page_per_block = 10;
   private String list_file_name = "/stockdata/list_search";
 
-  // 1. Create - 데이터 추가 폼
+  //1. Create - 데이터 추가 폼
   @GetMapping("/create")
   public String createForm(@RequestParam(value = "sdatano", required = false) Integer sdatano, 
-                           @ModelAttribute("stockdataVO") StockdataVO stockdataVO, 
-                           Model model) {
-      if (sdatano != null) {
-          stockdataVO = stockdataProc.read(sdatano); // 기존 데이터 조회
-      } else {
-          // sdatano가 null일 경우 기본값 설정 (예: 새 데이터 추가)
-          stockdataVO.setStockno(0); // stockno가 null이면 기본값으로 0 설정
-      }
-      model.addAttribute("stockdataVO", stockdataVO);
-      return "/th/stockdata/create"; // create.html로 이동
+                          @ModelAttribute("stockdataVO") StockdataVO stockdataVO, 
+                          Model model, HttpSession session) {
+     // 세션에서 관리자 확인
+     if (this.memberProc.isAdmin(session)) { // 관리자로 로그인한 경우
+         if (sdatano != null) {
+             stockdataVO = stockdataProc.read(sdatano); // 기존 데이터 조회
+         } else {
+             // sdatano가 null일 경우 기본값 설정 (예: 새 데이터 추가)
+             stockdataVO.setStockno(0); // stockno가 null이면 기본값으로 0 설정
+         }
+         model.addAttribute("stockdataVO", stockdataVO);
+         return "/th/stockdata/create"; // create.html로 이동
+     } else { // 관리자가 아닌 경우 로그인 페이지로 리다이렉트
+         return "redirect:/member/login_cookie_need"; // 관리자만 접근 가능
+     }
   }
+
 
 
 
@@ -129,23 +159,29 @@ public class StockdataCont {
 
 
 
-  // 4. Update - 데이터 수정 폼
+  //4. Update - 데이터 수정 폼
   @GetMapping("/update/{sdatano}")
-  public String updateForm(@PathVariable("sdatano") int sdatano, Model model) {
-      // stockdataVO 가져오기
-      StockdataVO stockdataVO = stockdataProc.read(sdatano); // 수정할 주식 데이터 조회
-      model.addAttribute("stockdataVO", stockdataVO);
-
-      if (stockdataVO.getStockno() != null) {
-          StockVO stockVO = stockProc.read(stockdataVO.getStockno()); // stockno에 해당하는 종목 정보
-          stockdataVO.setStockVO(stockVO); // stockVO에 해당하는 종목 정보 설정
-          model.addAttribute("stockVO", stockVO);  // stockVO를 모델에 추가
-      } else {
-          model.addAttribute("errorMessage", "No stock information found for the given stockno.");
-      }
-
-      return "/th/stockdata/update"; // update.html로 이동
+  public String updateForm(@PathVariable("sdatano") int sdatano, Model model, HttpSession session) {
+     // 세션에서 관리자 확인
+     if (this.memberProc.isAdmin(session)) { // 관리자로 로그인한 경우
+         // stockdataVO 가져오기
+         StockdataVO stockdataVO = stockdataProc.read(sdatano); // 수정할 주식 데이터 조회
+         model.addAttribute("stockdataVO", stockdataVO);
+  
+         if (stockdataVO.getStockno() != null) {
+             StockVO stockVO = stockProc.read(stockdataVO.getStockno()); // stockno에 해당하는 종목 정보
+             stockdataVO.setStockVO(stockVO); // stockVO에 해당하는 종목 정보 설정
+             model.addAttribute("stockVO", stockVO);  // stockVO를 모델에 추가
+         } else {
+             model.addAttribute("errorMessage", "No stock information found for the given stockno.");
+         }
+  
+         return "/th/stockdata/update"; // update.html로 이동
+     } else { // 관리자가 아닌 경우 로그인 페이지로 리다이렉트
+         return "redirect:/member/login_cookie_need"; // 관리자만 접근 가능
+     }
   }
+
 
 
   @PostMapping("/update")
@@ -181,13 +217,19 @@ public class StockdataCont {
 
 
 
-  // 5. Delete - 데이터 삭제 폼
+  //5. Delete - 데이터 삭제 폼
   @GetMapping("/delete/{sdatano}")
-  public String deleteForm(@PathVariable("sdatano") int sdatano, Model model) {
-     StockdataVO stockdataVO = stockdataProc.read(sdatano); // 삭제할 주식 데이터 조회
-     model.addAttribute("stockdataVO", stockdataVO); // 삭제할 주식 데이터 전달
-     return "/th/stockdata/delete"; // delete.html로 이동
+  public String deleteForm(@PathVariable("sdatano") int sdatano, Model model, HttpSession session) {
+     // 세션에서 관리자 확인
+     if (this.memberProc.isAdmin(session)) { // 관리자로 로그인한 경우
+         StockdataVO stockdataVO = stockdataProc.read(sdatano); // 삭제할 주식 데이터 조회
+         model.addAttribute("stockdataVO", stockdataVO); // 삭제할 주식 데이터 전달
+         return "/th/stockdata/delete"; // delete.html로 이동
+     } else { // 관리자가 아닌 경우 로그인 페이지로 리다이렉트
+         return "redirect:/member/login_cookie_need"; // 관리자만 접근 가능
+     }
   }
+
   
   // 5. Delete - 데이터 삭제 처리
   @PostMapping("/delete")

@@ -4,8 +4,8 @@
 
   <!-- C: Create -->
   <insert id="create" parameterType="dev.mvc.news.NewsVO">
-    INSERT INTO news (newsno, text, url, source, publish_date)
-    VALUES (news_seq.nextval, #{text}, #{url}, #{source}, #{publishDate})
+    INSERT INTO news (newsno, text, url, source, publish_date, impact, summary)
+    VALUES (news_seq.nextval, #{text}, #{url}, #{source}, #{publishDate}, #{impact}, #{summary})
   </insert>
 
   <!-- R: Read -->

@@ -55,6 +55,18 @@
     ORDER BY seqno ASC
   </select> 
   
+  <!--우선 순위 높임, 10 등 -> 1 등-->
+  <update id="update_seqno_forward" parameterType="Integer">
+  Update calendar Set seqno=seqno-1
+  Where calendarno=#{calendarno}
+  </update>
+  
+    <!--우선 순위 낮춤, 1 등 -> 10 등-->
+  <update id="update_seqno_backward" parameterType="Integer">
+  Update calendar Set seqno=seqno+1
+  Where calendarno=#{calendarno}
+  </update>
+  
     <!-- 조회수 증가 -->
   <update id="increaseCnt" parameterType="int">
     UPDATE calendar
@@ -106,6 +118,6 @@
         FROM calendar
         WHERE 
             (#{searchLabel} IS NULL OR label LIKE '%' || #{searchLabel} || '%')
-    </select>
+    </select>     
 
 </mapper>

@@ -454,4 +454,118 @@ public class CalendarCont {
 
   }
   
+  /**
+   *  <!--우선 순위 높임, 10 등 -> 1 등-->,  http://localhost:9092/cate/update_seqno_forward/1
+   * @param model Controller -> Thymleaf HTML로 데이터 전송에 사용
+   * @return
+   */
+  @GetMapping(value="/update_seqno_forward/{calendarno}")
+  public String update_seqno_forward(Model model, @PathVariable("calendarno") Integer calendarno,
+      @RequestParam(name="word", defaultValue="") String word,
+      @RequestParam(name="now_page", defaultValue = "") int now_page,
+      RedirectAttributes ra ) {
+    this.calendarProc.update_seqno_forward(calendarno);
+     
+    ra.addAttribute("word", word); // redirect로 데이터 전송
+    ra.addAttribute("now_page", now_page); // redirect로 데이터 전송
+    
+    return "redirect:/calendar/list_all"; // @GetMapping(value="/list_all")
+  }
+  
+  /**
+   *  <!--우선 순위 높임, 10 등 -> 1 등-->,  http://localhost:9092/cate/update_seqno_backward/1
+   * @param model Controller -> Thymleaf HTML로 데이터 전송에 사용
+   * @return
+   */
+  @GetMapping(value="/update_seqno_backward/{calendarno}")
+  public String update_seqno_backward(Model model, @PathVariable("calendarno") Integer calendarno,
+      @RequestParam(name="word", defaultValue="") String word,
+      @RequestParam(name="now_page", defaultValue = "") int now_page,
+      RedirectAttributes ra ) {
+    this.calendarProc.update_seqno_backward(calendarno);
+    
+    ra.addAttribute("word", word); // redirect로 데이터 전송
+    ra.addAttribute("now_page", now_page); // redirect로 데이터 전송
+    
+    return "redirect:/calendar/list_all"; // @GetMapping(value="/list_all")
+  }
+  
+  /**
+   * 특정 날짜의 목록
+   * 현재 월: http://localhost:9091/calendar/list_calendar
+   * 이전 월: http://localhost:9091/calendar/list_calendar?year=2024&month=12 
+   * 다음 월: http://localhost:9091/calendar/list_calendar?year=2024&month=1
+   * @param model
+   * @return
+   */
+  @GetMapping(value = "/main_list_calendar")
+  public String main_list_calendar(Model model,
+      @RequestParam(name="year", defaultValue = "0") int year,
+      @RequestParam(name="month", defaultValue = "0") int month) {
+    
+    if (year == 0) {
+        // 현재 날짜를 가져옴
+        LocalDate today = LocalDate.now();
+
+        // 년도와 월 추출
+        year = today.getYear();
+        month = today.getMonthValue();
+    } 
+    
+    String month_str = String.format("%02d", month); // 두 자리 형식으로
+    System.out.println("-> month: " + month_str);
+  
+    String date = year + "-" + month;
+    System.out.println("-> date: " + date);
+    
+//    ArrayList<CalendarVO> list = this.calendarProc.list_calendar(date);
+//    model.addAttribute("list", list);
+
+    ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
+    model.addAttribute("menu", menu);
+
+    
+    model.addAttribute("year", year);
+    model.addAttribute("month", month-1);  // javascript는 1월이 0임. 
+    
+    return "/th/calendar/main_list_calendar"; // /templates/calendar/list_calendar.html
+  }
+  
+  /**
+   * 특정 날짜의 목록
+   * 
+   * @param model
+   * @return
+   */
+  // http://localhost:9091/calendar/list_calendar_day?labeldate=2025-01-03
+  @GetMapping(value = "/main_list_calendar_day")
+  @ResponseBody
+  public String main_list_calendar_day(Model model, @RequestParam(name="labeldate", defaultValue = "") String labeldate) {
+    System.out.println("-> labeldate: " + labeldate);  // console에서 labeldate 확인
+        
+        // 추가적인 검사
+        if ("undefined".equals(labeldate)) {
+            System.out.println("No labeldate parameter provided.");
+        }
+  
+    ArrayList<CalendarVO> list = this.calendarProc.list_calendar_day(labeldate);
+    model.addAttribute("list", list);
+
+    JSONArray schedule_list = new JSONArray();
+    
+    for (CalendarVO calendarVO: list) {
+        JSONObject schedual = new JSONObject();
+        schedual.put("calendarno", calendarVO.getCalendarno());
+        schedual.put("labeldate", calendarVO.getLabeldate());
+        schedual.put("label", calendarVO.getLabel());
+        schedual.put("seqno", calendarVO.getSeqno());
+        
+        schedule_list.put(schedual);
+    }
+
+    return schedule_list.toString();
+    
+  }
+
+  
 }

@@ -43,13 +43,19 @@ public class TermbookCont {
     System.out.println("-> TermbookCont created");
   }  
   
-  // 1. Create - 데이터 추가 폼
+  //1. Create - 데이터 추가 폼
   @GetMapping("/create")
-  public String createForm(Model model) {
-    TermbookVO termbookVO = new TermbookVO();
-    model.addAttribute("termbookVO", termbookVO);
-    return "/th/termbook/create"; // create.html로 이동
+  public String createForm(Model model, HttpSession session) {
+   // 세션에서 관리자 확인
+   if (this.memberProc.isAdmin(session)) { // 관리자로 로그인한 경우
+     TermbookVO termbookVO = new TermbookVO();
+     model.addAttribute("termbookVO", termbookVO);
+     return "/th/termbook/create"; // create.html로 이동
+   } else { // 관리자가 아닌 경우 로그인 페이지로 리다이렉트
+     return "redirect:/member/login_cookie_need"; // 관리자만 접근 가능
+   }
   }
+
 
 //1. Create - 데이터 추가 처리
 @PostMapping("/create")
@@ -187,28 +193,44 @@ public String create(Model model,
      return "/th/termbook/read"; // read.html로 이동
   }
 
-  // 5. Update - 데이터 수정 폼
+//5. Update - 데이터 수정 폼
   @GetMapping("/update/{termno}")
-  public String updateForm(@PathVariable("termno") int termno, Model model) {
-   TermbookVO termbookVO = termbookProc.read(termno);
-    model.addAttribute("termbookVO", termbookVO);
-    return "/th/termbook/update"; // termbook/update.html
+  public String updateForm(@PathVariable("termno") int termno, Model model, HttpSession session) {
+   // 세션에서 관리자 확인
+   System.out.println("Session grade: " + session.getAttribute("grade"));  // 디버깅을 위한 출력
+  
+   if (this.memberProc.isAdmin(session)) { // 관리자로 로그인한 경우
+     TermbookVO termbookVO = termbookProc.read(termno);
+     model.addAttribute("termbookVO", termbookVO);
+     return "/th/termbook/update"; // termbook/update.html
+   } else { // 관리자가 아닌 경우 로그인 페이지로 리다이렉트
+     return "redirect:/member/login_cookie_need"; // 관리자만 접근 가능
+   }
   }
-
-  // 5. Update - 데이터 수정 처리
+  
+  //5. Update - 데이터 수정 처리
   @PostMapping("/update")
-  public String update(@ModelAttribute TermbookVO termbookVO) {
-    termbookProc.update(termbookVO);
-    return "redirect:/termbook/list_all"; // 수정 후 목록 페이지로 이동
+  public String update(@ModelAttribute TermbookVO termbookVO, HttpSession session, RedirectAttributes ra) {
+   if (this.memberProc.isAdmin(session)) { // 관리자로 로그인한 경우
+     termbookProc.update(termbookVO);
+     return "redirect:/termbook/list_all"; // 수정 후 목록 페이지로 이동
+   } else { // 관리자가 아닌 경우 로그인 페이지로 리다이렉트
+     ra.addFlashAttribute("code", "access_denied"); // 권한 없음 메시지
+     return "redirect:/member/login_cookie_need"; // 관리자만 접근 가능
+   }
   }
 
   // 6. Delete - 데이터 삭제 폼
   @GetMapping("/delete/{termno}")
-  public String deleteForm(@PathVariable("termno") int termno, Model model) {
-    TermbookVO termbookVO = termbookProc.read(termno);
-    model.addAttribute("termbookVO", termbookVO);
+  public String deleteForm(@ModelAttribute TermbookVO termbookVO, HttpSession session, RedirectAttributes ra, @PathVariable("termno") int termno, Model model) {
+    if (this.memberProc.isAdmin(session)) {
+      termbookProc.delete(termno);
     return "/th/termbook/delete"; // termbook/delete.html
+  } else {
+    ra.addFlashAttribute("code", "access_denied"); // 권한 없음 메시지
+    return "redirect:/member/login_cookie_need"; // 관리자만 접근 가능
   }
+}
 
   // 6. Delete - 데이터 삭제 처리
   @PostMapping("/delete")
@@ -220,3 +242,4 @@ public String create(Model model,
   
 
 }
+ 

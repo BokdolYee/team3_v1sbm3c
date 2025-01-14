@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-<head>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -41,70 +40,166 @@
     </style>
 
     <script>
-        async function fetchCalendarData(year, month) {
-            const url = `/calendar/list_calendar?year=${year}&month=${month + 1}`;  // 요청 URL
+        function changeMonth(offset) {
+            // Logic to change the month dynamically
+            console.log('Change month by offset:', offset);
+            // Here you can add fetch requests or DOM updates to reload the calendar
+        }
+        
+        async function fetchSchedules(day) {
             try {
-                const response = await fetch(url);
+                const response = await fetch(`/calendar/main_list_calendar_day?labeldate=${day}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch schedules');
+                }
                 const data = await response.json();
                 return data;
             } catch (error) {
-                console.error('Error fetching calendar data:', error);
-                return [];
+                console.error('Error fetching schedules:', error);
+                return null;
             }
         }
 
-        async function generateCalendar(year, month) {
-            const calendarBody = document.querySelector("tbody");
-            calendarBody.innerHTML = ''; // 기존 내용 초기화
+        async function displaySchedules(day, cell) {
+            const schedules = await fetchSchedules(day);
+            if (schedules && schedules.length > 0) {
+                const scheduleList = document.createElement('ul');
+                schedules.forEach(schedule => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `<a href='/calendar/read/${schedule.calendarno}' style='color:black;'>${schedule.label}</a>`;
+                    scheduleList.appendChild(listItem);
+                });
+                cell.appendChild(scheduleList);
+            }
+        }
 
-            const daysInMonth = new Date(year, month + 1, 0).getDate(); // 월의 마지막 날짜
-            const firstDay = new Date(year, month, 1).getDay(); // 첫 번째 날짜의 요일
+        async function fetchCalendarData(date_calendar, contentDiv) {
+            try {
+                const response = await fetch("/calendar/list_calendar_day?labeldate=" + date_calendar, {
+                    method: "get",
+                });
 
-            let row = document.createElement("tr");
-            // 첫 번째 주 빈 칸 추가
-            for (let i = 0; i < firstDay; i++) {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+
+                const data = await response.json();
+
+                // 데이터 처리, 일정 추가
+                for (let item of data) {
+                    const schedule = document.createElement("span");
+                    const item_html = `<a href='/calendar/read/${item.calendarno}' style='color:black;'>${item.label}</a>`;
+                    schedule.innerHTML = item_html;
+                    contentDiv.appendChild(schedule);
+                }
+            } catch (error) {
+                console.error("Error fetching calendar data:", error);
+            }
+        }
+
+    window.onload = function() {
+        const year = parseInt('[[${year}]]');
+        const month = parseInt('[[${month}]]');
+        console.log(year, month);
+        
+        monthTitle = document.getElementById('month_title');
+        monthTitle.setAttribute('data-current_year', year);
+        monthTitle.setAttribute('data-current_month', month);
+
+        const panel_year_month = document.getElementById("panel_year_month");
+        panel_year_month.innerHTML = `${year}년 ${month + 1} 월`; // 제목 출력
+
+        const daysInMonth = new Date(year, month + 1, 0).getDate(); // 1월: 0부터 시작
+    
+        const calendarBody = document.querySelector("tbody");
+        calendarBody.innerHTML = "";
+    
+        const firstDay = new Date(year, month, 1).getDay();
+    
+        let row = document.createElement("tr");
+        for (let i = 0; i < firstDay; i++) {
+            const emptyCell = document.createElement("td");
+            row.appendChild(emptyCell);
+        }
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const cell = document.createElement("td");
+
+            // Create a div inside each cell
+            const contentDiv = document.createElement("div");
+            contentDiv.style.display = "flex";
+            contentDiv.style.flexDirection = "column";
+            contentDiv.style.justifyContent = "flex-start";
+            contentDiv.style.height = "100%";
+
+            // Add full date
+            const fullDateSpan = document.createElement("span");
+            let date_calendar = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            fullDateSpan.textContent = date_calendar;
+
+            // Append to the div
+            contentDiv.appendChild(fullDateSpan);
+
+            // Add data-labeldate attribute here
+            cell.setAttribute("data-labeldate", date_calendar);
+            
+            // fetch Ajax 요청
+            fetchCalendarData(date_calendar, contentDiv);
+
+            // Append the div to the cell
+            cell.appendChild(contentDiv);
+
+            // Add class for weekends
+            if ((firstDay + day - 1) % 7 === 0) {
+                cell.classList.add("weekend"); // 일요일
+            } else if ((firstDay + day - 1) % 7 === 6) {
+                cell.classList.add("saturday"); // 토요일
+            }
+            row.appendChild(cell);
+
+            if ((firstDay + day) % 7 === 0) {
+                calendarBody.appendChild(row);
+                row = document.createElement("tr");
+            }
+        }
+
+        // 마지막 행의 빈 칸 추가, 날짜가 주중에 30일 또는 31일이 걸리는 겨우
+        if (row.children.length > 0 && row.children.length < 7) {
+            while (row.children.length < 7) {
                 const emptyCell = document.createElement("td");
+                const schedule = document.createElement("span");
+                schedule.innerHTML = '&nbsp;';
+                emptyCell.appendChild(schedule);
                 row.appendChild(emptyCell);
             }
+            calendarBody.appendChild(row);
+        }
+    };
 
-            // 날짜 추가
-            for (let day = 1; day <= daysInMonth; day++) {
-                const cell = document.createElement("td");
-                const contentDiv = document.createElement("div");
-                const fullDateSpan = document.createElement("span");
+    // 이전달, 다음달
+    function changeMonth(cnt) {
+        const monthTitle = document.getElementById('month_title');
 
-                fullDateSpan.textContent = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                contentDiv.appendChild(fullDateSpan);
-                cell.appendChild(contentDiv);
+        let currentYear = parseInt(monthTitle.getAttribute('data-current_year'), 10);
+        let currentMonth = parseInt(monthTitle.getAttribute('data-current_month'), 10);
+                
+        currentMonth += cnt;
 
-                // 주말 처리
-                if ((firstDay + day - 1) % 7 === 0) {
-                    cell.classList.add("weekend"); // 일요일
-                } else if ((firstDay + day - 1) % 7 === 6) {
-                    cell.classList.add("saturday"); // 토요일
-                }
-
-                row.appendChild(cell);
-
-                // 주 단위로 테이블 행 추가
-                if ((firstDay + day) % 7 === 0 || day === daysInMonth) {
-                    calendarBody.appendChild(row);
-                    row = document.createElement("tr");
-                }
-            }
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        } else if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
         }
 
-        window.onload = function () {
-            const year = 2025;  // 예시: 2025년
-            const month = 0; // 예시: 1월 (0부터 시작)
-            generateCalendar(year, month);
-        };
-    </script>
-</head>
-<body>
+        const url = `/calendar/main_list_calendar?year=${currentYear}&month=${currentMonth + 1}`;
+        location.href = url; // 이전달, 다음달 이동
+    }
 
-    <h2>일정 달력</h2>
-    <h4 id="panel_year_month"></h4>
+    </script>
+
+    <h4 id='month_title' data-current_year='' data-current_month=''><a href="#" onclick="changeMonth(-1)">[이전 달]</a> <span id='panel_year_month'></span> <a href="#" onclick="changeMonth(1)">[다음 달]</a></h4>
     <table>
         <thead>
             <tr>
@@ -118,9 +213,7 @@
             </tr>
         </thead>
         <tbody>
-            <!-- 달력 내용이 동적으로 추가됩니다 -->
+            <!-- Calendar rows will be dynamically generated here -->
         </tbody>
     </table>
-
-</body>
 </html>

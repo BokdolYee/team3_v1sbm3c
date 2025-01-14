@@ -25,29 +25,15 @@
           console.log("urgentIssueUrl is empty or not passed correctly.");
         }
       };
-
-      // 일정 보기 버튼 클릭 시 list_calendar.html을 동적으로 로드
-      function loadCalendar() {
-        const calendarContainer = document.getElementById("calendarContainer");
-
-        // AJAX 요청
-        fetch('/calendar/main_list_calendar') // HomeCont에서 제공하는 URL로 요청
-          .then(response => response.text())
-          .then(data => {
-            calendarContainer.innerHTML = data; // 데이터를 받아서 로드
-          })
-          .catch(error => {
-            console.error('Error loading calendar:', error);
-          });
-      }
     </script>
   </head>
+
   <div layout:fragment="content" style="width: 80%; margin: 50px auto; text-align: center;">
     <h1>시작 화면</h1><br>
     <img src="/images/1main.jpg" style="width: 40%;"> <!-- /static/images/main.jpg -->
     <br>
     <!-- "일정 보기" 버튼 -->
-    <button onclick="loadCalendar()">일정 보기</button>
+    <a href="/calendar/list_calendar" class="btn">주요 일정 보기</a>
     <br>
 
     <!-- 일정 내용이 로드될 부분 -->

@@ -177,16 +177,4 @@ public class CalendarProc implements CalendarProcInter {
     return cnt;
   }
 
-  @Override
-  public ArrayList<CalendarVO> main_list_calendar(String date) {
-    ArrayList<CalendarVO> list = this.calendarDAO.main_list_calendar(date);
-    return list;
-  }
-
-  @Override
-  public ArrayList<CalendarVO> main_list_calendar_day(String date) {
-    ArrayList<CalendarVO> list = this.calendarDAO.main_list_calendar_day(date);
-    return list;
-  }    
-
 }

@@ -118,22 +118,6 @@
         FROM calendar
         WHERE 
             (#{searchLabel} IS NULL OR label LIKE '%' || #{searchLabel} || '%')
-    </select>
-    
-  <!-- 특정 달의 조회 -->
-  <select id="main_list_calendar" resultType="dev.mvc.calendar.CalendarVO" parameterType="String">
-    SELECT calendarno, labeldate, label, seqno
-    FROM calendar
-    WHERE SUBSTR(labeldate, 1, 7) = #{labeldate}
-    ORDER BY labeldate ASC, seqno ASC
-  </select>
-
-  <!-- 특정 날짜 조회 -->
-  <select id="main_list_calendar_day" resultType="dev.mvc.calendar.CalendarVO" parameterType="String">
-    SELECT calendarno, labeldate, label, seqno
-    FROM calendar
-    WHERE labeldate = #{labeldate}
-    ORDER BY seqno ASC
-  </select>     
+    </select>     
 
 </mapper>

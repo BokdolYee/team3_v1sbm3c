@@ -25,55 +25,6 @@
           console.log("urgentIssueUrl is empty or not passed correctly.");
         }
       };
-
-      // 일정 보기 버튼 클릭 시 main_list_calendar.html을 동적으로 로드
-      function loadCalendar() {
-        const calendarContainer = document.getElementById("calendarContainer");
-
-        // AJAX 요청
-        fetch('/calendar/main_list_calendar') // HomeCont에서 제공하는 URL로 요청
-          .then(response => response.text())
-          .then(data => {
-            calendarContainer.innerHTML = data; // 데이터를 받아서 로드
-            loadDaySchedules(); // 달력의 날짜 클릭 시 일정 로드
-          })
-          .catch(error => {
-            console.error('Error loading calendar:', error);
-          });
-      }
-
-      // 날짜 클릭 시 해당 날짜의 일정을 동적으로 가져옴
-      function loadDaySchedules() {
-        const dayCells = document.querySelectorAll('td[data-labeldate]'); // data-labeldate가 있는 td 셀만 선택
-        console.log("Day cells found:", dayCells);  // 셀들이 잘 선택되는지 확인하기 위한 로그 추가
-
-        dayCells.forEach(cell => {
-          cell.addEventListener('click', function() {
-            const labeldate = cell.getAttribute('data-labeldate');
-            console.log("Clicked labeldate:", labeldate);  // 클릭된 날짜 확인
-            fetch(`/calendar/main_list_calendar_day?labeldate=${labeldate}`) // 해당 날짜의 일정을 요청
-              .then(response => response.json())
-              .then(data => {
-                console.log(`Schedules for ${labeldate}:`, data);
-                displaySchedules(data, cell); // 일정 표시
-              })
-              .catch(error => {
-                console.error('Error loading schedule data:', error);
-              });
-          });
-        });
-      }
-
-      // 일정 표시 함수
-      function displaySchedules(schedules, cell) {
-        const scheduleList = document.createElement('ul');
-        schedules.forEach(schedule => {
-          const listItem = document.createElement('li');
-          listItem.innerHTML = `<a href='/calendar/read/${schedule.calendarno}' style='color:black;'>${schedule.label}</a>`;
-          scheduleList.appendChild(listItem);
-        });
-        cell.appendChild(scheduleList);
-      }
     </script>
   </head>
 
@@ -82,11 +33,10 @@
     <img src="/images/1main.jpg" style="width: 40%;"> <!-- /static/images/main.jpg -->
     <br>
     <!-- "일정 보기" 버튼 -->
-    <button onclick="loadCalendar()">일정 보기</button>
+    <a href="/calendar/list_calendar" class="btn">주요 일정 보기</a>
     <br>
 
     <!-- 일정 내용이 로드될 부분 -->
     <div id="calendarContainer"></div>
   </div>
-
 </html>

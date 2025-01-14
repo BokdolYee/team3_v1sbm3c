@@ -49,7 +49,7 @@
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <li class="nav-item"><a class="nav-link" th:if="${session.grade=='admin'}" th:href="@{|/calendar/create|}">일정 등록</a></li>
                         <li class="nav-item"><a class="nav-link" th:if="${session.grade=='admin' or session.grade=='member'}" th:href="@{|/calendar/list_all|}">일정 목록</a></li>
-                        <li class="nav-item"><a class="nav-link" th:if="${session.grade=='admin' or session.grade=='member'}" th:href="@{|/calendar/list_calendar|}">달력</a></li>
+                        <li class="nav-item"><a class="nav-link" th:if="${session.grade=='admin' or session.grade=='member'}" th:href="@{|/calendar/list_calendar|}">일정</a></li>
                         <li class="nav-item"><a class="nav-link" th:if="${session.grade=='admin'}" th:href="@{|/calendargood/list_all|}">일정 추천</a></li>
                     </ul>
                 </li>

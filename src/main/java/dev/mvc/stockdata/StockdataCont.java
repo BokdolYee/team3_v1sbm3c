@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import dev.mvc.member.MemberProcInter;
 import dev.mvc.stock.StockProcInter;
 import dev.mvc.stock.StockVO;
+import dev.mvc.team3.StockCrawlerScheduler;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -30,6 +31,23 @@ public class StockdataCont {
   @Autowired
   @Qualifier("dev.mvc.member.MemberProc")
   private MemberProcInter memberProc;  
+  
+  @Autowired
+  private StockCrawlerScheduler stockCrawlerScheduler;
+
+  // 페이지 로딩 시 버튼을 포함한 HTML 반환
+  @RequestMapping("/updatePage")
+  public String showUpdatePage() {
+      return "list_all";  // list_all.html 페이지를 반환
+  }
+
+  // 버튼 클릭 시 크롤링 작업 실행
+  @PostMapping("/updateStockData")
+  public String updateStockData() {
+      // 크롤링 작업을 즉시 실행
+      stockCrawlerScheduler.fetchAndUpdateStockDataOnDemand();  // 즉시 실행되는 메소드 호출
+      return "redirect:/stockdata/list_all";  // 크롤링이 완료된 후 동일 페이지로 돌아가기
+  }
   
   public int record_per_page = 4;
   public int page_per_block = 10;

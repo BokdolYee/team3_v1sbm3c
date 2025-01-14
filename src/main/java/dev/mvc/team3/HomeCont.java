@@ -31,7 +31,7 @@ public class HomeCont {
     @Autowired
     @Qualifier("dev.mvc.issue.IssueProc")
     private IssueProcInter issueProc;
-    
+
     @Autowired
     @Qualifier("dev.mvc.calendar.CalendarProc")
     private CalendarProcInter calendarProc;
@@ -57,57 +57,43 @@ public class HomeCont {
         ArrayList<NewsCateVOMenu> menu = this.newsCateProc.menu();
         model.addAttribute("menu", menu);
 
-        return "/th/index"; // /templates/index.html
+        // 현재 날짜를 가져옴
+        LocalDate today = LocalDate.now();
+        int year = today.getYear();
+        int month = today.getMonthValue();
+
+        model.addAttribute("year", year);
+        model.addAttribute("month", month - 1); // javascript에서 1월은 0으로 표시됨
+        
+        return "/th/index"; // 메인 페이지로 넘어갑니다.
     }
 
- // 메인 페이지에서 사용되는 달력
     @GetMapping("/main_list_calendar")
     public String mainListCalendar(Model model,
-                                   @RequestParam(name="year", defaultValue = "0") int year,
-                                   @RequestParam(name="month", defaultValue = "0") int month) {
-        
+                                   @RequestParam(name = "year", defaultValue = "0") int year,
+                                   @RequestParam(name = "month", defaultValue = "0") int month) {
+
         if (year == 0) {
             // 현재 날짜를 가져옴
             LocalDate today = LocalDate.now();
-            // 년도와 월 추출
             year = today.getYear();
             month = today.getMonthValue();
         }
-        
-        String month_str = String.format("%02d", month); // 두 자리 형식으로
-        System.out.println("-> month: " + month_str);
 
-        String date = year + "-" + month;
-        System.out.println("-> date: " + date);
-
-        // 메뉴 정보 가져오기
-        ArrayList<NewsCateVOMenu> menu = this.newsCateProc.menu();
-        model.addAttribute("menu", menu);
-
-        // 달력 관련 데이터 전달
         model.addAttribute("year", year);
-        model.addAttribute("month", month-1); // javascript는 1월이 0임. 
-        
-        return "/th/calendar/main_list_calendar"; // main_list_calendar.html을 반환
+        model.addAttribute("month", month - 1); // javascript에서 1월은 0으로 표시됨
+        return "/th/calendar/main_list_calendar"; // 달력 화면을 렌더링
     }
 
-    // 특정 날짜의 목록을 JSON으로 반환
     @GetMapping(value = "/main_list_calendar_day")
     @ResponseBody
-    public String mainListCalendarDay(Model model, @RequestParam(name="labeldate", defaultValue = "") String labeldate) {
-        System.out.println("-> labeldate: " + labeldate);  // 콘솔에서 labeldate 확인
-        
-        // 추가적인 검사
-        if ("undefined".equals(labeldate)) {
-            System.out.println("No labeldate parameter provided.");
-        }
+    public String mainListCalendarDay(Model model, @RequestParam(name = "labeldate", defaultValue = "") String labeldate) {
+        System.out.println("-> labeldate: " + labeldate);
 
-        ArrayList<CalendarVO> list = this.calendarProc.main_list_calendar_day(labeldate);
+        ArrayList<CalendarVO> list = this.calendarProc.list_calendar_day(labeldate);
         model.addAttribute("list", list);
 
-        // JSON 형식으로 변환
         JSONArray schedule_list = new JSONArray();
-        
         for (CalendarVO calendarVO : list) {
             JSONObject schedule = new JSONObject();
             schedule.put("calendarno", calendarVO.getCalendarno());
@@ -116,7 +102,6 @@ public class HomeCont {
             schedule.put("seqno", calendarVO.getSeqno());
             schedule_list.put(schedule);
         }
-
-        return schedule_list.toString(); // JSON 반환
+        return schedule_list.toString();
     }
 }

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dev.mvc.post_viewlog.Post_viewlogDAOInter">
+  
+  <!-- 조회 내역에 등록 -->
+  <insert id="create" parameterType="dev.mvc.post_viewlog.Post_viewlogVO">
+    INSERT INTO post_viewlog(post_viewlogno, memberno, postno, rdate, ldate, viewcnt)
+    VALUES(post_viewlog_seq.nextval, #{memberno}, #{postno}, sysdate, sysdate, 1)
+  </insert>
+  
+  <!-- 조회할 때마다 조회수 증가 -->
+  <update id="increase_viewcnt" parameterType="int">
+    UPDATE post_viewlog
+    SET viewcnt = viewcnt + 1
+    WHERE postno = #{postno}
+  </update>
+  
+  <!-- 조회할 때마다 마지막 조회일 변경 -->
+  <update id="update_ldate" parameterType="int">
+    UPDATE post_viewlog
+    SET ldate = sysdate
+    WHERE postno = #{postno}
+  </update>
+  
+  <!-- 해당 게시물을 회원이 조회한 기록이 있는지 확인 -->
+  <select id="check" resultType="int" parameterType="int">
+    SELECT COUNT(postno) as cnt
+    FROM post_viewlog
+    WHERE postno = #{postno}
+  </select>
+  
+  <!-- 조회 내역 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM post_viewlog
+    WHERE postno = #{postno}
+  </delete>
+  
+  <!-- 조회 내역 검색 목록 + 페이징 + memberno 이용 member 테이블과 JOIN 해서 닉네임 조회-->
+  <select id="list" parameterType="dev.mvc.dto.SearchDTO" resultType="dev.mvc.post_viewlog.Post_viewlogVO">
+    SELECT *
+    FROM(
+        SELECT a.*, ROWNUM rnum
+        FROM(
+            SELECT v.*, p.title, p.content, m.nickname
+            FROM post_viewlog v
+            INNER JOIN post_earning p ON v.postno = p.postno
+            INNER JOIN member m ON p.memberno = m.memberno
+            <where>
+              <if test="searchType != null and keyword != null">
+                <choose>
+                  <when test = "searchType == 'title'">
+                    AND p.title LIKE '%' || #{keyword} || '%'
+                  </when>
+                  <when test = "searchType == 'content'">
+                    AND p.content LIKE '%' || #{keyword} || '%'
+                  </when>
+                  <when test = "searchType == 'nickname'">
+                    AND m.nickname LIKE '%' || #{keyword} || '%'
+                  </when>
+                </choose>
+              </if>
+            </where>
+            ORDER BY v.viewcnt DESC
+          ) a
+          WHERE ROWNUM &lt;= #{size}
+        )
+        WHERE rnum &gt; #{offset}
+  </select>
+  
+  <!-- 조회 내역 검색된 수 -->
+  <select id="list_count" parameterType="dev.mvc.dto.SearchDTO" resultType="int">
+    SELECT COUNT(*)
+    FROM post_viewlog v
+    INNER JOIN post_earning p ON v.postno = p.postno
+    INNER JOIN member m ON p.memberno = m.memberno
+      <where>
+        <if test="searchType != null and keyword != null">
+          <choose>
+            <when test = "searchType == 'title'">
+              AND p.title LIKE '%' || #{keyword} || '%'
+            </when>
+            <when test = "searchType == 'content'">
+              AND p.content LIKE '%' || #{keyword} || '%'
+            </when>
+            <when test = "searchType == 'nickname'">
+              AND m.nickname LIKE '%' || #{keyword} || '%'
+            </when>
+          </choose>
+        </if>
+      </where>
+  </select>
+  
+</mapper>

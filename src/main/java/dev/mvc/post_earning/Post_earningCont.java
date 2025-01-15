@@ -27,6 +27,8 @@ import dev.mvc.dto.SearchDTO;
 import dev.mvc.member.MemberProcInter;
 import dev.mvc.newscate.NewsCateProcInter;
 import dev.mvc.newscate.NewsCateVOMenu;
+import dev.mvc.post_viewlog.Post_viewlogProcInter;
+import dev.mvc.post_viewlog.Post_viewlogVO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
@@ -44,10 +46,14 @@ public class Post_earningCont {
   @Autowired
   @Qualifier("dev.mvc.post_earning.Post_earningProc") // @Component("dev.mvc.post_earning.Post_earningProc")
   private Post_earningProcInter post_earningProc;
-  
+
   @Autowired
   @Qualifier("dev.mvc.attachment.AttachmentProc") // @Service("dev.mvc.member.MemberProc")
   private AttachmentProcInter attachmentProc;
+
+  @Autowired
+  @Qualifier("dev.mvc.post_viewlog.Post_viewlogProc")
+  private Post_viewlogProcInter post_viewlogProc;
 
   public Post_earningCont() {
     System.out.println("Post_earningCont 생성됨");
@@ -83,8 +89,8 @@ public class Post_earningCont {
     if (memberProc.isMember(session) == true || memberProc.isAdmin(session) == true) {
       ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
       model.addAttribute("menu", menu);
-      
-   // 게시물 최하단 댓글 밑에 검색 조건 유지한 채 리스트 뜨도록 list 코드 갖고 옴
+
+      // 게시물 최하단 댓글 밑에 검색 조건 유지한 채 리스트 뜨도록 list 코드 갖고 옴
       // ----------------------------------------------------------------
 
       // 검색 조건 설정
@@ -113,7 +119,7 @@ public class Post_earningCont {
       model.addAttribute("searchDTO", searchDTO);
       model.addAttribute("pageDTO", pageDTO);
       model.addAttribute("total", total);
-      
+
       // 각 게시물의 첫 번째 첨부파일(썸네일) 가져오기
       Map<Integer, String> thumbnails = new HashMap<>();
       for (Post_earningVO post : list) {
@@ -179,7 +185,7 @@ public class Post_earningCont {
    * @return
    */
   @GetMapping(value = "/read")
-  public String read(Model model, @RequestParam(value = "postno", defaultValue = "1") int postno,
+  public String read(Model model, @RequestParam(value = "postno", defaultValue = "1") int postno, HttpSession session,
       @RequestParam(value = "page", defaultValue = "1") int page,
       @RequestParam(value = "searchType", required = false) String searchType,
       @RequestParam(value = "keyword", defaultValue = "") String keyword) {
@@ -190,13 +196,30 @@ public class Post_earningCont {
     // 게시물 정보 읽고 뷰에 전송
     Post_earningVO post_earningVO = this.post_earningProc.read_join_nickname(postno);
     model.addAttribute("post_earningVO", post_earningVO);
-    
+
     // 첨부파일 목록 가져오기
     List<AttachmentVO> attachmentList = this.attachmentProc.list_by_postno(postno);
     model.addAttribute("attachmentList", attachmentList);
 
     // 조회수 증가
     int cnt = this.post_earningProc.increase_viewcnt(postno);
+
+    // 회원이 게시물을 조회한 내역이 있는지 검사
+    int check = this.post_viewlogProc.check(postno);
+    // 이 게시물에 대해 회원이 첫 조회일 경우 조회 내역 테이블에 등록
+    if (this.memberProc.isAdmin(session) || this.memberProc.isMember(session)) {
+      if (check == 0) {
+        Post_viewlogVO post_viewlogVO = new Post_viewlogVO();
+        post_viewlogVO.setMemberno((int) session.getAttribute("memberno"));
+        post_viewlogVO.setPostno(postno);
+
+       int viewlog =  this.post_viewlogProc.create(post_viewlogVO);
+       System.out.println("viewlog created: " + viewlog);
+      } else {  // 이미 조회한 게시물일 경우
+        int viewlogviewcnt = this.post_viewlogProc.increase_viewcnt(postno);
+        int viewlogldate = this.post_viewlogProc.update_ldate(postno);
+      }
+    }
 
     // 게시물 최하단 댓글 밑에 검색 조건 유지한 채 리스트 뜨도록 list 코드 갖고 옴
     // ----------------------------------------------------------------
@@ -227,7 +250,7 @@ public class Post_earningCont {
     model.addAttribute("searchDTO", searchDTO);
     model.addAttribute("pageDTO", pageDTO);
     model.addAttribute("total", total);
-    
+
     // 각 게시물의 첫 번째 첨부파일(썸네일) 가져오기
     Map<Integer, String> thumbnails = new HashMap<>();
     for (Post_earningVO post : list) {
@@ -287,7 +310,7 @@ public class Post_earningCont {
     model.addAttribute("searchDTO", searchDTO);
     model.addAttribute("pageDTO", pageDTO);
     model.addAttribute("total", total);
-    
+
     // 각 게시물의 첫 번째 첨부파일(썸네일) 가져오기
     Map<Integer, String> thumbnails = new HashMap<>();
     for (Post_earningVO post : list) {
@@ -324,7 +347,7 @@ public class Post_earningCont {
 
     Post_earningVO post_earningVO = this.post_earningProc.read_join_nickname(postno);
     model.addAttribute("post_earningVO", post_earningVO);
-    
+
     List<AttachmentVO> attachmentList = this.attachmentProc.list_by_postno(postno);
     model.addAttribute("attachmentList", attachmentList);
 
@@ -357,7 +380,7 @@ public class Post_earningCont {
     model.addAttribute("searchDTO", searchDTO);
     model.addAttribute("pageDTO", pageDTO);
     model.addAttribute("total", total);
-    
+
     // 각 게시물의 첫 번째 첨부파일(썸네일) 가져오기
     Map<Integer, String> thumbnails = new HashMap<>();
     for (Post_earningVO post : list) {
@@ -418,6 +441,7 @@ public class Post_earningCont {
 
   /**
    * 게시물 삭제 처리
+   * 
    * @param session
    * @param payload
    * @param memberno

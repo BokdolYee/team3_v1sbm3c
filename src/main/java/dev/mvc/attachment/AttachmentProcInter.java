@@ -17,4 +17,11 @@ public interface AttachmentProcInter {
    * @return
    */
   public List<AttachmentVO> list_by_postno(int postno);
+  
+  /**
+   * 첨부파일 삭제
+   * @param attachmentno
+   * @return
+   */
+  public int delete(int attachmentno);
 }

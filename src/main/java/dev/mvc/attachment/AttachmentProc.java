@@ -36,4 +36,11 @@ public class AttachmentProc implements AttachmentProcInter{
   public List<AttachmentVO> list_by_postno(int postno) {
     return this.attachmentDAO.list_by_postno(postno);
   }
+
+  @Override
+  public int delete(int attachmentno) {
+    int cnt = this.attachmentDAO.delete(attachmentno);
+    
+    return cnt;
+  }
 }

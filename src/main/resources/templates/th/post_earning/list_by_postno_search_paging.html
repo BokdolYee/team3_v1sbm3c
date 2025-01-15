@@ -41,12 +41,12 @@
       <td class='td_basic' th:text="${post_earningVO.postno}"></td> <!-- 번호 -->
       <td class='td_basic'>
         <img th:if="${thumbnails.get(post_earningVO.postno) != null}"
-             th:src="@{${'/attachment/thumb_' + thumbnails.get(post_earningVO.postno)}}"
-             style="width: 100px; height: 100px; object-fit: cover;"
+             th:src="@{${'/attachment/' + thumbnails.get(post_earningVO.postno)}}"
+             style="width: 80px; height: 80px; object-fit: cover;"
              alt="썸네일">
         <img th:unless="${thumbnails.get(post_earningVO.postno) != null}"
              src="/images/no_image.png"
-             style="width: 100px; height: 100px; object-fit: cover;"
+             style="width: 80px; height: 80px; object-fit: cover;"
              alt="썸네일 없음">
       </td> <!-- 썸네일 이미지 -->
       <td class='td_left'><a th:href="@{|/post_earning/read?postno=${post_earningVO.postno}|}" th:text="${post_earningVO.title}"></a></td>  <!-- 제목 -->

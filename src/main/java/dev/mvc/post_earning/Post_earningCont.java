@@ -75,11 +75,55 @@ public class Post_earningCont {
    */
   @GetMapping(value = "/create")
   public String create_form(Model model, HttpSession session,
-      @ModelAttribute("post_earningVO") Post_earningVO post_earningVO) {
+      @ModelAttribute("post_earningVO") Post_earningVO post_earningVO,
+      @RequestParam(value = "page", defaultValue = "1") int page,
+      @RequestParam(value = "searchType", required = false) String searchType,
+      @RequestParam(value = "keyword", defaultValue = "") String keyword) {
 
     if (memberProc.isMember(session) == true || memberProc.isAdmin(session) == true) {
       ArrayList<NewsCateVOMenu> menu = this.newscateProc.menu();
       model.addAttribute("menu", menu);
+      
+   // 게시물 최하단 댓글 밑에 검색 조건 유지한 채 리스트 뜨도록 list 코드 갖고 옴
+      // ----------------------------------------------------------------
+
+      // 검색 조건 설정
+      SearchDTO searchDTO = new SearchDTO();
+      searchDTO.setSearchType(searchType);
+      searchDTO.setKeyword(keyword);
+      searchDTO.setPage(page);
+      searchDTO.setSize(page * 10);
+      searchDTO.setOffset((page - 1) * 10);
+
+      // 전체 게시물 수 조회
+      int total = this.post_earningProc.list_by_postno_search_count(searchDTO);
+
+      // 검색 페이지 결과가 없고 페이지가 1보다 큰 경우 첫 페이지로 리다이렉트
+      if (total == 0 && page > 1) {
+        return "redirect:/post_earning/list_by_postno?searchType=" + searchType + "&keyword=" + keyword;
+      }
+
+      // 페이징 정보 계산
+      PageDTO pageDTO = new PageDTO(total, page);
+
+      // 게시물 목록 조회
+      ArrayList<Post_earningVO> list = this.post_earningProc.list_by_postno_search_paging(searchDTO);
+
+      model.addAttribute("list", list);
+      model.addAttribute("searchDTO", searchDTO);
+      model.addAttribute("pageDTO", pageDTO);
+      model.addAttribute("total", total);
+      
+      // 각 게시물의 첫 번째 첨부파일(썸네일) 가져오기
+      Map<Integer, String> thumbnails = new HashMap<>();
+      for (Post_earningVO post : list) {
+        List<AttachmentVO> attachments = this.attachmentProc.list_by_postno(post.getPostno());
+        if (!attachments.isEmpty() && attachments.get(0).getThumb() != null) {
+          thumbnails.put(post.getPostno(), attachments.get(0).getThumb());
+        }
+      }
+      model.addAttribute("thumbnails", thumbnails);
+      // ----------------------------------------------------------------
 
       return "/th/post_earning/create";
     } else {
@@ -183,6 +227,16 @@ public class Post_earningCont {
     model.addAttribute("searchDTO", searchDTO);
     model.addAttribute("pageDTO", pageDTO);
     model.addAttribute("total", total);
+    
+    // 각 게시물의 첫 번째 첨부파일(썸네일) 가져오기
+    Map<Integer, String> thumbnails = new HashMap<>();
+    for (Post_earningVO post : list) {
+      List<AttachmentVO> attachments = this.attachmentProc.list_by_postno(post.getPostno());
+      if (!attachments.isEmpty() && attachments.get(0).getThumb() != null) {
+        thumbnails.put(post.getPostno(), attachments.get(0).getThumb());
+      }
+    }
+    model.addAttribute("thumbnails", thumbnails);
     // ----------------------------------------------------------------
 
     return "/th/post_earning/read";
@@ -270,6 +324,9 @@ public class Post_earningCont {
 
     Post_earningVO post_earningVO = this.post_earningProc.read_join_nickname(postno);
     model.addAttribute("post_earningVO", post_earningVO);
+    
+    List<AttachmentVO> attachmentList = this.attachmentProc.list_by_postno(postno);
+    model.addAttribute("attachmentList", attachmentList);
 
     // 게시물 최하단 댓글 밑에 검색 조건 유지한 채 리스트 뜨도록 list 코드 갖고 옴
     // ----------------------------------------------------------------
@@ -300,6 +357,16 @@ public class Post_earningCont {
     model.addAttribute("searchDTO", searchDTO);
     model.addAttribute("pageDTO", pageDTO);
     model.addAttribute("total", total);
+    
+    // 각 게시물의 첫 번째 첨부파일(썸네일) 가져오기
+    Map<Integer, String> thumbnails = new HashMap<>();
+    for (Post_earningVO post : list) {
+      List<AttachmentVO> attachments = this.attachmentProc.list_by_postno(post.getPostno());
+      if (!attachments.isEmpty() && attachments.get(0).getThumb() != null) {
+        thumbnails.put(post.getPostno(), attachments.get(0).getThumb());
+      }
+    }
+    model.addAttribute("thumbnails", thumbnails);
     // ----------------------------------------------------------------
 
     // 로그인된 회원이고 작성자가 회원 본인일 경우

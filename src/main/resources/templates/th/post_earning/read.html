@@ -92,7 +92,7 @@
             const goodcnt = data.goodcnt;
 
             //화면 업데이트
-            goodcntElement.textContent = `호재(${goodcnt})`;
+            goodcntElement.textContent = `추천(${goodcnt})`;
             goodcntElement2[3].textContent = `추천수: ${goodcnt}`
 
             return;
@@ -154,7 +154,7 @@
             const badcnt = data.badcnt;
 
             //화면 업데이트
-            badcntElement.textContent = `악재(${badcnt})`;
+            badcntElement.textContent = `비추천(${badcnt})`;
 
             return;
           }
@@ -256,14 +256,14 @@
                    th:src="@{${'/attachment/' + attachment.upfile}}" class="full_image cursor-pointer" style="max-width: 100%; margin: 10px 0;">
             </div>
           </div>
-          <span th:text="${post_earningVO.content}" style="margin: 50px auto; margin-left: 250px; font-size: 30px;"></span>
+          <span th:text="${post_earningVO.content}" style="margin: 50px auto; margin-left: 350px; font-size: 30px;"></span>
         </div>
       </div>
     
       <div class="post_footer">
         <div class="vote_buttons">
-          <button onclick="good(event)" class="vote_up"><img src="/images/ho.png"><span th:text="'호재(' + ${post_earningVO.goodcnt} + ')'"></span></button>
-          <button onclick="bad(event)" class="vote_down"><img src="/images/ak.png"><span th:text="'악재(' + ${post_earningVO.badcnt} + ')'"></span></button>
+          <button onclick="good(event)" class="vote_up"><img src="/images/ho.png"><span th:text="'추천(' + ${post_earningVO.goodcnt} + ')'"></span></button>
+          <button onclick="bad(event)" class="vote_down"><img src="/images/ak.png"><span th:text="'비추천(' + ${post_earningVO.badcnt} + ')'"></span></button>
         </div>
       </div>
     </div>
@@ -291,7 +291,16 @@
      
       <tr th:each="post_earningVO : ${list}">
         <td class='td_basic' th:text="${post_earningVO.postno}"></td> <!-- 번호 -->
-        <td class='td_basic'><div>썸네일</div></td>    <!-- 썸네일 이미지 -->
+        <td class='td_basic'>
+          <img th:if="${thumbnails.get(post_earningVO.postno) != null}"
+               th:src="@{${'/attachment/' + thumbnails.get(post_earningVO.postno)}}"
+               style="width: 80px; height: 80px; object-fit: cover;"
+               alt="썸네일">
+          <img th:unless="${thumbnails.get(post_earningVO.postno) != null}"
+               src="/images/no_image.png"
+               style="width: 80px; height: 80px; object-fit: cover;"
+               alt="썸네일 없음">
+        </td> <!-- 썸네일 이미지 -->
         <td class='td_left'><a th:href="@{|/post_earning/read?postno=${post_earningVO.postno}|}" th:text="${post_earningVO.title}"></a></td>  <!-- 제목 -->
         <td class='td_basic' th:text="${post_earningVO.nickname}"></td> <!-- 닉네임 -->
         <td class='td_basic' th:text="${post_earningVO.rdate.substring(0, 16)}"></td> <!-- 등록일 -->

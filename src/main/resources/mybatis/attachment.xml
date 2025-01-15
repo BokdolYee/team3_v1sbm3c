@@ -9,11 +9,18 @@
     VALUES(attachment_seq.nextval, #{postno}, #{upfile}, #{thumb}, #{fname}, #{fsize}, sysdate, #{uuid})
   </insert>
   
+  <!-- 첨부파일을 화면에 나열하기 위한 리스트 -->
   <select id="list_by_postno" resultType="dev.mvc.attachment.AttachmentVO" parameterType="int">
     SELECT attachmentno, postno, upfile, thumb, fname, fsize, rdate, uuid, visible 
     FROM attachment
     WHERE postno = #{postno}
     ORDER BY attachmentno ASC
   </select>
+  
+  <!-- 첨부파일 삭제 -->
+  <delete id="delete" parameterType="int">
+    DELETE FROM attachment
+    WHERE attachmentno=#{attachmentno}
+  </delete>
   
 </mapper>

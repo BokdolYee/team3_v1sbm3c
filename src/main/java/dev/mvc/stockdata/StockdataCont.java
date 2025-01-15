@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import dev.mvc.member.MemberProcInter;
 import dev.mvc.stock.StockProcInter;
@@ -48,6 +49,14 @@ public class StockdataCont {
       stockCrawlerScheduler.fetchAndUpdateStockDataOnDemand();  // 즉시 실행되는 메소드 호출
       return "redirect:/stockdata/list_all";  // 크롤링이 완료된 후 동일 페이지로 돌아가기
   }
+  
+//버튼 클릭 시 크롤링 작업 실행
+ @PostMapping("/updateStockDataview")
+ public String updateStockDataview() {
+     // 크롤링 작업을 즉시 실행
+     stockCrawlerScheduler.fetchAndUpdateStockDataOnDemand();  // 즉시 실행되는 메소드 호출
+     return "redirect:/stockdata/viewstockdata";  // 크롤링이 완료된 후 동일 페이지로 돌아가기
+ }
   
   public int record_per_page = 4;
   public int page_per_block = 10;
@@ -238,4 +247,45 @@ public class StockdataCont {
       stockdataProc.delete(sdatano); // sdatano로 삭제 작업
       return "redirect:/stockdata/list_all"; // 삭제 후 목록 페이지로 이동
   }
+  
+//  @RequestMapping("/viewstockdata")
+//  public ModelAndView viewstockdata() {
+//      List<StockdataVO> viewdataList = stockdataProc.getStockdata();  // 데이터 가져오기
+//
+//      // null 값을 기본값으로 변경하는 로직
+//      for (StockdataVO stockdataVO : viewdataList) {
+//          // 'stock_name'이 'null'인 경우 기본값 설정
+//          if (stockdataVO.getStock_name() == null || "null".equals(stockdataVO.getStock_name())) {
+//              stockdataVO.setStock_name("");  // 기본값 설정
+//          }
+//
+//          // 'searchName'이 'null'인 경우 기본값 설정
+//          if (stockdataVO.getSearchName() == null || "null".equals(stockdataVO.getSearchName())) {
+//              stockdataVO.setSearchName("");  // 기본값 설정
+//          }
+//
+//          // 'stockno'가 null인 경우 기본값 설정
+//          if (stockdataVO.getStockno() == null) {
+//              stockdataVO.setStockno(0);  // 기본값 설정
+//          }
+//
+//          // 'rdate'가 'null'인 경우 기본값 설정
+//          if (stockdataVO.getRdate() == null || "null".equals(stockdataVO.getRdate())) {
+//              stockdataVO.setRdate("");  // 기본값 설정
+//          }
+//
+//          // 'volume'이 null인 경우 기본값 설정
+//          if (stockdataVO.getVolume() == null || "null".equals(stockdataVO.getVolume())) {
+//              stockdataVO.setVolume("0");  // 기본값 설정
+//          }
+//      }
+
+      @RequestMapping("/viewstockdata")
+      public ModelAndView viewStockdata() {
+          List<StockdataVO> stockdataList = stockdataProc.getStockdata();  // 데이터 가져오기
+          ModelAndView mav = new ModelAndView();  // ModelAndView 객체 생성
+          mav.addObject("stockdataList", stockdataList);  // 모델에 데이터 추가
+          mav.setViewName("/th/stockdata/viewstockdata");  // "stockdata/viewstockdata.html"을 반환
+          return mav;  // 반환
+      }
 }

@@ -108,7 +108,7 @@ public String create(Model model, @Valid @ModelAttribute("stockVO") StockVO stoc
    // 3. DB에 데이터 삽입
    int cnt = stockProc.create(stockVO); // stockVO에 담긴 정보를 DB에 저장
    if (cnt == 1) {
-       return "redirect:/stock/list_search"; // 성공 시 목록 페이지로 리다이렉트
+       return "redirect:/stock/list_all"; // 성공 시 목록 페이지로 리다이렉트
    } else {
        model.addAttribute("code", "create_fail");
        model.addAttribute("cnt", cnt);
@@ -125,7 +125,17 @@ public String create(Model model, @Valid @ModelAttribute("stockVO") StockVO stoc
                          @RequestParam(name = "searchIndustry", defaultValue = "") String searchIndustry,
                          @RequestParam(name = "now_page", defaultValue = "1") int now_page,
                          Model model) {
-
+      
+    if (searchSymbol == null) {
+      searchSymbol = "";  // 빈 문자열로 설정
+    }
+    if (searchName == null) {
+        searchName = "";  // 빈 문자열로 설정
+    }
+    if (searchIndustry == null) {
+        searchIndustry = "";  // 빈 문자열로 설정
+    }
+    
       // start_num 계산: 1페이지일 때 0, 2페이지일 때 10, 3페이지일 때 20
       int start_num = (now_page - 1) * record_per_page + 1;
       // end_num 계산: start_num + record_per_page - 1
@@ -159,9 +169,22 @@ public String create(Model model, @Valid @ModelAttribute("stockVO") StockVO stoc
 
   // 3. List - 검색된 데이터 목록
   @GetMapping("/list_search")
-  public String list_search_paging(@RequestParam(name="word", defaultValue = "") String word,
+  public String list_search_paging(@RequestParam(name = "searchSymbol", defaultValue = "") String searchSymbol,
+      @RequestParam(name = "searchName", defaultValue = "") String searchName,
+      @RequestParam(name = "searchIndustry", defaultValue = "") String searchIndustry,@RequestParam(name="word", defaultValue = "") String word,
                                    @RequestParam(name="now_page", defaultValue="1") int now_page,
                                    Model model) {
+    
+    if (searchSymbol == null) {
+      searchSymbol = "";  // 빈 문자열로 설정
+    }
+    if (searchName == null) {
+        searchName = "";  // 빈 문자열로 설정
+    }
+    if (searchIndustry == null) {
+        searchIndustry = "";  // 빈 문자열로 설정
+    }
+    
     Map<String, Object> params = Map.of(
       "word", word,
       "nowPage", now_page,

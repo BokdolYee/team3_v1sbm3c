@@ -32,9 +32,15 @@
     <h1>시작 화면</h1><br>
     <img src="/images/1main.jpg" style="width: 40%;"> <!-- /static/images/main.jpg -->
     <br>
-    <!-- "일정 보기" 버튼 -->
-    <a href="/calendar/list_calendar" class="btn">주요 일정 보기</a>
-    <br>
+    <a href="/calendar/list_calendar" class="btn">
+    <img src="/images/main_button_to_calendar.png" alt="일정" style="display: block; margin: 0 auto 5px;">
+        주요 일정 보기
+    </a>
+    <a href="/stockdata/viewstockdata" class="btn">
+    <img src="/images/main_button_to_graph.png" alt="일정" style="display: block; margin: 0 auto 5px;">
+        주요 종목 한 눈에 보기
+    </a>
+
 
     <!-- 일정 내용이 로드될 부분 -->
     <div id="calendarContainer"></div>

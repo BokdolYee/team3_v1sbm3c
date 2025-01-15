@@ -87,5 +87,12 @@
     <delete id="delete" parameterType="int">
         DELETE FROM Stockdata WHERE sdatano = #{sdatano}
     </delete>
+    
+     <select id="getStockdata" resultType="dev.mvc.stockdata.StockdataVO">
+        SELECT symbol, close_price, change
+        FROM stockdata
+        ORDER BY rdate DESC
+    </select>
+
 
 </mapper>

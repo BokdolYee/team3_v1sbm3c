@@ -3,8 +3,8 @@
 <mapper namespace="dev.mvc.calendar.CalendarDAOInter"> <!-- SB가 자동으로 구현하여 연동하는 interface -->
    <!-- 등록 --> 
   <insert id="create" parameterType="dev.mvc.calendar.CalendarVO">
-    INSERT INTO calendar(calendarno, labeldate, label, title, content, cnt, seqno, regdate, memberno)
-    VALUES(calendar_seq.nextval, #{labeldate}, #{label}, #{title}, #{content}, 0, 1, sysdate, #{memberno})
+    INSERT INTO calendar(calendarno, labeldate, label, title, content, cnt, seqno, regdate, memberno, recom)
+    VALUES(calendar_seq.nextval, #{labeldate}, #{label}, #{title}, #{content}, 0, 1, sysdate, #{memberno}, #{recom})
   </insert>
   
   <!-- 전체 목록   

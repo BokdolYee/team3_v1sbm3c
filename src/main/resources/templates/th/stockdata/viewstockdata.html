@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html layout:decorate="~{th/layout}"> <!-- layout.html 상속 -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Data</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js 추가 -->
+</head>
+
+<div layout:fragment="content"> <!-- content 영역 시작 -->
+    <h2>종목 데이터 한 눈에 보기</h2>
+
+    <!-- Chart.js 그래프를 위한 캔버스 -->
+    <canvas id="stockChart" width="400" height="200"></canvas>
+
+    <script th:inline="javascript">
+        var stockdataList = /*[[${stockdataList}]]*/ [];
+
+        // 데이터가 비어있는지 확인
+        if (stockdataList.length === 0) {
+            alert("No stock data available.");
+        } else {
+            // labels: 각 symbol
+            var labels = stockdataList.map(function(item) {
+                return item.symbol;
+            });
+
+            // closePrices: 각 symbol의 종가
+            var closePrices = stockdataList.map(function(item) {
+                return item.close_price;
+            });
+
+            // changes: 각 symbol의 변동율
+            var changes = stockdataList.map(function(item) {
+                return item.change;
+            });
+
+            // Chart.js 데이터셋 생성
+            var chartData = {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Price',
+                        data: closePrices,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',  // 막대 색상
+                        borderColor: 'rgba(75, 192, 192, 1)',  // 막대 테두리 색상
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Change (%)',
+                        data: changes.map(function(item) {
+                            return parseFloat(item.replace('%', ''));  // % 기호를 제거하고 숫자 형태로 변환
+                        }),
+                        type: 'line',  // 라인 차트로 표시
+                        fill: false,  // 영역 채우기 비활성화
+                        borderColor: 'rgba(255, 99, 132, 1)',  // 변동성 선 색상
+                        borderWidth: 2
+                    }
+                ]
+            };
+
+            var config = {
+                type: 'bar',  // 기본적으로 막대 그래프
+                data: chartData,
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            };
+
+            // Chart.js 차트 생성
+            var ctx = document.getElementById('stockChart').getContext('2d');
+            var stockChart = new Chart(ctx, config);
+        }
+    </script>
+    
+      <!-- 업데이트 버튼 -->
+    <form action="/stockdata/updateStockDataview" method="post"  style="text-align: center; margin-top: 1.5rem;">
+        <button type="submit" class="btn btn-primary" style="margin-bottom: 3rem;">업데이트</button>
+    </form>
+    
+</div> <!-- content 영역 끝 -->
+</html>

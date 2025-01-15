@@ -13,6 +13,11 @@ CREATE TABLE post_goodbad (
     FOREIGN KEY(memberno) REFERENCES member (memberno)
 );
 
+SELECT constraint_name 
+FROM user_constraints 
+WHERE table_name = 'POST_GOODBAD' 
+AND constraint_type = 'R';
+
 ALTER TABLE post_goodbad
 DROP CONSTRAINT SYS_C007771;
 

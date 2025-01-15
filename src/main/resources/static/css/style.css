@@ -720,3 +720,46 @@
     height: 35px;
     border-radius: 4px;
   }
+
+  /* 다중 이미지 첨부 관련 스타일 */
+  .preview-item {
+    display: inline-block;
+    position: relative;
+    margin: 10px;
+  }
+
+  .preview-item img {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+  }
+
+  .preview-item button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+  }
+
+  .attached_images {
+    margin: 20px 0;
+    margin-left: 250px;
+    text-align: center;
+  }
+
+  .image_container {
+      margin: 20px 0;
+  }
+
+  .full_image {
+      display: block;
+      max-width: 70%;
+      margin: 0 auto;
+  }
+
+  .cursor-pointer {
+    cursor: pointer;
+  }
+  
+  .cursor-pointer:hover {
+    opacity: 0.9;
+  }

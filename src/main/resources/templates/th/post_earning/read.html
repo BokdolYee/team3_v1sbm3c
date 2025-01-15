@@ -212,7 +212,6 @@
         });
       }
     }
-
   </script>
 
   <div class='title_line'>수익 인증 게시판</div>
@@ -249,7 +248,15 @@
     
       <div class="post_body">
         <div class="chat_log">
-          <span th:text="${post_earningVO.content}"></span>
+          <!-- 첨부파일 이미지들을 순서대로 표시 -->
+          <div class="attached_images">
+            <div th:each="attachment : ${attachmentList}" class="image_container">
+              <img th:if="${attachment.upfile != null}"
+                   th:onclick="|window.open(this.src, '_blank', 'width=800,height=600')|"
+                   th:src="@{${'/attachment/' + attachment.upfile}}" class="full_image cursor-pointer" style="max-width: 100%; margin: 10px 0;">
+            </div>
+          </div>
+          <span th:text="${post_earningVO.content}" style="margin: 50px auto; margin-left: 250px; font-size: 30px;"></span>
         </div>
       </div>
     

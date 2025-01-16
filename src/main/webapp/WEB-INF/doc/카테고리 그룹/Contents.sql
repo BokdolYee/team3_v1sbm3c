@@ -20,12 +20,15 @@ CREATE TABLE contents (
     PRIMARY KEY (contentno)
 );
 
+ALTER TABLE contents ADD word VARCHAR2(255);
+
 CREATE SEQUENCE contents_seq
   START WITH 1                -- 시작 번호
   INCREMENT BY 1            -- 증가값
   MAXVALUE 9999999999  -- 최대값: 9999999999 --> NUMBER(10) 대응
   CACHE 2                        -- 2번은 메모리에서만 계산
   NOCYCLE;                      -- 다시 1부터 생성되는 것을 방지
+  
   
   
 SELECT contentno, title, passwd, rdate, cnt, all_cnt, visible, stockno, newsno, newscateno, recom, file1, file1saved, thumb1, size1

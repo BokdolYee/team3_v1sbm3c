@@ -9,9 +9,9 @@
     /* 추천 혹은 비추천을 이미 했을 경우 띄울 토스트 메시지 */
     function showToast(message) {
       let toast = ""
-      if(message ==='이미 호재로 간주한 게시물입니다.') {
+      if(message ==='이미 추천한 게시물입니다.') {
         toast = document.getElementById('toast-message-good');
-      } else if(message === '이미 악재로 간주한 게시물입니다.') {
+      } else if(message === '이미 비추천한 게시물입니다.') {
         toast = document.getElementById('toast-message-bad');
       }
       const messageSpan = toast.querySelector('span');
@@ -63,12 +63,12 @@
       const url = "/post_goodbad/create";
 
       if(session == null) {
-        alert("호재, 악재를 간주하려면 로그인이 필요합니다.");
+        alert("추천 혹은 비추천을 하려면 로그인이 필요합니다.");
         location.href = "/member/login_cookie";
         return;
       }
 
-      if(confirm('이 게시물을 호재로 간주하시겠습니까?')) {
+      if(confirm('이 게시물을 추천하시겠습니까?')) {
 
         fetch(url, {
           method:'POST',
@@ -99,12 +99,12 @@
           }
           else if(data.cnt == "g") {
             // 토스트 호출
-            showToast('이미 호재로 간주한 게시물입니다.');
+            showToast('이미 추천한 게시물입니다.');
             return;
           }
           else if(data.cnt == "b") {
             // 토스트 호출
-            showToast('이미 악재로 간주한 게시물입니다.');
+            showToast('이미 비추천한 게시물입니다.');
             return;
           }
           else if(data.cnt == "login_fail");
@@ -127,12 +127,12 @@
       const url = "/post_goodbad/create";
 
       if(session == null) {
-        alert("호재, 악재를 간주하려면 로그인이 필요합니다.");
+        alert("추천 혹은 비추천하려면 로그인이 필요합니다.");
         location.href = "/member/login_cookie";
         return;
       }
 
-      if(confirm('이 게시물을 악재로 간주하시겠습니까?')) {
+      if(confirm('이 게시물을 비추천하시겠습니까?')) {
 
         fetch(url, {
           method:'POST',
@@ -160,12 +160,12 @@
           }
           else if(data.cnt == "g") {
             // 토스트 호출
-            showToast('이미 호재로 간주한 게시물입니다.');
+            showToast('이미 추천한 게시물입니다.');
             return;
           }
           else if(data.cnt == "b") {
             // 토스트 호출
-            showToast('이미 악재로 간주한 게시물입니다.');
+            showToast('이미 비추천한 게시물입니다.');
             return;
           }
           else if(data.cnt == "login_fail");

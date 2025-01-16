@@ -15,6 +15,7 @@
 
   <table class="table table-striped" style='width: 100%;'>
     <colgroup>
+      <col style='width: 10%;' />
       <col style='width: 20%;' />
       <col style='width: 20%;' />
       <col style='width: 8%;' />
@@ -23,6 +24,7 @@
       <col style='width: 15%;' />
     </colgroup>
     <tr>
+      <th class='th_bs'>이미지</th>
       <th class='th_bs'>제목</th>
       <th class='th_bs'>내용</th>
       <th class='th_bs'>작성자</th>
@@ -32,6 +34,16 @@
     </tr>
 
     <tr th:each="post_viewlogVO : ${list}">
+      <td class='td_basic'>
+        <img th:if="${post_viewlogVO.thumb != null}"
+             th:src="@{${'/attachment/' + post_viewlogVO.thumb}}"
+             style="width: 80px; height: 80px; object-fit: cover;"
+             alt="썸네일">
+        <img th:unless="${post_viewlogVO.thumb != null}"
+             src="/images/no_image.png"
+             style="width: 80px; height: 80px; object-fit: cover;"
+             alt="썸네일 없음">
+      </td> <!-- 썸네일 이미지 -->
       <td class='td_basic'><a th:href="@{|/post_earning/read?postno=${post_viewlogVO.postno}|}"
           th:text="${post_viewlogVO.title}"></a></td> <!-- 제목 -->
       <td class='td_left'> <!-- 글내용 -->

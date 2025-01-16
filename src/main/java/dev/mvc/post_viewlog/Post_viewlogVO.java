@@ -46,4 +46,5 @@ public class Post_viewlogVO {
   private String title = "";
   private String content = "";
   private String nickname = "";
+  private String thumb = "";
 }

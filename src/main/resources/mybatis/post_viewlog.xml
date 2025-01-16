@@ -42,10 +42,18 @@
     FROM(
         SELECT a.*, ROWNUM rnum
         FROM(
-            SELECT v.*, p.title, p.content, m.nickname
-            FROM post_viewlog v
-            INNER JOIN post_earning p ON v.postno = p.postno
-            INNER JOIN member m ON p.memberno = m.memberno
+            SELECT DISTINCT v.*, p.title, p.content, m.nickname,
+              (SELECT f.thumb 
+               FROM (
+                     SELECT thumb, postno
+                     FROM attachment
+                     ORDER BY attachmentno ASC
+                    ) f 
+               WHERE f.postno = v.postno 
+               AND ROWNUM = 1) as thumb
+           FROM post_viewlog v
+           INNER JOIN post_earning p ON v.postno = p.postno
+           INNER JOIN member m ON p.memberno = m.memberno
             <where>
               <if test="searchType != null and keyword != null">
                 <choose>

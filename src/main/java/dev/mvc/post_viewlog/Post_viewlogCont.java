@@ -81,6 +81,8 @@ public class Post_viewlogCont {
     model.addAttribute("pageDTO", pageDTO);
     model.addAttribute("total", total);
     
+    
+    
     return "/th/post_viewlog/list";
   }
 }

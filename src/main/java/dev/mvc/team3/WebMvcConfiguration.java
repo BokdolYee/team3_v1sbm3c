@@ -31,6 +31,10 @@ public class WebMvcConfiguration implements WebMvcConfigurer{
         
         // C:/kd/deploy/resort/trip/storage -> /trip/storage -> http://localhost:9091/trip/storage";
         // registry.addResourceHandler("/trip/storage/**").addResourceLocations("file:///" +  Trip.getUploadDir());
+        
+        //첨부파일 테이블 이미지 주소
+        registry.addResourceHandler("/attachment/**")
+        .addResourceLocations("file:///C:/kd/deploy/team3/attachment/");
     }
  
 }

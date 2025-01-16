@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,9 @@ public class StockdataProc implements StockdataProcInter {
     @Autowired
     private StockdataDAOInter stockdataDAO;
 
+    @Autowired
+    private SqlSession sqlSession; // SqlSession을 직접 사용하여 데이터베이스와 연결
+    
     @Override
     public int create(StockdataVO stockdataVO) {
         return stockdataDAO.create(stockdataVO); // 데이터를 추가
@@ -106,5 +110,17 @@ public class StockdataProc implements StockdataProcInter {
     public String getStockNameByStockno(Integer stockno) {
         return stockdataDAO.getStockNameByStockno(stockno);  // 실제 DB 쿼리 호출
     }
+       
+//    @Override
+//    public List<StockdataVO> getStockdata() {
+//      return stockdataDAO.getStockdata(); // stockno에 해당하는 데이터 목록
+//  }
+    
+    @Override
+    public List<StockdataVO> getStockdata() {
+        return stockdataDAO.getStockdata();  // stockdata 조회
+    }
+
+
 
 }

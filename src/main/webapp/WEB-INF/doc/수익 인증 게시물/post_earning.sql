@@ -54,3 +54,7 @@ WHERE R_CONSTRAINT_NAME IN (
 SELECT P.*, m.nickname
 FROM post_earning p INNER JOIN member m ON p.memberno = m.memberno
 WHERE p.postno = postno;
+
+ROLLBACK;
+
+DELETE FROM post_earning;

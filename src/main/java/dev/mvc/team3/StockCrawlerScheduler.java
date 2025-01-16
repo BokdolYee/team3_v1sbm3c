@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-@Component
+@Component("dev.mvc.team3.StockCrawlerScheduler")
 public class StockCrawlerScheduler {
 
     // 1시간마다 크롤링 작업을 실행 (3600000ms = 1시간)

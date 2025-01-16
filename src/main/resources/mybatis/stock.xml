@@ -61,9 +61,9 @@
               SELECT stockno, symbol, name, industry, description, file1saved, thumb1, size1
               FROM stock
               WHERE
-                  (#{searchSymbol} IS NULL OR symbol LIKE '%' || #{searchSymbol} || '%')
-                  AND (#{searchName} IS NULL OR name LIKE '%' || #{searchName} || '%')
-                  AND (#{searchIndustry} IS NULL OR industry LIKE '%' || #{searchIndustry} || '%')
+                  (#{searchSymbol, jdbcType=VARCHAR} IS NULL OR symbol LIKE '%' || #{searchSymbol, jdbcType=VARCHAR} || '%')
+                  AND (#{searchName, jdbcType=VARCHAR} IS NULL OR name LIKE '%' || #{searchName, jdbcType=VARCHAR} || '%')
+                  AND (#{searchIndustry, jdbcType=VARCHAR} IS NULL OR industry LIKE '%' || #{searchIndustry, jdbcType=VARCHAR} || '%')
               ORDER BY stockno ASC
           )
       )

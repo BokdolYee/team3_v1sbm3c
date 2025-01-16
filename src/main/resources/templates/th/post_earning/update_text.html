@@ -3,53 +3,160 @@
 <html layout:decorate="~{th/layout}"> <!-- layout.html 상속-->
 <div layout:fragment="content">
   <script>
-
-    function send(event) {
-      event.preventDefault();
-
-      const formData = new FormData(document.getElementById('frm'));  // 폼 데이터 가져오기
-      const postno = document.getElementById('postno');
-      const url = '/post_earning/update_text?postno=' + postno.value;
-
-      fetch(url, {
-        method: 'POST',
-        body: formData, // 서버에 formData 전송
-      }).then(res => res.json())
-        .then(data => {
-          if (data.cnt === 1) {
-            alert('게시물이 수정되었습니다.');
-            window.location.href = "/post_earning/read?postno=" + postno.value; //"/post_earning/read?postno="
-          }
-          else {
-            alert("게시물 수정에 실패하였습니다.");
-            console.log(data.cnt);
-            return false;
-          }
-
-        }).catch(error => { // 서버 다운 등 통신 에러
-          console.error('Error', error);
-        })
-    }
-
+    // 삭제할 파일 번호를 저장할 배열
+    let filesToDelete = [];
+    // 새로 추가할 파일을 저장할 배열
+    let newFiles = [];
 
     function search() {
       const searchType = document.getElementById('searchType').value;
       const keyword = document.getElementById('keyword').value;
-        
+
       if (keyword.trim() === '') {
         alert('검색어를 입력해주세요');
         return;
       }
-        
+
       location.href = `/post_earning/read?page=1&searchType=${searchType}&keyword=${keyword}`;
     }
-    
+
     // 엔터키 검색 기능
-    document.getElementById('keyword').addEventListener('keypress', function(e) {
+    document.getElementById('keyword').addEventListener('keypress', function (e) {
       if (e.key === 'Enter') {
         search();
       }
     });
+
+    // 기존 파일 삭제 처리
+    function deleteExistingFile(attachmentno) {
+      // 삭제할 파일 번호 배열에 추가
+      filesToDelete.push(attachmentno);
+
+      // UI에서 해당 파일 미리보기 제거
+      const fileElement = document.getElementById('file-' + attachmentno);
+      if (fileElement) {
+        fileElement.remove();
+      }
+      console.log('삭제될 파일 번호들:', filesToDelete); // 로그 찍기
+    }
+
+    // 새 파일 처리
+    function handleNewFiles(event) {
+      const files = event.target.files;
+      const preview = document.getElementById('newImagesPreview');
+      preview.innerHTML = ''; // 미리보기 영역 초기화
+
+      // FileList를 Array로 변환하여 저장
+      newFiles = Array.from(files);
+
+      // 새 파일들의 미리보기 생성
+      newFiles.forEach((file, index) => {
+        if (!file.type.startsWith('image/')) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const div = document.createElement('div');
+          div.className = 'preview-item';
+          div.innerHTML = `
+                <img src="${e.target.result}" style="max-width: 200px; margin: 10px;">
+                <button type="button" class="btn btn-danger btn-sm" 
+                        onclick="removeNewFile(${index})">삭제</button>`;
+          preview.appendChild(div);
+        }
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // 새 파일 삭제
+    function removeNewFile(index) {
+      newFiles.splice(index, 1);
+      updateNewFilesPreview();
+    }
+
+    // 새 파일 미리보기 업데이트
+    function updateNewFilesPreview() {
+      const preview = document.getElementById('newImagesPreview');
+      preview.innerHTML = '';
+
+      newFiles.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const div = document.createElement('div');
+          div.className = 'preview-item';
+          div.innerHTML = `
+                <img src="${e.target.result}" style="max-width: 200px; margin: 10px;">
+                <button type="button" class="btn btn-danger btn-sm" 
+                        onclick="removeNewFile(${index})">삭제</button>`;
+          preview.appendChild(div);
+        }
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // 수정 제출
+    async function send(event) {
+      event.preventDefault();
+
+      try {
+        const formData = new FormData(document.getElementById('frm'));
+        const postno = document.getElementById('postno').value;
+
+        // 삭제할 파일이 있다면 처리
+        if (filesToDelete.length > 0) {
+          // 삭제할 파일들의 번호 서버에 전송
+          const deleteResponse = await fetch('/attachment/delete', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              attachmentNos: filesToDelete
+            })
+          });
+          const deleteResult = await deleteResponse.json();
+          if (!deleteResult.success) {
+            throw new Error('파일 삭제 실패');
+          }
+        }
+
+        // 새 파일 추가가 있다면 처리
+        if (newFiles.length > 0) {
+          const attachmentData = new FormData();
+          newFiles.forEach(file => {
+            attachmentData.append('files', file);
+          });
+          attachmentData.append('postno', postno);
+
+          const attachResponse = await fetch('/attachment/create', {
+            method: 'POST',
+            body: attachmentData
+          });
+          const attachResult = await attachResponse.json();
+          if (!attachResult.success) {
+            throw new Error('새 파일 추가 실패');
+          }
+        }
+
+        // 게시물 내용 수정
+        const url = '/post_earning/update_text?postno=' + postno;
+        const response = await fetch(url, {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await response.json();
+        if (data.cnt === 1) {
+          alert('게시물이 수정되었습니다.');
+          window.location.href = "/post_earning/read?postno=" + postno;
+        } else {
+          alert("게시물 수정에 실패하였습니다.");
+          return false;
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert("수정 중 오류가 발생했습니다: " + error.message);
+      }
+    }
 
   </script>
 
@@ -57,13 +164,13 @@
 
   <aside class="aside_right">
     <a href="javascript:location.reload();">새로고침</a>
-    <span class='menu_divide' >│</span>
+    <span class='menu_divide'>│</span>
     <a th:if="${session.memberno != null}" href="javascript:location.href='/post_earning/create'">글쓰기</a>
-    <span class='menu_divide' >│</span>
+    <span class='menu_divide'>│</span>
     <a href="javascript:location.href='/post_earning/list_by_postno'">목록</a>
-    <span class='menu_divide' >│</span>
+    <span class='menu_divide'>│</span>
     <a th:if="${session.memberno != null}" href='/member/logout'>로그아웃</a>
-  </aside> 
+  </aside>
 
   <div class='menu_line'></div>
 
@@ -74,7 +181,8 @@
       <div class="post_content">
         <div class="post_header">
           <div class="post_title">
-            <input type="text" name="title" required="required" th:value="${post_earningVO.title}" autofocus class="form-control" style='width: 100%;'>
+            <input type="text" name="title" required="required" th:value="${post_earningVO.title}" autofocus
+              class="form-control" style='width: 100%;'>
           </div>
           <div class="post_info">
             <span th:text="'작성자: ' + ${post_earningVO.nickname}"></span>
@@ -83,13 +191,35 @@
             <span th:text="'추천수: ' + ${post_earningVO.goodcnt}"></span>
           </div>
         </div>
-      
+
         <div class="post_body">
           <div class="chat_log">
-            <textarea name="content" required="required" class="form-control" rows="12" style='width: 100%;' th:text="${post_earningVO.content}"></textarea>
+            <textarea name="content" required="required" class="form-control" rows="12" style='width: 100%;'
+              th:text="${post_earningVO.content}"></textarea>
+          </div>
+
+          <!-- 기존 첨부파일 표시 영역 -->
+          <div class="existing-files mt-4">
+            <h5>첨부된 파일</h5>
+            <div id="existingImagesPreview">
+              <div th:each="attachment : ${attachmentList}" class="preview-item"
+                th:id="'file-' + ${attachment.attachmentno}">
+                <img th:src="@{${'/attachment/' + attachment.upfile}}" style="max-width: 200px; margin: 10px;">
+                <button type="button" class="btn btn-danger btn-sm"
+                  th:onclick="deleteExistingFile([[${attachment.attachmentno}]])">삭제</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 새 파일 첨부 영역 -->
+          <div class="form-group mt-4">
+            <h5>새 파일 추가</h5>
+            <input type="file" id="fileInput" multiple accept="image/*" class="form-control"
+              onchange="handleNewFiles(event)">
+            <div id="newImagesPreview" class="mt-2"></div>
           </div>
         </div>
-      
+
         <div class="post_footer">
           <input type="button" value="수정" onclick="send(event)" class="btn btn-secondary btn-sm">
           <button type="button" onclick="history.back();" class="btn btn-secondary btn-sm">취소</button>
@@ -100,58 +230,65 @@
   <fieldset class="fieldset_basic">
     <table class="table table-striped" style='width: 100%;'>
       <colgroup>
-        <col style='width: 5%;'/>
-        <col style='width: 10%;'/>
-        <col style='width: 30%;'/>
-        <col style='width: 8%;'/>
-        <col style='width: 7%;'/>
-        <col style='width: 4%;'/>
-        <col style='width: 4%;'/>
+        <col style='width: 5%;' />
+        <col style='width: 10%;' />
+        <col style='width: 30%;' />
+        <col style='width: 8%;' />
+        <col style='width: 7%;' />
+        <col style='width: 4%;' />
+        <col style='width: 4%;' />
       </colgroup>
       <tr>
         <th class='th_bs'>번호</th>
         <th class='th_bs'>이미지</th>
-        <th class='th_bs'>제목</th>  
+        <th class='th_bs'>제목</th>
         <th class='th_bs'>작성자</th>
         <th class='th_bs'>등록일</th>
         <th class='th_bs'>조회수</th>
         <th class='th_bs'>추천수</th>
       </tr>
-     
+
       <tr th:each="post_earningVO : ${list}">
         <td class='td_basic' th:text="${post_earningVO.postno}"></td> <!-- 번호 -->
-        <td class='td_basic'><div>썸네일</div></td>    <!-- 썸네일 이미지 -->
-        <td class='td_left'><a th:href="@{|/post_earning/read?postno=${post_earningVO.postno}|}" th:text="${post_earningVO.title}"></a></td>  <!-- 제목 -->
+        <td class='td_basic'>
+          <img th:if="${thumbnails.get(post_earningVO.postno) != null}"
+            th:src="@{${'/attachment/' + thumbnails.get(post_earningVO.postno)}}"
+            style="width: 80px; height: 80px; object-fit: cover;" alt="썸네일">
+          <img th:unless="${thumbnails.get(post_earningVO.postno) != null}" src="/images/no_image.png"
+            style="width: 80px; height: 80px; object-fit: cover;" alt="썸네일 없음">
+        </td> <!-- 썸네일 이미지 -->
+        <td class='td_left'><a th:href="@{|/post_earning/read?postno=${post_earningVO.postno}|}"
+            th:text="${post_earningVO.title}"></a></td> <!-- 제목 -->
         <td class='td_basic' th:text="${post_earningVO.nickname}"></td> <!-- 닉네임 -->
         <td class='td_basic' th:text="${post_earningVO.rdate.substring(0, 16)}"></td> <!-- 등록일 -->
         <td class='td_basic' th:text="${post_earningVO.viewcnt}"></td> <!-- 조회수 -->
         <td class='td_basic' th:text="${post_earningVO.goodcnt}"></td> <!-- 추천수 -->
       </tr>
     </table>
-    
+
     <!-- 페이징 -->
     <div class="pagination">
       <!-- 검색 결과가 있을 때만 페이징 표시-->
       <th:block th:if="${total > 0}">
         <!-- 이전 페이지-->
-        <a th:if="${pageDTO.prev}" th:href="@{|/post_earning/list_by_postno?page=${pageDTO.startPage - 1}&searchType=${searchDTO.searchType}&keyword=${searchDTO.keyword}|}"></a>
-        
+        <a th:if="${pageDTO.prev}"
+          th:href="@{|/post_earning/list_by_postno?page=${pageDTO.startPage - 1}&searchType=${searchDTO.searchType}&keyword=${searchDTO.keyword}|}"></a>
+
         <!-- 페이지 번호-->
         <th:block th:each="num : ${#numbers.sequence(pageDTO.startPage, pageDTO.endPage)}">
           <a th:href="@{|/post_earning/list_by_postno?page=${num}&searchType=${searchDTO.searchType}&keyword=${searchDTO.keyword}|}"
-            th:class="${pageDTO.currentPage == num} ? 'active' : ''"
-            class="page-link"
-            th:text="${num}"></a>
+            th:class="${pageDTO.currentPage == num} ? 'active' : ''" class="page-link" th:text="${num}"></a>
         </th:block>
-  
+
         <!-- 다음 페이지-->
-        <a th:if="${pageDTO.next}" th:href="@{|/post_earning/list_by_postno?page=${pageDTO.endPage + 1}&searchType=${searchDTO.searchType}&keyword=${searchDTO.keyword}|}"></a>
+        <a th:if="${pageDTO.next}"
+          th:href="@{|/post_earning/list_by_postno?page=${pageDTO.endPage + 1}&searchType=${searchDTO.searchType}&keyword=${searchDTO.keyword}|}"></a>
       </th:block>
     </div>
-  
+
     <!-- 검색 결과가 없을 때 메시지 표시-->
     <div th:if="${total == 0}" class="text-center mt-3">검색 결과가 존재하지 않습니다.</div>
-  
+
     <div class='bottom_menu'>
       <select id="searchType" th:value="${searchDTO.searchType}">
         <option value="title">제목</option>
@@ -166,4 +303,5 @@
 
 
 </div>
+
 </html>

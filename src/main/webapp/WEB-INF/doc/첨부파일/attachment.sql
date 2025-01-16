@@ -34,6 +34,19 @@ CREATE SEQUENCE attachment_seq
   MAXVALUE 9999999999         -- 최대값: 9999999999 --> NUMBER(10) 대응
   CACHE 2                     -- 2번은 메모리에서만 계산
   NOCYCLE;                    -- 다시 1부터 생성되는 것을 방지
+  
+SELECT constraint_name 
+FROM user_constraints 
+WHERE table_name = 'ATTACHMENT' 
+AND constraint_type = 'R';
+  
+ALTER TABLE attachment
+DROP CONSTRAINT SYS_C008038;
+
+ALTER TABLE attachment
+ADD CONSTRAINT FK_ATTACHMENT
+FOREIGN KEY(postno) REFERENCES post_earning(postno)
+ON DELETE CASCADE;
 
 COMMIT;
 

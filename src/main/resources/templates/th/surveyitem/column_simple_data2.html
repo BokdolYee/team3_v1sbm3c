@@ -1,9 +1,47 @@
 <!DOCTYPE html>
 <html layout:decorate="~{th/layout}"> <!-- layout.html 상속 -->
-  <div layout:fragment="content" style="width: 80%; margin: 50px auto; text-align: center;">
-    <div class='title_line'>설문조사 결과 데이터 차트</div>
-      
-    <div id="chart_div" style='height: 500px;'></div>
+<head>
+    <style>
+        .container {
+            border: 12px solid #87CEEB; /* 하늘색 테두리 */
+            border-radius: 20px; /* 모서리 둥글게 */
+            padding: 20px; /* 내부 여백 */
+            background-color: white; /* 배경색 */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* 그림자 효과 */
+            width: 80%; /* 너비 설정 */
+            margin: 50px auto; /* 중앙 정렬 */
+            text-align: center; /* 텍스트 중앙 정렬 */
+            overflow: hidden; /* 내부 요소가 넘치지 않도록 설정 */
+        }
+
+        .title_line {
+            background-image: url(/survey/images/경제.jpg); 
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat; 
+            padding: 30px; /* 패딩 조정 */
+            font-size: 30px; /* 폰트 크기 감소 */
+            text-align: center; 
+            border-radius: 20px; 
+            position: relative; 
+            color: white; /* 텍스트 색상 */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* 텍스트 그림자 추가 */
+        }
+
+        #chart_div {
+            height: 600px; /* 차트 영역 높이 조정 */
+            margin-top: 20px; /* 위쪽 여백 추가 */
+        }
+    </style>
+</head>
+<body>
+  <div layout:fragment="content" class="container">
+    <div class="title_line">
+      설문조사 결과 데이터 차트
+    </div>
+    
+    <div id="chart_div"></div>
+    
     <script type="text/javascript">
       // Load the Visualization API and the corechart package.
       google.charts.load('current', {'packages':['corechart']});
@@ -20,7 +58,6 @@
         chart_data = chart_data.replace(/&#39;/g, "'");
         console.log('-> chart_data: ' + chart_data);
         
-        // chart_data = JSON.parse(chart_data); // ERROR
         chart_data = eval(chart_data); // 문자열 -> 자바스크립트 코드로 변경
             
         var data = google.visualization.arrayToDataTable(chart_data);
@@ -29,7 +66,6 @@
         var options = {
           title: '[[${title}]]',
           hAxis: {title: '[[${xlabel}]]', titleTextStyle: {color: '#000'}},
-          
           vAxis: {title: '[[${ylabel}]]', minValue: 0}
         };
 
@@ -41,9 +77,10 @@
 
     <!-- 추가된 돌아가기 버튼 -->
     <div style="margin-top: 20px; text-align: center;">
-      <a href="javascript:history.back();" class="btn btn-secondary" style="padding: 10px 20px; font-size: 16px; text-decoration: none; color: white; background-color: #6c757d; border-radius: 5px;">
+      <a href="javascript:history.back();" class="btn btn-secondary" style="background-color: #007BFF; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-left: 10px; transition: background-color 0.3s;">
         뒤로가기
       </a>
     </div>
   </div>
+</body>
 </html>

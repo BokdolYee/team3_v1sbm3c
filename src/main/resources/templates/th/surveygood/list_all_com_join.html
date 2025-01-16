@@ -1,62 +1,125 @@
-<!--/* 
-<div th:replace="~{calendar/list_all_com::list_all_fragment}"></div> 
-'/calendar/list_all_com.html' 파일의 list_all_fragment를 가져다 사용
-*/-->
 <div th:fragment="list_all_fragment"> 
-  <table class="table table-hover" style="width: 100%;">
-    <colgroup>
-      <col style='width: 10%;'/>
-      <col style='width: 10%;'/>
-      <col style='width: 10%;'/>
-      <col style='width: 30%;'/>    
-      <col style='width: 10%;'/>
-      <col style='width: 10%;'/>
-      <col style='width: 10%;'/>
-      <col style='width: 10%;'/>
-     
-    </colgroup>
-    <thead>
-      <tr>
-        <th class="th_bs">순서</th>
-        <th class="th_bs">등록일(추천일)</th>
-        <th class="th_bs">설문조사 번호</th>
-        <th class="th_bs">제목</th>
-        <th class="th_bs">회원 번호</th>
-        <th class="th_bs">ID</th>
-        <th class="th_bs">성명</th>
-        <th class="th_bs">기타</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr th:each="SurveySurveygoodMemberVO, status:${list}">
-        <td class="td_bs" th:text="|${status.index+1}|"></td>
-        <td class="td_bs" th:text="${SurveySurveygoodMemberVO.rdate.substring(0, 10)}"></td>
-        <td class="td_bs" th:text="${SurveySurveygoodMemberVO.surveyno}"></td> 
-        <td class="td_bs_left" th:text="${SurveySurveygoodMemberVO.c_topic}"></td> 
-        <td class="td_bs" th:text="${SurveySurveygoodMemberVO.memberno}"></td> 
-        <td class="td_bs" th:text="${SurveySurveygoodMemberVO.id}"></td> 
-        <td class="td_bs" th:text="${SurveySurveygoodMemberVO.name}"></td> 
-        
-        <td class="td_bs">
-          
-         <a href="#" th:onclick="'delete_good(event, ' + ${SurveySurveygoodMemberVO.surveygoodno} + ');'"><img src="/survey/images/delete1.png" class="icon" title="삭제"></a>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  
+  <style>
+    .survey-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #f7f9fc;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .survey-card {
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        width: 300px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+    }
+
+    .survey-card:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transform: translateY(-5px);
+        transition: all 0.3s ease;
+    }
+
+    .survey-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .survey-header-icon {
+        width: 40px;
+        height: 40px;
+        background-color: #4CAF50;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        margin-right: 10px;
+    }
+
+    .survey-title {
+        font-weight: bold;
+        font-size: 16px;
+        color: #333;
+    }
+
+    .survey-content {
+        font-size: 14px;
+        color: #555;
+        margin: 10px 0;
+    }
+
+    .survey-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .delete-btn {
+        background: none;
+        border: none;
+        color: #e74c3c;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+    }
+
+    .delete-btn img {
+        width: 16px;
+        margin-right: 5px;
+    }
+
+    .delete-btn:hover {
+        text-decoration: underline;
+    }
+  </style>
+
+  <div class="survey-container">
+    <div class="survey-card" th:each="SurveySurveygoodMemberVO, status:${list}">
+      <div class="survey-header">
+        <div class="survey-header-icon" th:text="${status.index+1}"></div>
+        <div class="survey-title" th:text="${SurveySurveygoodMemberVO.c_topic}"></div>
+      </div>
+      <div class="survey-content">
+        <p><strong>등록일:</strong> <span th:text="${SurveySurveygoodMemberVO.rdate.substring(0, 10)}"></span></p>
+        <p><strong>설문조사 번호:</strong> <span th:text="${SurveySurveygoodMemberVO.surveyno}"></span></p>
+        <p><strong>회원 번호:</strong> <span th:text="${SurveySurveygoodMemberVO.memberno}"></span></p>
+        <p><strong>ID:</strong> <span th:text="${SurveySurveygoodMemberVO.id}"></span></p>
+        <p><strong>성명:</strong> <span th:text="${SurveySurveygoodMemberVO.name}"></span></p>
+      </div>
+      <div class="survey-footer">
+        <button class="delete-btn" th:onclick="'delete_good(event, ' + ${SurveySurveygoodMemberVO.surveygoodno} + ');'">
+          <img src="/survey/images/delete1.png" alt="삭제 아이콘"> 삭제
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     function delete_good(e, surveygoodno) {
-      let sw = confirm(surveygoodno + '번 글 삭제를 하시겠습니까?\n삭제하면 복구 할수 없습니다. ');
+      let sw = confirm(surveygoodno + '번 글 삭제를 하시겠습니까?\n삭제하면 복구할 수 없습니다.');
       if (sw == true) {
         document.querySelector('#surveygoodno').value = surveygoodno;
         document.querySelector('#frm').submit();
       }
     }
   </script>
-  
+
   <form name='frm' id='frm' method='post' action='/surveygood/delete'>
     <input type='hidden' name='surveygoodno' id='surveygoodno'>
   </form>
 </div>
-

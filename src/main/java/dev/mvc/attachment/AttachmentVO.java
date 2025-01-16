@@ -1,5 +1,7 @@
 package dev.mvc.attachment;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -18,7 +20,7 @@ import lombok.ToString;
  */
 
 @Getter @Setter @ToString
-public class attachmentVO {
+public class AttachmentVO {
 
   /** 첨부파일 번호 */
   private int attachmentno;
@@ -36,7 +38,7 @@ public class attachmentVO {
   private String fname = "";
   
   /** 파일 크기 */
-  private int fsize = 0;
+  private long fsize;
   
   /** 등록일 */
   private String rdate = "";
@@ -48,5 +50,8 @@ public class attachmentVO {
   private String visible = "Y";
   
   /** 파일 고유 식별자 */
-  private String uudi = "";
+  private String uuid = "";
+  
+  /** 진짜 파일 */
+  private MultipartFile file1;
 }

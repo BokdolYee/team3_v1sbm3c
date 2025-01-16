@@ -21,6 +21,8 @@ public interface StockdataProcInter {
     public ArrayList<StockdataVO> listSearchPaging(Map<String, Object> map);
     
     public String getStockNameByStockno(Integer stockno);
+    
+    public List<StockdataVO> getStockdata();
 
 
 }

@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -326,7 +327,37 @@ public class SurveyitemCont {
         return "/th/surveyitem/list_search"; 
     }
     
+    
+    
     @GetMapping("/column_simple_data2")
+    public String column_simple_data2(@RequestParam(value = "surveytopicno", defaultValue = "0") int surveytopicno, Model model) {
+        // 해당 surveytopicno에 맞는 설문 항목 데이터를 가져옵니다.
+        ArrayList<SurveyitemVO> list = this.surveyitemProc.listBySurveytopicno(surveytopicno);
+        
+        // chart_data에 필요한 형식으로 변환
+        StringBuilder chartDataBuilder = new StringBuilder("[['항목', '응답 수']"); // 첫 행: 열 이름
+        for (SurveyitemVO item : list) {
+            chartDataBuilder.append(", ['")
+            
+                            .append(item.getItem()) // 설문 항목 이름
+                            
+                            .append("', ")
+                            .append(item.getItemcnt())  // 응답 수
+                            .append("]");
+        }
+        chartDataBuilder.append("]");
+        
+        model.addAttribute("title", "설문조사 결과 데이터");
+        model.addAttribute("xlabel", "설문 항목");
+        model.addAttribute("ylabel", "응답 수");
+        model.addAttribute("chart_data", chartDataBuilder.toString());
+        
+        System.out.println("Retrieved data size: " + list.size()); // 데이터 크기 출력
+        System.out.println("Querying for surveytopicno: " + surveytopicno);
+        return "/th/surveyitem/column_simple_data2"; // 경로 수정: "/th/" 제거
+    }
+    
+    @GetMapping("/column_simple_data3")
     public String column_simple_data2(Model model) {
         // 예: 설문 항목 데이터를 가져옵니다.
         ArrayList<SurveytopicitemVO> list = this.surveyitemProc.list_all();
@@ -352,7 +383,7 @@ public class SurveyitemCont {
         model.addAttribute("ylabel", "응답 수");
         model.addAttribute("chart_data", chartDataBuilder.toString());
         
-        return "/th/surveyitem/column_simple_data2.html";
+        return "/th/surveyitem/column_simple_data3.html";
     }
 
 }

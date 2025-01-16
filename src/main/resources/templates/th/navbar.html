@@ -39,6 +39,7 @@
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">    
                     <li class="nav-item"><a class="nav-link" href="/stock/list_all">종목</a></li>
                     <li class="nav-item"><a class="nav-link" href="/stockdata/list_all">종목 데이터</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/stockdata/viewstockdata">데이터 한 눈에</a></li>
                     <li class="nav-item"><a class="nav-link" th:href="@{|/termbook/list_all|}">용어 목록</a></li>
                     </ul>
 
@@ -60,13 +61,13 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <li class="nav-item"><a class="nav-link" th:href="@{|/survey/list_search|}">설문조사 목록</a></li>
-                        <li class="nav-item"><a class="nav-link"th:if="${session.grade=='admin' or session.grade=='member'}" th:href="@{|/survey/create|}">설문조사 등록</a></li>
-                        <li class="nav-item"><a class="nav-link"th:if="${session.grade=='admin' or session.grade=='member'}" th:href="@{|/surveytopic/list_search|}">설문조사 개별 문제 목록</a></li>
-                        <li class="nav-item"><a class="nav-link"th:if="${session.grade=='admin' or session.grade=='member'}" th:href="@{|/surveyitem/list_search|}">설문조사 항목 문제 목록</a></li>
-                        <li class="nav-item"><a class="nav-link" th:href="@{|/surveygood/list_all|}">설문조사 추천 목록</a></li>
-                        <li class="nav-item"><a class="nav-link" th:href="@{|/surveyitem/read_res|}">설문조사 결과 목록</a></li>
-                        <li class="nav-item"><a class="nav-link" th:href="@{|/surveyitem/column_simple_data2|}">설문조사 차트 결과 목록</a></li>
-                        <li class="nav-item"><a class="nav-link" th:href="@{|/surveymember/list_all|}">설문조사 참여 회원 목록</a></li>
+                        <li class="nav-item"><a class="nav-link"th:if="${session.grade=='admin' }" th:href="@{|/survey/create|}">설문조사 등록</a></li>
+                        <li class="nav-item"><a class="nav-link"th:if="${session.grade=='admin' }" th:href="@{|/surveytopic/list_search|}">설문조사 개별 문제 목록</a></li>
+                        <li class="nav-item"><a class="nav-link"th:if="${session.grade=='admin' }" th:href="@{|/surveyitem/list_search|}">설문조사 항목 문제 목록</a></li>
+                        <li class="nav-item"><a class="nav-link"th:if="${session.grade=='admin' }" th:href="@{|/surveygood/list_all|}">설문조사 추천 목록</a></li>
+                        <li class="nav-item"><a class="nav-link"th:if="${session.grade=='admin' }" th:href="@{|/surveyitem/read_res|}">설문조사 결과 목록</a></li>
+                        <li class="nav-item"><a class="nav-link"th:if="${session.grade=='admin' }" th:href="@{|/surveyitem/column_simple_data3|}">설문조사 차트 결과 목록</a></li>
+                        <li class="nav-item"><a class="nav-link"th:if="${session.grade=='admin' }" th:href="@{|/surveymember/list_all|}">설문조사 참여 회원 목록</a></li>
                     </ul>
                 </li>
 				
@@ -81,7 +82,7 @@
                     </ul>
                 </li>
 
-                <li class="nav-item dropdown">
+                <li class="nav-item dropdown"> 
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" 
                         role="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="회원">                                                            
                     </a>
@@ -94,6 +95,9 @@
                         </li>
                         <li class="nav-item" th:if="${session.memberno != null}">
                           <a class="nav-link" th:href="@{|/member/read|}">내 정보 보기</a>
+                        </li>
+                        <li class="nav-item" th:if="${session.memberno != null}">
+                            <a class="nav-link" th:href="@{|/post_viewlog/list|}">내가 조회한 게시물</a>
                         </li>
                     </ul>
                 </li>

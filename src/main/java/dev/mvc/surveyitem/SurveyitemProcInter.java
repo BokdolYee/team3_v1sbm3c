@@ -64,7 +64,7 @@ public interface SurveyitemProcInter {
   public ArrayList<SurveytopicitemVO> list_search_paging(String word, int now_page, int record_per_page);
 
 
-  
+
  
   
 

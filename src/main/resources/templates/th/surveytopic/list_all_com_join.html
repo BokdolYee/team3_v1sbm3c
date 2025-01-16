@@ -1,58 +1,101 @@
-<div th:fragment="list_all_join_fragment"> 
-  <table class="table table-hover" style="width: 100%;">
-    <colgroup>
-      <col style='width: 10%;'/>
-      <col style='width: 10%;'/>
-      <col style='width: 20%;'/> <!-- 제목 열의 너비를 늘림 -->
-      <col style='width: 20%;'/> <!-- 제목 열의 너비를 늘림 -->
-      <col style='width: 10%;'/>
-      <col style='width: 5%;'/>
-    </colgroup>
-    <thead>
-      <tr>
-        <th class="th_bs">순서</th>
-        <th class="th_bs">설문조사 번호</th>
-        <th class="th_bs">설문조사 제목</th>     
-        <th class="th_bs">제목</th>        
-        <th class="th_bs">출력 순서</th>
-        <th class="th_bs">기타</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr th:each="SurveySurveytopicVO, status : ${list}">
-        <td class="td_bs" th:text="${status.index + 1}"></td>
+<div th:fragment="list_all_join_fragment">
+  <style>
+    .survey-item-container {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 20px;
+        margin-top: 50px;
+    }
 
-        <td class="td_bs">
-          <a style="display:block; color:black;" th:text="${SurveySurveytopicVO.surveyno}"></a>
-        </td>
-        
-        <td class="td_bs">
-          <a  style="display:block; color:black;" th:text="${SurveySurveytopicVO.topic}"></a>
-         
-        </td>
-        <td class="td_bs">
-          <a  style="display:block; color:black;" th:text="${SurveySurveytopicVO.title}"></a>
-         
-        </td>
+    .survey-item-card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
 
-        
-        <td class="td_bs">
-          <a  style="display:block; color:black;" th:text="${SurveySurveytopicVO.seqno}"></a>
-        </td>
+    .survey-item-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
 
-        <td style="vertical-align: middle; text-align: center;">
-          <a th:href="@{|/surveytopic/update?surveytopicno=${SurveySurveytopicVO.surveytopicno}&surveyno=${SurveySurveytopicVO.surveyno}|}">
-            <img src="/survey/images/update.png" class="icon" title="수정">
-          </a>
-          <a th:href="@{|/surveytopic/delete?surveytopicno=${SurveySurveytopicVO.surveytopicno}&surveyno=${SurveySurveytopicVO.surveyno}|}">
-            <img src="/survey/images/delete.png" class="icon" title="삭제">
-          </a>
-           
-          <!--<a th:href="@{|/surveyitem/create?surveytopicno=${surveytopicVO.surveytopicno}|}">
-            <img src="/survey/images/create.png" class="icon" title="추가"> -->
-          </a>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+    .survey-item-header {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .survey-item-content {
+        font-size: 16px;
+        color: #555;
+        margin-bottom: 10px;
+    }
+
+    .survey-item-footer {
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .survey-item-footer a {
+        background-color: #007BFF;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .survey-item-footer a:hover {
+        background-color: #0056b3;
+    }
+
+    @media screen and (max-width: 768px) {
+        .survey-item-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media screen and (max-width: 480px) {
+        .survey-item-container {
+            grid-template-columns: 1fr;
+        }
+    }
+  </style>
+
+  <div class="survey-item-container">
+    <div th:each="SurveySurveytopicVO, status : ${list}">
+      <div class="survey-item-card">
+        <div class="survey-item-header">
+          <strong>순서:</strong> <span th:text="${status.index + 1}"></span>
+        </div>
+
+        <div class="survey-item-content">
+          <strong>설문조사 번호:</strong> <span th:text="${SurveySurveytopicVO.surveyno}"></span>
+        </div>
+
+        <div class="survey-item-content">
+          <strong>설문조사 제목:</strong> <a style="color: black;" th:text="${SurveySurveytopicVO.topic}"></a>
+        </div>
+
+        <div class="survey-item-content">
+          <strong>제목:</strong> <span th:text="${SurveySurveytopicVO.title}"></span>
+        </div>
+
+        <div class="survey-item-content">
+          <strong>출력 순서:</strong> <span th:text="${SurveySurveytopicVO.seqno}"></span>
+        </div>
+
+        <div class="survey-item-footer">
+          <!-- 필요한 기능이 있으면 추가 -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 페이지 버튼 목록 출력 -->
+  <div class="Bottom_menu" th:utext="${paging}"></div>
 </div>

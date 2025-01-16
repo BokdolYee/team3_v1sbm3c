@@ -3,6 +3,32 @@
 <body>
 <div layout:fragment="content">
     <script>
+
+        function goToSurveyItem() {
+            const surveyno = [[${surveyVO.surveyno}]]; // 현재 설문 번호를 Thymeleaf로 가져옵니다.
+            let surveytopicno;
+
+            // 설문 번호에 따라 설문 항목 번호를 설정합니다.
+            switch (surveyno) {
+                case 22:
+                    surveytopicno = 71;
+                    break;
+                case 24:
+                    surveytopicno = 65;
+                    break;
+
+                case 42:
+                    surveytopicno = 69;
+                    break;
+                // 추가적인 조건을 여기에 추가할 수 있습니다.
+                default:
+                    alert("유효하지 않은 설문 번호입니다.");
+                    return; // 유효하지 않은 경우 함수 종료
+            }
+
+            // 해당 URL로 이동
+            window.location.href = `/surveyitem/column_simple_data2?surveytopicno=${surveytopicno}`;
+        }
         // good 함수: 전역 범위에서 선언
         function good(surveyno) {
             console.log('-> surveyno: ' + surveyno);
@@ -241,13 +267,15 @@
     
     <!-- 완료 및 목록 버튼 -->
     <div class="content_body_bottom" style="text-align: center; margin-top: 30px;">
-        <!--<button id="btn_handleSubmit" type="button" class="btn btn-secondary btn-sm" style="background-color: #007BFF; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;">
-            완료
-        </button> -->
         <button type="button" onclick="location.href='/survey/list_search'" class="btn btn-secondary btn-sm" style="background-color: #007BFF; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-left: 10px; transition: background-color 0.3s;">
             목록
         </button>
+        <!-- 설문 항목 보기 버튼 추가 -->
+        <button type="button" onclick="goToSurveyItem()" class="btn btn-secondary btn-sm" style="background-color: #007BFF; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-left: 10px; transition: background-color 0.3s;">
+            설문 결과 차트 보기
+        </button>
     </div>
+    
     
     <style>
         .btn {

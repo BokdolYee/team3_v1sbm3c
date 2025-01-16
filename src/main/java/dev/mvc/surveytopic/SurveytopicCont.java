@@ -33,6 +33,7 @@ import dev.mvc.surveygood.SurveySurveygoodMemberVO;
 import dev.mvc.surveygood.SurveygoodProcInter;
 import dev.mvc.surveyitem.SurveyitemProcInter;
 import dev.mvc.surveyitem.SurveyitemVO;
+import dev.mvc.surveyitem.SurveytopicitemVO;
 import dev.mvc.tool.Tool;
 import dev.mvc.tool.Upload;
 import jakarta.servlet.http.HttpServletRequest;

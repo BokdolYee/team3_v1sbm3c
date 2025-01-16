@@ -29,17 +29,77 @@
   </head>
 
   <div layout:fragment="content" style="width: 80%; margin: 50px auto; text-align: center;">
-    <h1>시작 화면</h1><br>
-    <img src="/images/1main.jpg" style="width: 40%;"> <!-- /static/images/main.jpg -->
-    <br>
-    <a href="/calendar/list_calendar" class="btn">
-    <img src="/images/main_button_to_calendar.png" alt="일정" style="display: block; margin: 0 auto 5px;">
-        주요 일정 보기
-    </a>
-    <a href="/stockdata/viewstockdata" class="btn">
-    <img src="/images/main_button_to_graph.png" alt="일정" style="display: block; margin: 0 auto 5px;">
-        주요 종목 한 눈에 보기
-    </a>
+    <h1>해외 주식 투자 정보</h1><br>
+    <p>실시간 해외 주식 데이터와 관련 뉴스를 통해, 투자 결정을 돕는 웹사이트입니다.</p>
+
+    <div style="display: flex; justify-content: center; gap: 30px; margin-top: 30px;">
+        <!-- 뉴스 관련 섹션 -->
+        <div style="width: 45%; text-align: center; border: 1px solid #ddd; padding: 20px;">
+            <h2>최신 뉴스 분석</h2>
+            <img src="/images/main_news_icon.png" alt="뉴스 아이콘" style="width: 80px; height: auto;">
+            <p style="margin-top: 1rem">해외 주요 뉴스가 주식에 미치는 영향을 분석하여</p> 
+            <p>호재인지  악재인지 알려드립니다.</p>
+            <a href="/news/list" class="btn" style="display: block; margin-top: 20px;">
+                <img src="/images/main_button_to_news.png" alt="뉴스 분석" style="display: block; margin: 0 auto 5px;">
+                뉴스 분석 보기
+            </a>
+        </div>
+
+        <!-- 주식 데이터 관련 섹션 -->
+        <div style="width: 45%; text-align: center; border: 1px solid #ddd; padding: 20px;">
+            <h2>실시간 주식 데이터</h2>
+            <img src="/images/main_stock_icon.png" alt="주식 아이콘" style="width: 80px; height: auto;">
+            <p style="margin-top: 1rem">주요 해외 주식의 실시간 데이터를 확인하고</p>
+            <p>투자 결정을 내리는데 필요한 정보를 제공합니다.</p>
+            <a href="/stockdata/viewstockdata" class="btn" style="display: block; margin-top: 20px;">
+                <img src="/images/main_button_to_graph.png" alt="주식 데이터" style="display: block; margin: 0 auto 5px;">
+                실시간 주식 데이터 보기
+            </a>
+        </div>
+    </div>
+    
+    <!-- 설문조사 섹션 -->
+    <div style="display: flex; justify-content: center; gap: 30px; margin-top: 30px;">
+        <div style="width: 45%; text-align: center; border: 1px solid #ddd; padding: 20px;">
+            <h2>설문조사 참여</h2>
+            <img src="/images/main_suevey_icon.png" alt="설문조사 아이콘" style="width: 80px; height: auto;">
+            <p style="margin-top: 1rem">해외 주식 투자에 대한 여러분의 의견을 듣고 싶습니다.</p>
+            <p>설문에 참여하고 더 나은 서비스를 만들어가세요.</p>
+            <a href="/survey/list_search" class="btn" style="display: block; margin-top: 20px;">
+                <img src="/images/main_button_to_survay.png" alt="설문조사" style="display: block; margin: 0 auto 5px;">
+                설문조사 참여하기
+            </a>
+        </div>
+
+        <!-- 수익 인증 섹션 -->
+        <div style="width: 45%; text-align: center; border: 1px solid #ddd; padding: 20px;">
+            <h2>수익 인증</h2>
+            <img src="/images/main_profit_icon.png" alt="수익 인증 아이콘" style="width: 80px; height: auto;">
+            <p style="margin-top: 1rem">당신의 투자 수익을 인증하고, 다른 투자자들과 경험을 나눠보세요.</p>
+            <p>수익 인증을 통해 신뢰를 얻고, 더 많은 투자 정보를 공유하세요.</p>
+            <a href="/post_earning/list_by_postno" class="btn" style="display: block; margin-top: 20px;">
+                <img src="/images/main_button_to_profit.png" alt="수익 인증" style="display: block; margin: 0 auto 5px;">
+                수익 인증하기
+            </a>
+        </div>
+    </div>
+    
+    <div style="margin-top: 50px;">
+    <h2>시작하기 전에</h2>
+    <p>해외 주식 시장은 빠르게 변동합니다. 최신 정보를 빠르게 얻고, 주식 트렌드를 따라가세요.</p>
+    <div style="display: flex; justify-content: space-between; gap: 20px; margin-top: 20px;">
+        <a href="/member/create" class="btn" style="flex: 1; text-align: center;">
+            <img src="/images/main_button_to_profile.png" alt="" style="display: block; margin: 0 auto 5px;">
+            회원 가입
+        </a>
+        <a href="/calendar/list_calendar" class="btn" style="flex: 1; text-align: center;">
+            <img src="/images/main_button_to_calendar.png" alt="주요 일정" style="display: block; margin: 0 auto 5px;">
+            주요 일정 보기
+        </a>
+    </div>
+    </div>
+
+
 
 
     <!-- 일정 내용이 로드될 부분 -->
